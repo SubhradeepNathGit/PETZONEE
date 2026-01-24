@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key"
 );
 
 interface UserProfile {
@@ -209,16 +209,14 @@ export default function DeleteUserPage() {
               </div>
 
               <div
-                className={`p-4 rounded-xl border ${
-                  relatedData.pets > 0
+                className={`p-4 rounded-xl border ${relatedData.pets > 0
                     ? "bg-orange-500/10 border-orange-500/20"
                     : "bg-green-500/10 border-green-500/20"
-                }`}
+                  }`}
               >
                 <h4
-                  className={`font-semibold mb-1 ${
-                    relatedData.pets > 0 ? "text-orange-400" : "text-green-400"
-                  }`}
+                  className={`font-semibold mb-1 ${relatedData.pets > 0 ? "text-orange-400" : "text-green-400"
+                    }`}
                 >
                   {relatedData.pets} Pet{relatedData.pets === 1 ? "" : "s"}
                 </h4>
@@ -248,9 +246,8 @@ export default function DeleteUserPage() {
                   className="hidden"
                 />
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                    confirmed ? "bg-red-500 border-red-500" : "border-gray-400"
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${confirmed ? "bg-red-500 border-red-500" : "border-gray-400"
+                    }`}
                 >
                   {confirmed && <Check size={14} className="text-white" />}
                 </div>
@@ -270,11 +267,10 @@ export default function DeleteUserPage() {
             <button
               onClick={handleDelete}
               disabled={!canDelete || loading}
-              className={`flex-1 px-6 py-3 text-sm font-semibold rounded-xl transition ${
-                !canDelete || loading
+              className={`flex-1 px-6 py-3 text-sm font-semibold rounded-xl transition ${!canDelete || loading
                   ? "bg-gray-600/50 text-gray-400"
                   : "bg-gradient-to-r from-red-500 to-orange-500 text-white hover:scale-105"
-              }`}
+                }`}
             >
               {loading ? (
                 <>

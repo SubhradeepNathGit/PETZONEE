@@ -10,12 +10,10 @@ import type { Product, ProductDetail } from "@/types/product";
  * NEXT_PUBLIC_SUPABASE_URL=...
  * NEXT_PUBLIC_SUPABASE_ANON_KEY=...
  */
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
-export const supabase = (supabaseUrl && supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : (null as any); // Fallback for build time if env vars are missing
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
  * 2. Tailwind class merge utility
