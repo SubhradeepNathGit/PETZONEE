@@ -84,13 +84,13 @@ export default function Team() {
         {/* Header */}
         <div className="mb-12 md:mb-16 lg:mb-20">
           <p className="text-sm md:text-base text-orange-500 font-bold tracking-wider uppercase mb-2">
-            /POSHIK CREW
+            /PETZONEE CREW
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight">
             Certified Pet Coaches
           </h2>
           <p className="text-gray-600 max-w-3xl mx-auto text-sm sm:text-base md:text-lg leading-relaxed px-4">
-            Our certified veterinarians and pet specialists provide expert care, training, and 
+            Our certified veterinarians and pet specialists provide expert care, training, and
             nutrition advice to keep your beloved pets healthy and happy.
           </p>
         </div>

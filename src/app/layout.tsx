@@ -24,7 +24,7 @@ const inter = Inter({
 
 // Metadata
 export const metadata: Metadata = {
-  title: "Poshik",
+  title: "PETZONEE",
   description: "Connecting Pets, Owners & Services in One Happy Place 🐾",
 };
 

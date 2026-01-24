@@ -19,7 +19,7 @@ const Banner = () => {
       id: 1,
       videoSrc: '/videos/Banner12.mp4',
       title: 'Connect with Pet Lovers',
-      subtitle: 'WELCOME TO POSHIK',
+      subtitle: 'WELCOME TO PETZONEE',
       description:
         'The ultimate social platform for pet lovers. Share moments, find services, and build a community around your furry friends.',
     },
@@ -94,7 +94,7 @@ const Banner = () => {
           if (firstVideo.readyState >= 2) {
             loadedVideosRef.current.add(0);
             setVideosLoaded(true);
-            
+
             // Preload other videos progressively
             videoRefs.current.slice(1).forEach((video, index) => {
               if (video) {
@@ -103,7 +103,7 @@ const Banner = () => {
                   video.muted = true;
                   video.preload = 'metadata';
                   video.playsInline = true;
-                  
+
                   const handleLoad = () => {
                     loadedVideosRef.current.add(actualIndex);
                     video.removeEventListener('loadeddata', handleLoad);
@@ -255,7 +255,7 @@ const Banner = () => {
     return () => {
       if (slideTimerRef.current) clearInterval(slideTimerRef.current);
       if (preloadTimeoutRef.current) clearTimeout(preloadTimeoutRef.current);
-      
+
       // Clean up video event listeners
       videoRefs.current.forEach((video) => {
         if (video) {
@@ -300,17 +300,15 @@ const Banner = () => {
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
         >
           <video
             ref={(el) => {
               videoRefs.current[index] = el;
             }}
-            className={`absolute inset-0 w-full h-full object-cover ${
-              index === 0 ? 'banner-video' : ''
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover ${index === 0 ? 'banner-video' : ''
+              }`}
             muted={isMuted}
             loop
             playsInline
@@ -399,11 +397,10 @@ const Banner = () => {
           <button
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
                 ? 'bg-white scale-125'
                 : 'bg-white/50 hover:bg-white/75'
-            }`}
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

@@ -56,7 +56,7 @@ export default function AboutPage() {
                             value: 300000,
                             duration: 2,
                             ease: 'power2.out',
-                            onUpdate: function() {
+                            onUpdate: function () {
                                 setCounterValue(Math.floor(this.targets()[0].value));
                             }
                         });
@@ -154,7 +154,7 @@ export default function AboutPage() {
                     </motion.h1>
 
                     <motion.p className="reveal-text text-base lg:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 opacity-95 font-medium">
-                        At Poshik, we believe every pet deserves love, care and the best journey
+                        At PETZONEE, we believe every pet deserves love, care and the best journey
                         of life. From food to accessories, we provide everything that strengthens
                         the bond between pets and owners.
                     </motion.p>

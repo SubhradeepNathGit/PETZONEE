@@ -74,7 +74,7 @@ export default function Footer() {
               0: { slidesPerView: 2 },
               640: { slidesPerView: 3 },
               1024: { slidesPerView: 4 },
-              1280: { slidesPerView: 5 }, 
+              1280: { slidesPerView: 5 },
             }}
             className="overflow-hidden px-2 sm:px-4"
           >
@@ -83,7 +83,7 @@ export default function Footer() {
                 <div className="w-full h-36 sm:h-40 md:h-44 lg:h-48 xl:h-52 rounded-2xl overflow-hidden shadow-md shadow-black/20">
                   <Image
                     src={src}
-                    alt={`poshik-${i}`}
+                    alt={`petzonee-${i}`}
                     width={500}
                     height={300}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
@@ -120,8 +120,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={18} className="text-[#FF6B40]" />
-                <a href="mailto:poshik@example.com" className="hover:underline">
-                  poshik@example.com
+                <a href="mailto:support@petzonee.com" className="hover:underline">
+                  support@petzonee.com
                 </a>
               </li>
             </ul>
@@ -140,7 +140,7 @@ export default function Footer() {
 
           {/* Center brand */}
           <div className="text-center md:text-left">
-            <div className="text-3xl font-extrabold text-[#FF8A65]">POSHIK</div>
+            <div className="text-3xl font-extrabold text-[#FF8A65]">PETZONEE</div>
             <p className="mx-auto md:mx-0 mt-4 max-w-[480px] text-[15px] text-gray-600 leading-relaxed">
               Give your pets the love, care and attention they deserve every single day 24/7 with us.
             </p>
@@ -188,7 +188,7 @@ export default function Footer() {
                 alt="Dog"
                 width={250}
                 height={250}
-                className="object-contain scale-x-[-1] -rotate-20" 
+                className="object-contain scale-x-[-1] -rotate-20"
               />
             </div>
           </div>

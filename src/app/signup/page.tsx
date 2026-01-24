@@ -40,7 +40,7 @@ async function geocodeCityState(
   }
 }
 
-export default function PoshikAuth() {
+export default function PetzoneeAuth() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('signup');
   const [role, setRole] = useState<Role>('user');
@@ -337,7 +337,7 @@ function RegisterCard({
     <div className="mx-auto w-full max-w-[520px] text-white">
       <h2 className="mb-2 text-center text-[40px] font-extrabold leading-none drop-shadow-sm">Signup</h2>
       <p className="mb-6 text-center text-[14px] opacity-90">
-        Create account to start your exciting journey with Poshik
+        Create account to start your exciting journey with PETZONEE
       </p>
 
       {/* Role tabs (orange styling) */}

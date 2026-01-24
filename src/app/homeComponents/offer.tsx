@@ -103,7 +103,7 @@ export default function OfferBanner({ endDate }: OfferBannerProps) {
               </p>
 
               <h2 className="ob-heading font-bold leading-tight mb-3 text-[22px] sm:text-[28px] md:text-[40px] lg:text-[48px]">
-                Poshik Deals You’ll Love —<br className="hidden sm:block" />
+                PETZONEE Deals You’ll Love —<br className="hidden sm:block" />
                 Ending Really Soon
               </h2>
 
@@ -125,7 +125,7 @@ export default function OfferBanner({ endDate }: OfferBannerProps) {
               </div>
 
               {/* CTA */}
-              
+
             </div>
           </div>
         </div>

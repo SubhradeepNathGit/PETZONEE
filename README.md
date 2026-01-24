@@ -1,6 +1,6 @@
-🐾 Poshik – Pet Social Media & Services Platform
+🐾 PETZONEE – Pet Social Media & Services Platform
 
-Poshik is a digital hub for pet lovers — combining social networking, pet services, and e-commerce into one platform.
+PETZONEE is a digital hub for pet lovers — combining social networking, pet services, and e-commerce into one platform.
 Users can create pet profiles, connect with other owners, share updates, book vet appointments, shop pet products, and make secure payments — all in one app.
 
 ✨ Features
@@ -105,7 +105,7 @@ Stripe
  (Payments & Connect)
 
 📂 Project Structure
-poshik/
+petzonee/
 ├── app/                 # Next.js App Router
 │   ├── (auth)/          # Auth pages (login, signup, KYC)
 │   ├── (dashboard)/     # User dashboard
@@ -132,8 +132,8 @@ poshik/
 
 Clone Repo
 
-git clone https://github.com/your-username/poshik.git
-cd poshik
+git clone https://github.com/your-username/petzonee.git
+cd petzonee
 
 
 Install Dependencies

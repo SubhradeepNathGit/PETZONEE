@@ -193,7 +193,7 @@ export default function PetProfilePage() {
   }
   // ----------------------------------------------------
 
-  const coverSrc  = pet?.cover_url  || pet?.photo_url || '';
+  const coverSrc = pet?.cover_url || pet?.photo_url || '';
   const avatarSrc = pet?.avatar_url || '/images/avatar-placeholder.png';
   const iOwnIt = !!(meId && pet && meId === pet.owner_id);
 
@@ -232,7 +232,7 @@ export default function PetProfilePage() {
 
   return (
     <main className="min-h-[100dvh] w-full bg-[#f5f5dc]">
-     {/*  Top Banner with Breadcrumb */}
+      {/*  Top Banner with Breadcrumb */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
         <Image
           src="/images/statbg13.jpg" // put your banner in /public
@@ -250,10 +250,10 @@ export default function PetProfilePage() {
           </p>
         </div>
       </div>
- 
-      
+
+
       <div className="mx-auto max-w-[1000px] px-4 py-8">
-        
+
         {/* Cover / hero - Increased height */}
         <div className="relative overflow-hidden rounded-[28px] border border-[#ffe2cf] bg-[#FF8A65] p-6  shadow-[0_10px_35px_rgba(0,0,0,0.15)] ">
           <div className="relative h-72 w-full overflow-hidden rounded-[24px] bg-white  ">
@@ -292,190 +292,190 @@ export default function PetProfilePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-             
+
               <Link
                 href={`/pets/${pet.id}/edit`}
-               className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
 
               >
                 Edit
               </Link>
               <button
-  onClick={handleDeletePet}
-  disabled={!iOwnIt || deleting}
-  className="rounded-full border border-rose-500/30 bg-white/20 p-2 text-red-500 shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
->
-  {deleting ? (
-    <span className="text-xs">…</span>
-  ) : (
-    <Trash2 className="w-5 h-5 text-rose-400" />
-  )}
-</button>
+                onClick={handleDeletePet}
+                disabled={!iOwnIt || deleting}
+                className="rounded-full border border-rose-500/30 bg-white/20 p-2 text-red-500 shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
+              >
+                {deleting ? (
+                  <span className="text-xs">…</span>
+                ) : (
+                  <Trash2 className="w-5 h-5 text-rose-400" />
+                )}
+              </button>
             </div>
           </div>
         </div>
 
-       {/* Stats */}
-<section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-  <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-    <h4 className="text-lg font-bold text-[#FF6B40]/70">Age</h4>
-    <p className="mt-2 text-xl font-bold text-black/70">{ageLabel}</p>
-  </div>
-
-  <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-    <h4 className="text-sm font-medium text-[#FF6B40]/70">Weight</h4>
-    <p className="mt-2 text-xl font-bold text-black/70">
-      {pet.weight_kg ? `${pet.weight_kg} kg` : "—"}
-    </p>
-  </div>
-
-  <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-    <h4 className="text-sm font-medium text-[#FF6B40]/70">Joined</h4>
-    <p className="mt-2 text-xl font-bold text-black/70">
-      {new Date(pet.created_at).toLocaleDateString("en-US", {
-        month: "short",
-        year: "numeric",
-      })}
-    </p>
-  </div>
-</section>
-
-
-{/* About Section */}
-<motion.section
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.4, delay: 0.1 }}
-  className="mt-10 overflow-hidden rounded-3xl bg-orange-100 "
->
- {/* Header */}
-<div className="px-8 py-6 bg-[#FF8A65]">
-  <h2 className="text-2xl font-bold text-white">
-    Meet {pet.name || "Pet"}
-  </h2>
-  <p className="text-sm text-white mt-1 flex items-center gap-2">
-    <span className='font-medium'>Joined Poshik on</span>
-    <span className="font-medium text-white">
-      {new Date(pet.created_at).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      })}
-    </span>
-  </p>
-</div>
-
-
-  {/* Content */}
-  <div className="p-8 space-y-8">
-    {/* Basic Info + Physical Stats */}
-    <div className="grid gap-8 md:grid-cols-2">
-      {/* Basic Info */}
-      <div>
-        <h3 className="mb-4 text-lg font-semibold text-orange-400">
-          Basic Information
-        </h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Species :</span>
-            <span className=" font-medium text-gray-600">{pet.species || "Not specified"}</span>
+        {/* Stats */}
+        <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
+            <h4 className="text-lg font-bold text-[#FF6B40]/70">Age</h4>
+            <p className="mt-2 text-xl font-bold text-black/70">{ageLabel}</p>
           </div>
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Breed :</span>
-            <span className="font-medium text-gray-600">{pet.breed || "Mixed/Unknown"}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Age :</span>
-            <span className="font-medium text-gray-600">{ageLabel}</span>
-          </div>
-        </div>
-      </div>
 
-      {/* Physical Stats */}
-      <div>
-        <h3 className="mb-4 text-lg font-semibold text-orange-400">
-          Physical Stats
-        </h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Weight :</span>
-            <span className="font-medium text-gray-600">
-              {pet.weight_kg ? `${pet.weight_kg} kg` : "Not recorded"}
-            </span>
+          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
+            <h4 className="text-sm font-medium text-[#FF6B40]/70">Weight</h4>
+            <p className="mt-2 text-xl font-bold text-black/70">
+              {pet.weight_kg ? `${pet.weight_kg} kg` : "—"}
+            </p>
           </div>
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Born: </span>
-            <span className="font-medium text-gray-600">
-              {pet.dob
-                ? new Date(pet.dob).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
-                : "Unknown"}
-            </span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span className="font-medium">Owner: </span>
-            <span className=" font-medium text-gray-600">
-              {meId === pet.owner_id ? "You" : "Shared access"}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    {/* Biography */}
-    {pet.notes && (
-      <>
-        <hr className="border-t border-gray-700/40" />
-        <div>
-          <h3 className="mb-4 text-lg font-semibold text-orange-400">
-            Bio
-          </h3>
-          <p className="leading-relaxed text-md font-semibold text-gray-500">{pet.notes}</p>
-        </div>
-      </>
-    )}
-
-    {/* Timeline */}
-    <hr className="border-t border-gray-700/40" />
-    <div>
-      <h3 className="mb-4 text-lg font-semibold text-orange-400">Timeline</h3>
-      <div className="flex flex-wrap gap-3 text-sm text-gray-100">
-        {/* Added */}
-        <div className="flex items-center gap-2 rounded-full bg-orange-300/20 px-4 py-2  border border-orange-300">
-          <span className="font-medium text-orange-400">Added:</span>
-          <span className=" font-medium text-gray-500">
-            {new Date(pet.created_at).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
-        </div>
-
-        {/* Birthday */}
-        {pet.dob && (
-          <div className="flex items-center gap-2 rounded-full bg-[#FF8A65] px-4 py-2  border border-orange-300">
-            <span className="font-medium text-white">Birthday:</span>
-            <span className='font-medium'>
-              {new Date(pet.dob).toLocaleDateString("en-US", {
+          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
+            <h4 className="text-sm font-medium text-[#FF6B40]/70">Joined</h4>
+            <p className="mt-2 text-xl font-bold text-black/70">
+              {new Date(pet.created_at).toLocaleDateString("en-US", {
                 month: "short",
-                day: "numeric",
+                year: "numeric",
               })}
-            </span>
+            </p>
           </div>
-        )}
+        </section>
 
-        {/* Photos */}
-        <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 shadow-sm border border-black/30">
-          <span className="font-medium">Photos:</span>
-          <span className='font-medium'>{gallery.length} uploaded</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</motion.section>
+
+        {/* About Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="mt-10 overflow-hidden rounded-3xl bg-orange-100 "
+        >
+          {/* Header */}
+          <div className="px-8 py-6 bg-[#FF8A65]">
+            <h2 className="text-2xl font-bold text-white">
+              Meet {pet.name || "Pet"}
+            </h2>
+            <p className="text-sm text-white mt-1 flex items-center gap-2">
+              <span className='font-medium'>Joined PETZONEE on</span>
+              <span className="font-medium text-white">
+                {new Date(pet.created_at).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </p>
+          </div>
+
+
+          {/* Content */}
+          <div className="p-8 space-y-8">
+            {/* Basic Info + Physical Stats */}
+            <div className="grid gap-8 md:grid-cols-2">
+              {/* Basic Info */}
+              <div>
+                <h3 className="mb-4 text-lg font-semibold text-orange-400">
+                  Basic Information
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Species :</span>
+                    <span className=" font-medium text-gray-600">{pet.species || "Not specified"}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Breed :</span>
+                    <span className="font-medium text-gray-600">{pet.breed || "Mixed/Unknown"}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Age :</span>
+                    <span className="font-medium text-gray-600">{ageLabel}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Physical Stats */}
+              <div>
+                <h3 className="mb-4 text-lg font-semibold text-orange-400">
+                  Physical Stats
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Weight :</span>
+                    <span className="font-medium text-gray-600">
+                      {pet.weight_kg ? `${pet.weight_kg} kg` : "Not recorded"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Born: </span>
+                    <span className="font-medium text-gray-600">
+                      {pet.dob
+                        ? new Date(pet.dob).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                        : "Unknown"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span className="font-medium">Owner: </span>
+                    <span className=" font-medium text-gray-600">
+                      {meId === pet.owner_id ? "You" : "Shared access"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Biography */}
+            {pet.notes && (
+              <>
+                <hr className="border-t border-gray-700/40" />
+                <div>
+                  <h3 className="mb-4 text-lg font-semibold text-orange-400">
+                    Bio
+                  </h3>
+                  <p className="leading-relaxed text-md font-semibold text-gray-500">{pet.notes}</p>
+                </div>
+              </>
+            )}
+
+            {/* Timeline */}
+            <hr className="border-t border-gray-700/40" />
+            <div>
+              <h3 className="mb-4 text-lg font-semibold text-orange-400">Timeline</h3>
+              <div className="flex flex-wrap gap-3 text-sm text-gray-100">
+                {/* Added */}
+                <div className="flex items-center gap-2 rounded-full bg-orange-300/20 px-4 py-2  border border-orange-300">
+                  <span className="font-medium text-orange-400">Added:</span>
+                  <span className=" font-medium text-gray-500">
+                    {new Date(pet.created_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                {/* Birthday */}
+                {pet.dob && (
+                  <div className="flex items-center gap-2 rounded-full bg-[#FF8A65] px-4 py-2  border border-orange-300">
+                    <span className="font-medium text-white">Birthday:</span>
+                    <span className='font-medium'>
+                      {new Date(pet.dob).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                )}
+
+                {/* Photos */}
+                <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 shadow-sm border border-black/30">
+                  <span className="font-medium">Photos:</span>
+                  <span className='font-medium'>{gallery.length} uploaded</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.section>
 
 
 
@@ -627,7 +627,7 @@ export default function PetProfilePage() {
           <Link href="/pets/new" className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold hover:bg-slate-50">
             Add another pet
           </Link>
-          
+
           <Link href="/dashboard" className="rounded-full bg-[#FF8A65] px-5 py-2 text-sm font-semibold text-white hover:opacity-95">
             Back to dashboard
           </Link>
@@ -714,9 +714,8 @@ function UploadPetPhoto({
       <label
         htmlFor={inputId}
         title="Add photo to gallery"
-        className={`rounded-full px-4 py-2 text-sm font-semibold shadow cursor-pointer ${
-          busy ? 'bg-slate-300 text-slate-600' : 'bg-[#FF8A65] text-white hover:opacity-90'
-        }`}
+        className={`rounded-full px-4 py-2 text-sm font-semibold shadow cursor-pointer ${busy ? 'bg-slate-300 text-slate-600' : 'bg-[#FF8A65] text-white hover:opacity-90'
+          }`}
       >
         {busy ? 'Uploading…' : 'Add photo'}
       </label>

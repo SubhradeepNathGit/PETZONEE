@@ -12,7 +12,7 @@ type OrderItem = {
 };
 type LastOrder = {
   orderId: string; when: string; items: OrderItem[];
-  summary: { subtotal: number; sgst: number; cgst: number; totalTax: number; deliveryFee: number; total: number,promoCode?: string; promoDiscount?: number; } 
+  summary: { subtotal: number; sgst: number; cgst: number; totalTax: number; deliveryFee: number; total: number, promoCode?: string; promoDiscount?: number; }
   contact: { email: string; phone: string };
   address: { name: string; line1: string; line2?: string; city: string; state: string; pincode: string };
   delivery: "standard" | "express"; payMode: "card" | "upi" | "netbanking" | "wallet";
@@ -40,7 +40,7 @@ const AnimatedParticles = () => (
 );
 
 const SuccessHeader = ({ order }: { order: LastOrder | null }) => (
-  <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} 
+  <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.6, type: "spring" }} className="text-center">
     <div className="relative inline-block">
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }}
@@ -53,12 +53,12 @@ const SuccessHeader = ({ order }: { order: LastOrder | null }) => (
         </motion.div>
       </motion.div>
     </div>
-    
+
     <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
       className="mt-6 text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
       Payment Successful!
     </motion.h1>
-    
+
     <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 0.6 }}
       className="mt-4 space-y-2">
       <p className="text-xl text-gray-700 font-medium">Your order has been confirmed and is being processed</p>
@@ -138,7 +138,7 @@ const OrderSummary = ({ order, itemCount }: { order: LastOrder | null; itemCount
               <span className="font-semibold text-gray-900">₹{Number(value).toLocaleString()}</span>
             </div>
           ))}
-          
+
           {/* Promo Discount Row - Only shows if promo was applied */}
           {order.summary.promoCode && order.summary.promoDiscount && order.summary.promoDiscount > 0 && (
             <div className="flex items-center justify-between text-base">
@@ -151,7 +151,7 @@ const OrderSummary = ({ order, itemCount }: { order: LastOrder | null; itemCount
               </span>
             </div>
           )}
-          
+
           <div className="border-t-2 border-green-200 my-4" />
           <div className="flex items-center justify-between text-base">
             <span className="font-bold text-gray-900">Total Paid</span>
@@ -223,19 +223,19 @@ const InvoiceModal = ({ order, onClose }: { order: LastOrder; onClose: () => voi
       ['CGST (9%)', order.summary.cgst],
       [`Delivery (${order.delivery === 'standard' ? 'Standard' : 'Express'})`, order.summary.deliveryFee]
     ];
-    
+
     // Add promo discount if exists
     if (order.summary.promoCode && order.summary.promoDiscount && order.summary.promoDiscount > 0) {
       rows.push([`Promo Discount (${order.summary.promoCode})`, -order.summary.promoDiscount]);
     }
-    
+
     return rows;
   };
 
   const invoiceHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice</title>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;color:#1f2937;background:#f5f5dc;padding:20px;min-height:100vh}@media print{body{padding:0;margin:0;background:#f5f5dc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;min-height:100vh}}.invoice{width:100%;max-width:800px;margin:0 auto;background:#f5f5dc;border:2px solid #FF8A65;page-break-inside:avoid;min-height:100vh;display:flex;flex-direction:column}@media print{.invoice{max-width:100%;margin:0;border:1px solid #FF8A65;box-shadow:none;width:100%;min-height:100vh}}.header{background:#FF8A65;color:#fff;padding:25px}@media print{.header{padding:15px}}.header-content{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:15px}.company h1{font-size:2rem;font-weight:800;margin-bottom:5px}@media print{.company h1{font-size:1.5rem}}.tagline{font-size:1rem;opacity:.9;margin-bottom:10px}@media print{.tagline{font-size:0.8rem}}.company-details{font-size:.85rem;opacity:.8}@media print{.company-details{font-size:0.7rem}}.invoice-meta{text-align:right;background:rgba(255,255,255,.2);padding:15px;border-radius:8px}@media print{.invoice-meta{padding:10px}}.invoice-meta h2{font-size:1.5rem;margin-bottom:8px}@media print{.invoice-meta h2{font-size:1.2rem}}.body{padding:25px;flex:1}@media print{.body{padding:15px;flex:1}}.billing{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:20px;padding:20px;background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px}@media print{.billing{padding:12px;margin-bottom:15px;gap:15px}}.billing h3{color:#FF8A65;font-size:1rem;font-weight:700;margin-bottom:10px;border-bottom:2px solid #FF8A65;padding-bottom:5px}.billing-details{line-height:1.4;color:#374151;font-size:0.85rem}@media print{.billing-details{font-size:0.75rem;line-height:1.3}}.table{width:100%;border-collapse:collapse;margin-bottom:15px;border:1px solid #FF8A65}@media print{.table{margin-bottom:10px;font-size:0.8rem}}.table thead{background:#FF8A65;color:#fff}.table th{padding:10px 8px;text-align:left;font-weight:600;font-size:0.9rem}@media print{.table th{padding:6px 4px;font-size:0.75rem}}.table th:last-child,.table td:last-child{text-align:right}.table tbody tr{border-bottom:1px solid #FF8A65}.table tbody tr:nth-child(even){background:rgba(255,138,101,0.05)}.table td{padding:8px;font-size:0.85rem}@media print{.table td{padding:4px;font-size:0.7rem}}.item-name{font-weight:600;color:#1f2937}.qty-badge{background:rgba(255,138,101,0.2);color:#FF8A65;padding:2px 8px;border-radius:12px;font-weight:600;font-size:.75rem}.price{font-weight:600;color:#1f2937}.totals{background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px;padding:20px;margin-bottom:15px}@media print{.totals{padding:12px;margin-bottom:10px}}.totals-table{width:100%;max-width:350px;margin-left:auto}.totals-table tr{border-bottom:1px solid #FF8A65}.totals-table tr:last-child{border-bottom:2px solid #FF8A65;font-weight:700}.totals-table td{padding:8px 0;font-size:0.9rem}@media print{.totals-table td{padding:4px 0;font-size:0.8rem}}.total-amount{color:#FF8A65;font-size:1.2rem;font-weight:800}@media print{.total-amount{font-size:1rem}}.promo-row{color:#e97d2a!important;font-weight:600}.payment-status{background:#FF8A65;color:#fff;padding:15px;border-radius:8px;text-align:center;margin-bottom:15px}@media print{.payment-status{padding:10px;margin-bottom:10px}}.payment-status h3{font-size:1.1rem;margin-bottom:5px}@media print{.payment-status h3{font-size:0.9rem}}.payment-details{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px;padding:15px;background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px}@media print{.payment-details{padding:10px;margin-bottom:10px;grid-template-columns:repeat(2,1fr)}}.payment-detail{text-align:center;padding:8px;background:#f5f5dc;border:1px solid #FF8A65;border-radius:4px}@media print{.payment-detail{padding:5px}}.payment-detail .label{font-size:.75rem;color:#6b7280;margin-bottom:2px}@media print{.payment-detail .label{font-size:0.65rem}}.payment-detail .value{font-weight:700;font-size:0.8rem}@media print{.payment-detail .value{font-size:0.7rem}}.footer{background:rgba(255,138,101,0.1);padding:15px;text-align:center;border-top:2px solid #FF8A65;margin-top:auto}@media print{.footer{padding:10px;margin-top:auto}}.thank-you{font-size:1rem;font-weight:700;color:#FF8A65;margin-bottom:8px}@media print{.thank-you{font-size:0.85rem}}.support-info{color:#6b7280;font-size:.8rem}@media print{.support-info{font-size:0.7rem}}.btn{padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;border:none;margin:0 8px}.btn-primary{background:#FF8A65;color:#fff}.btn-secondary{background:#f5f5dc;color:#FF8A65;border:2px solid #FF8A65}@media print{.btn{display:none}}@media(max-width:768px){.billing{grid-template-columns:1fr}.payment-details{grid-template-columns:repeat(2,1fr)}}@page{margin:0.3in;size:A4}</style>
 </head><body><div class="invoice">
-<div class="header"><div class="header-content"><div class="company"><h1>Poshik PetShop</h1><div class="tagline">Premium Pet Care & Accessories</div><div class="company-details">GST: 07AABCP0123A1Z5<br>Phone: +91 98765 43210<br>Email: support@poshikpetshop.com</div></div>
+<div class="header"><div class="header-content"><div class="company"><h1>PETZONEE PetShop</h1><div class="tagline">Premium Pet Care & Accessories</div><div class="company-details">GST: 07AABCP0123A1Z5<br>Phone: +91 98765 43210<br>Email: support@petzonee.com</div></div>
 <div class="invoice-meta"><h2>INVOICE</h2><div>Invoice No: <strong>${order.orderId}</strong></div><div>Date: <strong>${formatDate(order.when)}</strong></div><div>Payment: <strong>${prettyPayMode(order.payMode)}</strong></div></div></div></div>
 <div class="body"><div class="billing"><div><h3>Bill To</h3><div class="billing-details"><strong>${order.address.name}</strong><br>${order.address.line1}<br>${order.address.line2 ? order.address.line2 + '<br>' : ''}${order.address.city}, ${order.address.state} ${order.address.pincode}<br><strong>Email:</strong> ${order.contact.email}<br><strong>Phone:</strong> ${order.contact.phone}</div></div>
 <div><h3>Ship To</h3><div class="billing-details"><strong>${order.address.name}</strong><br>${order.address.line1}<br>${order.address.line2 ? order.address.line2 + '<br>' : ''}${order.address.city}, ${order.address.state} ${order.address.pincode}</div></div></div>
@@ -244,32 +244,32 @@ ${order.items.map(item => `<tr><td><div class="item-name">${item.name}</div></td
 </tbody></table>
 <div class="totals"><table class="totals-table">
 ${buildInvoiceRows().map(([label, value]) => {
-  const isPromo = String(label).includes('Promo');
-  const isNegative = Number(value) < 0;
-  const displayValue = isNegative ? `₹${Math.abs(Number(value)).toLocaleString()}` : `₹${Number(value).toLocaleString()}`;
-  const finalValue = isNegative ? `- ${displayValue}` : displayValue;
-  return `<tr${isPromo ? ' class="promo-row"' : ''}><td>${label}:</td><td>${finalValue}</td></tr>`;
-}).join('')}
+    const isPromo = String(label).includes('Promo');
+    const isNegative = Number(value) < 0;
+    const displayValue = isNegative ? `₹${Math.abs(Number(value)).toLocaleString()}` : `₹${Number(value).toLocaleString()}`;
+    const finalValue = isNegative ? `- ${displayValue}` : displayValue;
+    return `<tr${isPromo ? ' class="promo-row"' : ''}><td>${label}:</td><td>${finalValue}</td></tr>`;
+  }).join('')}
 <tr><td><strong>Total Amount:</strong></td><td class="total-amount">₹${order.summary.total.toLocaleString()}</td></tr>
 </table></div>
 <div class="payment-status"><h3>✓ Payment Successful</h3><p>Your payment has been processed successfully</p></div>
 <div class="payment-details">
 ${[
-  ['Transaction ID', order.orderId],
-  ['Payment Method', prettyPayMode(order.payMode)],
-  ['Transaction Time', formatDateTime(order.when)],
-  ['Delivery Type', `${order.delivery === 'standard' ? 'Standard' : 'Express'} Delivery`]
-].map(([label, value]) => `<div class="payment-detail"><div class="label">${label}</div><div class="value">${value}</div></div>`).join('')}
+      ['Transaction ID', order.orderId],
+      ['Payment Method', prettyPayMode(order.payMode)],
+      ['Transaction Time', formatDateTime(order.when)],
+      ['Delivery Type', `${order.delivery === 'standard' ? 'Standard' : 'Express'} Delivery`]
+    ].map(([label, value]) => `<div class="payment-detail"><div class="label">${label}</div><div class="value">${value}</div></div>`).join('')}
 </div>
 <div style="text-align:center;margin:20px 0"><button class="btn btn-primary" onclick="window.print()">Print Invoice</button></div></div>
-<div class="footer"><div class="thank-you">Thank you for choosing Poshik PetShop!</div><div class="support-info">For queries: <a href="mailto:subhradeepnathprofessional@gmail.com">subhradeepnathprofessional@gmail.com</a> or +91 9876543210<br><strong>Note:</strong> This is a demo transaction</div></div></div></body></html>`;
+<div class="footer"><div class="thank-you">Thank you for choosing PETZONEE PetShop!</div><div class="support-info">For queries: <a href="mailto:subhradeepnathprofessional@gmail.com">subhradeepnathprofessional@gmail.com</a> or +91 9876543210<br><strong>Note:</strong> This is a demo transaction</div></div></div></body></html>`;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
         className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         <div className="sticky top-0 bg-[#FF8A65] text-white p-4 flex justify-between items-center">
-          <h3 className="text-xl font-semibold mx-auto">Poshik Petshop Invoice</h3>
+          <h3 className="text-xl font-semibold mx-auto">PETZONEE Petshop Invoice</h3>
           <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors p-2">
             <X className="h-6 w-6" />
           </button>
@@ -291,7 +291,7 @@ export default function SuccessPage() {
   useEffect(() => {
     const raw = localStorage.getItem("last_order");
     if (raw) {
-      try { setOrder(JSON.parse(raw)); } catch {}
+      try { setOrder(JSON.parse(raw)); } catch { }
     }
   }, []);
 
