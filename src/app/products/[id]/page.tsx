@@ -3,11 +3,12 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { product, details } = await getProductById(params.id);
+  const { id } = await params;
+  const { product, details } = await getProductById(id);
 
   if (!product) {
     return (

@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
 
 type Mode = 'signup' | 'signin';
@@ -65,7 +64,7 @@ export default function PoshikAuth() {
     if (error) return setMsg(error.message);
 
     const user = data.user;
-    const userRole = (user?.user_metadata as any)?.role;
+    const userRole = (user?.user_metadata as { role?: string })?.role;
     if (userRole === 'vet') {
       const { data: vet } = await supabase
         .from('veterinarian')
@@ -141,63 +140,63 @@ export default function PoshikAuth() {
     setMode('signin');
   }
 
-async function onSignupVet(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  setBusy(true);
-  setMsg('');
+  async function onSignupVet(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg('');
 
-  const fd = new FormData(e.currentTarget);
-  const name = String(fd.get('name') || '');
-  const email = String(fd.get('email') || '');
-  const phone = String(fd.get('phone') || '');
-  const password = String(fd.get('password') || '');
-  const file = (fd.get('medical_pdf') as File) ?? null;
+    const fd = new FormData(e.currentTarget);
+    const name = String(fd.get('name') || '');
+    const email = String(fd.get('email') || '');
+    const phone = String(fd.get('phone') || '');
+    const password = String(fd.get('password') || '');
+    const file = (fd.get('medical_pdf') as File) ?? null;
 
-  // 1️⃣ Create auth user
-  const { data: sign, error: signErr } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { role: 'vet', display_name: name } },
-  });
-  if (signErr) { setBusy(false); return setMsg(signErr.message); }
+    // 1️⃣ Create auth user
+    const { data: sign, error: signErr } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { role: 'vet', display_name: name } },
+    });
+    if (signErr) { setBusy(false); return setMsg(signErr.message); }
 
-  const uid = sign.user?.id;
-  if (!uid) { setBusy(false); return setMsg('Signup succeeded but no UID found.'); }
+    const uid = sign.user?.id;
+    if (!uid) { setBusy(false); return setMsg('Signup succeeded but no UID found.'); }
 
-  // 2️⃣ Upload PDF to Supabase storage (medical-docs bucket)
-  let medicalDocUrl: string | null = null;
-  if (file && file.size > 0) {
-    const path = `${uid}/${Date.now()}-${file.name}`;
-    const { error: uploadErr } = await supabase.storage
-      .from('medical-docs')
-      .upload(path, file, { upsert: true });
+    // 2️⃣ Upload PDF to Supabase storage (medical-docs bucket)
+    let medicalDocUrl: string | null = null;
+    if (file && file.size > 0) {
+      const path = `${uid}/${Date.now()}-${file.name}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('medical-docs')
+        .upload(path, file, { upsert: true });
 
-    if (uploadErr) {
-      setBusy(false);
-      return setMsg(`File upload failed: ${uploadErr.message}`);
+      if (uploadErr) {
+        setBusy(false);
+        return setMsg(`File upload failed: ${uploadErr.message}`);
+      }
+
+      // Get public URL after upload
+      const { data: pub } = supabase.storage.from('medical-docs').getPublicUrl(path);
+      medicalDocUrl = pub.publicUrl;
     }
 
-    // Get public URL after upload
-    const { data: pub } = supabase.storage.from('medical-docs').getPublicUrl(path);
-    medicalDocUrl = pub.publicUrl;
+    // 3️⃣ Insert vet record into DB with medical_doc_url
+    const { error: dbErr } = await supabase.from('veterinarian').insert([{
+      id: uid,
+      name,
+      email,
+      phone,
+      medical_doc_url: medicalDocUrl, // ✅ Now storing full URL
+      kyc_status: 'pending',
+    }]);
+    if (dbErr) { setBusy(false); return setMsg(`Vet insert failed: ${dbErr.message}`); }
+
+    // ✅ Done
+    setBusy(false);
+    setMsg('Vet account created! Please confirm your email. KYC is pending.');
+    setMode('signin');
   }
-
-  // 3️⃣ Insert vet record into DB with medical_doc_url
-  const { error: dbErr } = await supabase.from('veterinarian').insert([{
-    id: uid,
-    name,
-    email,
-    phone,
-    medical_doc_url: medicalDocUrl, // ✅ Now storing full URL
-    kyc_status: 'pending',
-  }]);
-  if (dbErr) { setBusy(false); return setMsg(`Vet insert failed: ${dbErr.message}`); }
-
-  // ✅ Done
-  setBusy(false);
-  setMsg('Vet account created! Please confirm your email. KYC is pending.');
-  setMode('signin');
-}
 
   const isSignup = mode === 'signup';
 

@@ -1,0 +1,346 @@
+﻿
+> poshik-petcare@0.1.0 lint
+> next lint
+
+node.exe :  ΓÜá 
+Warning: Found 
+multiple lockfiles. 
+Selecting 
+C:\Users\Subhradeep N
+ath\package-lock.json
+.
+At C:\Program Files\n
+odejs\npm.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ( ΓÜá Wa   
+ rning: F...kage-    
+lock.json.:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+   Consider removing 
+the lockfiles at:
+   * 
+C:\Users\Subhradeep N
+ath\OneDrive\Desktop\
+New folder 
+(6)\package-lock.json
+
+
+./src/app/contactUs/p
+age.tsx
+142:9  Warning: 
+'mapInView' is 
+assigned a value but 
+never used.  @typescr
+ipt-eslint/no-unused-
+vars
+167:15  Warning: 
+Using `<img>` could 
+result in slower LCP 
+and higher 
+bandwidth. Consider 
+using `<Image />` 
+from `next/image` or 
+a custom image 
+loader to 
+automatically 
+optimize images. 
+This may incur 
+additional usage or 
+cost from your 
+provider. See: https:
+//nextjs.org/docs/mes
+sages/no-img-element 
+ @next/next/no-img-el
+ement
+
+./src/app/dashboard/p
+age.tsx
+41:9  Warning: 
+'throwAsyncError' is 
+assigned a value but 
+never used.  @typescr
+ipt-eslint/no-unused-
+vars
+166:6  Warning: 
+React Hook useEffect 
+has a missing 
+dependency: 
+'initializeUser'. 
+Either include it or 
+remove the 
+dependency array.  re
+act-hooks/exhaustive-
+deps
+369:40  Warning: 
+Expected an 
+assignment or 
+function call and 
+instead saw an 
+expression.  @typescr
+ipt-eslint/no-unused-
+expressions
+571:41  Warning: 
+'fallback' is 
+defined but never 
+used.  @typescript-es
+lint/no-unused-vars
+
+./src/app/delete/page
+.tsx
+13:3  Warning: 
+'Heart' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+14:3  Warning: 
+'Shield' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+
+./src/app/feed/page.t
+sx
+18:9  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+28:6  Warning: 
+'ActivityComment' is 
+defined but never 
+used.  @typescript-es
+lint/no-unused-vars
+64:59  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+164:29  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+180:39  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+181:26  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+271:42  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+276:48  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+293:51  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+309:9  Warning: 
+'mounted' is 
+assigned a value but 
+never used.  @typescr
+ipt-eslint/no-unused-
+vars
+354:20  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+375:20  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+387:51  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+549:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+571:10  Warning: 
+'MiniImage' is 
+defined but never 
+used.  @typescript-es
+lint/no-unused-vars
+799:13  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+925:33  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+./src/app/homeCompone
+nts/banner.tsx
+260:17  Warning: The 
+ref value 
+'videoRefs.current' 
+will likely have 
+changed by the time 
+this effect cleanup 
+function runs. If 
+this ref points to a 
+node rendered by 
+React, copy 
+'videoRefs.current' 
+to a variable inside 
+the effect, and use 
+that variable in the 
+cleanup function.  re
+act-hooks/exhaustive-
+deps
+
+./src/app/homeCompone
+nts/testimonials.tsx
+115:17  Warning: 
+Using `<img>` could 
+result in slower LCP 
+and higher 
+bandwidth. Consider 
+using `<Image />` 
+from `next/image` or 
+a custom image 
+loader to 
+automatically 
+optimize images. 
+This may incur 
+additional usage or 
+cost from your 
+provider. See: https:
+//nextjs.org/docs/mes
+sages/no-img-element 
+ @next/next/no-img-el
+ement
+182:21  Warning: 
+Using `<img>` could 
+result in slower LCP 
+and higher 
+bandwidth. Consider 
+using `<Image />` 
+from `next/image` or 
+a custom image 
+loader to 
+automatically 
+optimize images. 
+This may incur 
+additional usage or 
+cost from your 
+provider. See: https:
+//nextjs.org/docs/mes
+sages/no-img-element 
+ @next/next/no-img-el
+ement
+
+./src/app/pets/new/pa
+ge.tsx
+112:19  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+./src/app/pets/[id]/e
+dit/page.tsx
+112:36  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+153:17  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+./src/app/pets/[id]/p
+age.tsx
+729:10  Warning: 
+'InfoRow' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+738:10  Warning: 
+'Stat' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+
+./src/app/signup/page
+.tsx
+7:8  Warning: 
+'Image' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+68:46  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+./src/components/navb
+ar.tsx
+33:49  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+./src/components/port
+al/UserDashboard.tsx
+2:8  Warning: 'Link' 
+is defined but never 
+used.  @typescript-es
+lint/no-unused-vars
+
+./src/components/port
+al/VetDashboard.tsx
+197:53  Warning: 
+'index' is defined 
+but never used.  @typ
+escript-eslint/no-unu
+sed-vars
+
+./src/components/prod
+ucts/Sidebar.tsx
+48:18  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-es
+lint/no-explicit-any
+
+info  - Need to 
+disable some ESLint 
+rules? Learn more 
+here: https://nextjs.
+org/docs/app/api-refe
+rence/config/eslint#d
+isabling-rules

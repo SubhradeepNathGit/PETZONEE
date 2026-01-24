@@ -78,7 +78,7 @@ export default function EditPetPage() {
     setCoverPreview(f ? URL.createObjectURL(f) : (pet?.cover_url ?? pet?.photo_url ?? null));
   }
 
-  async function uploadToBucket(kind: 'avatars'|'covers', file: File) {
+  async function uploadToBucket(kind: 'avatars' | 'covers', file: File) {
     const ext = file.name.split('.').pop() || 'jpg';
     const key = `${kind}/${id}-${Date.now()}.${ext}`;
     const { error: upErr } = await supabase
@@ -103,15 +103,15 @@ export default function EditPetPage() {
       let cover_url: string | null | undefined = undefined;
 
       if (removeAvatar) avatar_url = null;
-      if (removeCover)  cover_url = null;
+      if (removeCover) cover_url = null;
 
       if (avatarFile) avatar_url = await uploadToBucket('avatars', avatarFile);
-      if (coverFile)  cover_url  = await uploadToBucket('covers',   coverFile);
+      if (coverFile) cover_url = await uploadToBucket('covers', coverFile);
 
       // update row
-      const update: Record<string, any> = { name: name.trim() };
+      const update: Record<string, unknown> = { name: name.trim() };
       if (avatar_url !== undefined) update.avatar_url = avatar_url;
-      if (cover_url  !== undefined) update.cover_url  = cover_url;
+      if (cover_url !== undefined) update.cover_url = cover_url;
 
       const { error } = await supabase.from('pets').update(update).eq('id', pet.id);
       if (error) throw error;
@@ -150,9 +150,9 @@ export default function EditPetPage() {
       }
 
       router.replace(`/pets/${pet.id}`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      alert(e?.message ?? 'Failed to save changes.');
+      alert((e as Error)?.message ?? 'Failed to save changes.');
       setSaving(false);
     }
   }

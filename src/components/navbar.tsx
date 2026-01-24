@@ -30,7 +30,7 @@ const Navbar = () => {
   // Fetch cart count
   const fetchCartCount = useCallback(async (uid: string) => {
     const { data } = await supabase.from('cart').select('quantity').eq('user_id', uid);
-    if (data) setCartCount(data.reduce((sum, r: any) => sum + Number(r.quantity || 0), 0));
+    if (data) setCartCount(data.reduce((sum, r) => sum + Number((r as { quantity: number }).quantity || 0), 0));
   }, []);
 
   // Initialize and handle auth changes
@@ -40,23 +40,23 @@ const Navbar = () => {
     const initUser = async () => {
       const { data } = await supabase.auth.getUser();
       const user = data?.user;
-      
+
       if (user) {
         setUserId(user.id);
         const { data: profile } = await supabase.from('users').select('first_name').eq('id', user.id).single();
         setFirstName(profile?.first_name || 'Friend');
         fetchCartCount(user.id);
-        
+
         // Setup realtime and polling
         const channel = supabase.channel(`cart-${user.id}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart', filter: `user_id=eq.${user.id}` }, 
-             () => fetchCartCount(user.id))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'cart', filter: `user_id=eq.${user.id}` },
+            () => fetchCartCount(user.id))
           .subscribe();
-        
+
         const interval = setInterval(() => fetchCartCount(user.id), 5000);
         const onVis = () => document.visibilityState === 'visible' && fetchCartCount(user.id);
         document.addEventListener('visibilitychange', onVis);
-        
+
         cleanup.push(
           () => supabase.removeChannel(channel),
           () => clearInterval(interval),
@@ -125,7 +125,7 @@ const Navbar = () => {
   const UserDropdown = ({ isMobile = false }) => {
     const isOpen = isMobile ? mobileDropdownOpen : dropdownOpen;
     const setOpen = isMobile ? setMobileDropdownOpen : setDropdownOpen;
-    
+
     return (
       <div className="relative">
         <button

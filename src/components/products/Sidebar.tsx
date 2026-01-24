@@ -44,9 +44,9 @@ export default function Sidebar({
         const { data, error } = (await supabase
           .from("products")
           .select("category, tags")) as {
-          data: ProductRow[] | null;
-          error: any;
-        };
+            data: ProductRow[] | null;
+            error: unknown;
+          };
 
         if (error) throw error;
 
@@ -127,19 +127,17 @@ export default function Sidebar({
           <div className="space-y-2">
             {/* All Products */}
             <div
-              className={`flex justify-between items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${
-                category === "all"
+              className={`flex justify-between items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${category === "all"
                   ? "bg-red-400 text-white scale-105"
                   : "hover:bg-white/40 hover:scale-105 active:scale-95 text-gray-700"
-              }`}
+                }`}
               onClick={() => setCategory("all")}
             >
               <span className="flex items-center gap-3">
                 <PawPrint
                   size={18}
-                  className={`font-bold ${
-                    category === "all" ? "text-white" : "text-red-400"
-                  }`}
+                  className={`font-bold ${category === "all" ? "text-white" : "text-red-400"
+                    }`}
                 />
                 <span className="font-medium">All Products</span>
               </span>
@@ -154,11 +152,10 @@ export default function Sidebar({
               return (
                 <div
                   key={c.name}
-                  className={`flex justify-between text-md items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${
-                    isSelected
+                  className={`flex justify-between text-md items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${isSelected
                       ? "bg-red-400 text-white scale-105"
                       : "hover:bg-[#fef6ef] hover:scale-105 active:scale-95 text-gray-700"
-                  }`}
+                    }`}
                   onClick={() => setCategory(c.name)}
                 >
                   <span className="flex items-center gap-3">
@@ -169,11 +166,10 @@ export default function Sidebar({
                     <span className="font-medium">{displayName}</span>
                   </span>
                   <span
-                    className={`text-sm px-2 py-1 rounded-full backdrop-blur-sm ${
-                      isSelected
+                    className={`text-sm px-2 py-1 rounded-full backdrop-blur-sm ${isSelected
                         ? "bg-white/30 text-white"
                         : "bg-white/40 text-gray-700 border border-white/30"
-                    }`}
+                      }`}
                   >
                     {c.count}
                   </span>
@@ -222,11 +218,10 @@ export default function Sidebar({
               <button
                 key={tag}
                 onClick={() => toggleTag(tag)}
-                className={`px-3 py-1 rounded-full border text-sm transition-all transform ${
-                  isActive
+                className={`px-3 py-1 rounded-full border text-sm transition-all transform ${isActive
                     ? "bg-red-400 text-white border-red-400 scale-105"
                     : "bg-white/40 text-gray-700 border-gray-300 hover:bg-white/60 hover:scale-105 active:scale-95"
-                }`}
+                  }`}
               >
                 {tag}
               </button>

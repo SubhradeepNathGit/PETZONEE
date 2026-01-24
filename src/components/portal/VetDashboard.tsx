@@ -50,7 +50,16 @@ export default function VetDashboard({
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setAppointments((data as AppointmentRow[] | null) ?? []);
+
+        const mappedData: AppointmentRow[] = (data as unknown[] ?? []).map((row) => {
+          const r = row as { users: PatientUser[] | PatientUser | null } & Omit<AppointmentRow, 'users'>;
+          return {
+            ...r,
+            users: Array.isArray(r.users) ? r.users[0] : (r.users || null)
+          };
+        });
+
+        setAppointments(mappedData);
       } catch (error: unknown) {
         console.error('Fetch appointments error:', error);
         showMessage('Failed to load appointments', 'error');
@@ -148,11 +157,10 @@ export default function VetDashboard({
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors border ${
-                  filter === f
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-transparent'
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10 border-white/10'
-                }`}
+                className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors border ${filter === f
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-transparent'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10 border-white/10'
+                  }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
                 {f !== 'all' && stats[f] > 0 && (
@@ -194,7 +202,7 @@ export default function VetDashboard({
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredAppointments.map((appointment, index) => (
+            {filteredAppointments.map((appointment) => (
               <div
                 key={appointment.id}
                 className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4"
@@ -228,15 +236,14 @@ export default function VetDashboard({
 
                       <div className="mt-2">
                         <span
-                          className={`px-2 py-1 text-xs rounded-full border ${
-                            appointment.status === 'pending'
-                              ? 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30'
-                              : appointment.status === 'accepted'
+                          className={`px-2 py-1 text-xs rounded-full border ${appointment.status === 'pending'
+                            ? 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30'
+                            : appointment.status === 'accepted'
                               ? 'bg-emerald-500/10 text-emerald-200 border-emerald-500/30'
                               : appointment.status === 'rejected'
-                              ? 'bg-red-500/10 text-red-200 border-red-500/30'
-                              : 'bg-white/10 text-gray-200 border-white/20'
-                          }`}
+                                ? 'bg-red-500/10 text-red-200 border-red-500/30'
+                                : 'bg-white/10 text-gray-200 border-white/20'
+                            }`}
                         >
                           {appointment.status.charAt(0).toUpperCase() +
                             appointment.status.slice(1)}

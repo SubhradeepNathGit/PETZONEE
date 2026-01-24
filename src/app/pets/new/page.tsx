@@ -109,9 +109,9 @@ export default function NewMultiplePetsPage() {
       // 3) go somewhere—either list or first pet
       if (data && data.length > 0) router.replace(`/pets/${data[0].id}`);
       else router.replace('/pets');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err?.message ?? 'Failed to save pets.');
+      alert((err as Error)?.message ?? 'Failed to save pets.');
     } finally {
       setSaving(false);
     }
@@ -254,7 +254,7 @@ function PetRowCard({
             onChange={(e) => onChange(index, { species: e.target.value as Species })}
             className="input"
           >
-            {(['Dog','Cat','Bird','Rabbit','Fish','Reptile','Other'] as Species[]).map((s) => (
+            {(['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Reptile', 'Other'] as Species[]).map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>

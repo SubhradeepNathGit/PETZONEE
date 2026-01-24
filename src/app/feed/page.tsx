@@ -15,7 +15,7 @@ type Activity = {
   subject_type: string;
   subject_id: string;
   summary: string;
-  diff: any;
+  diff: Record<string, unknown>;
   photo_url: string | null;
   visibility: 'owner_only' | 'public';
   owner_id: string;
@@ -61,7 +61,7 @@ export default function FeedPage() {
   // Like & Comment states
   const [likes, setLikes] = useState<Record<number, number>>({});
   const [userLiked, setUserLiked] = useState<Record<number, boolean>>({});
-  const [comments, setComments] = useState<Record<number, any[]>>({});
+  const [comments, setComments] = useState<Record<number, ActivityComment[]>>({});
   const [newComment, setNewComment] = useState<Record<number, string>>({});
 
   const loadMyPets = useCallback(() => router.push('/pets'), [router]);
@@ -161,7 +161,7 @@ export default function FeedPage() {
       if (!error && data) {
         const counts: Record<number, number> = {};
         const liked: Record<number, boolean> = {};
-        data.forEach((like: any) => {
+        data.forEach((like) => {
           counts[like.activity_id] = (counts[like.activity_id] || 0) + 1;
           if (like.user_id === meId) liked[like.activity_id] = true;
         });
@@ -177,8 +177,8 @@ export default function FeedPage() {
     async function fetchComments() {
       const { data, error } = await supabase.from('activity_comments').select('*');
       if (!error && data) {
-        const grouped: Record<number, any[]> = {};
-        data.forEach((c: any) => {
+        const grouped: Record<number, ActivityComment[]> = {};
+        data.forEach((c) => {
           if (!grouped[c.activity_id]) grouped[c.activity_id] = [];
           grouped[c.activity_id].push(c);
         });
@@ -238,7 +238,7 @@ export default function FeedPage() {
       const from = reset ? 0 : items.length;
       const to = from + PAGE - 1;
       const userId = currentUserId || meId;
-      
+
       const { data, error } = await supabase
         .from('activities')
         .select('*')
@@ -251,32 +251,32 @@ export default function FeedPage() {
         setMoreLoading(false);
         return;
       }
-      
+
       let rows = (data ?? []) as Activity[];
 
       if (rows.length > 0) {
         const ids = rows.map((r) => r.id);
-        
+
         const { data: likesData } = await supabase
           .from('activity_likes')
           .select('activity_id')
           .in('activity_id', ids);
-        
+
         const { data: commentsData } = await supabase
           .from('activity_comments')
           .select('activity_id')
           .in('activity_id', ids);
-        
+
         const likeCounts: Record<number, number> = {};
-        (likesData ?? []).forEach((like: any) => {
+        (likesData ?? []).forEach((like) => {
           likeCounts[like.activity_id] = (likeCounts[like.activity_id] || 0) + 1;
         });
-        
+
         const commentCounts: Record<number, number> = {};
-        (commentsData ?? []).forEach((comment: any) => {
+        (commentsData ?? []).forEach((comment) => {
           commentCounts[comment.activity_id] = (commentCounts[comment.activity_id] || 0) + 1;
         });
-        
+
         rows = rows.map((r) => ({
           ...r,
           likes_count: likeCounts[r.id] || 0,
@@ -290,12 +290,12 @@ export default function FeedPage() {
             .eq('user_id', userId)
             .in('activity_id', ids);
           if (myLikes) {
-            const liked = new Set(myLikes.map((l: any) => l.activity_id));
+            const liked = new Set(myLikes.map((l) => l.activity_id));
             rows = rows.map((r) => ({ ...r, liked_by_me: liked.has(r.id) }));
           }
         }
       }
-      
+
       rows = rows.map(withSafeCounters);
       setItems(reset ? rows : [...items, ...rows]);
       setHasMore(rows.length === PAGE);
@@ -330,19 +330,19 @@ export default function FeedPage() {
               .from('activity_likes')
               .select('activity_id')
               .eq('activity_id', row.id);
-            
+
             const { data: commentsCount } = await supabase
               .from('activity_comments')
               .select('activity_id')
               .eq('activity_id', row.id);
-            
+
             const activityWithCounts = {
               ...row,
               likes_count: likesCount?.length ?? 0,
               comments_count: commentsCount?.length ?? 0,
               liked_by_me: false,
             };
-            
+
             setItems((prev) => (prev.some((p) => p.id === row.id) ? prev : [withSafeCounters(activityWithCounts), ...prev]));
           }
         })
@@ -351,10 +351,10 @@ export default function FeedPage() {
       const chLikes = supabase
         .channel('rt_activity_likes')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_likes' }, (payload) => {
-          const r: any = payload.new ?? payload.old;
-          const aId = r?.activity_id as number | undefined;
+          const r = (payload.new ?? payload.old) as { activity_id?: number; user_id?: string };
+          const aId = r?.activity_id;
           if (!aId) return;
-          
+
           if (payload.eventType === 'INSERT') {
             setLikes((prev) => ({ ...prev, [aId]: (prev[aId] || 0) + 1 }));
             if (r.user_id === meId) {
@@ -372,10 +372,10 @@ export default function FeedPage() {
       const chComments = supabase
         .channel('rt_activity_comments')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_comments' }, (payload) => {
-          const r: any = payload.new ?? payload.old;
-          const aId = r?.activity_id as number | undefined;
+          const r = (payload.new ?? payload.old) as ActivityComment;
+          const aId = r?.activity_id;
           if (!aId) return;
-          
+
           if (payload.eventType === 'INSERT') {
             setComments((prev) => ({
               ...prev,
@@ -384,7 +384,7 @@ export default function FeedPage() {
           } else if (payload.eventType === 'DELETE') {
             setComments((prev) => ({
               ...prev,
-              [aId]: (prev[aId] || []).filter((c: any) => c.id !== r.id),
+              [aId]: (prev[aId] || []).filter((c) => c.id !== r.id),
             }));
           }
         })
@@ -546,7 +546,7 @@ const humanizeVerb = (a: Activity) => {
   return map[a.verb] ?? '📝 Made an update';
 };
 
-const shorten = (v: any, max = 40) => {
+const shorten = (v: unknown, max = 40) => {
   if (!v) return '—';
   const s = String(v);
   if (s.startsWith('http')) return s.length > max ? s.slice(0, max) + '...' : s;
@@ -796,7 +796,7 @@ function FeedItem({
   open: boolean;
   likes: number;
   userLiked: boolean;
-  comments: any[];
+  comments: ActivityComment[];
   newComment: string;
   onToggleLike: () => void;
   onToggleComments: () => void;
@@ -804,7 +804,7 @@ function FeedItem({
   onAddComment: () => void;
 }) {
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
-  
+
   const title = humanizeVerb(a);
   const isBeforeAfter =
     a.diff?.field === 'cover_url' ||
@@ -813,7 +813,7 @@ function FeedItem({
     a.verb === 'user.avatar_updated';
   const rawName = a.actor_id === meId ? 'You' : a.user_name?.trim() || 'User';
   const safeInitials = (rawName || 'U').slice(0, 2).toUpperCase();
-  
+
   const handleLikeWithAnimation = () => {
     if (!userLiked) {
       setShowHeartAnimation(true);
@@ -854,7 +854,7 @@ function FeedItem({
           <div className="bg-gray-800/70 ">
             <div className="grid gap-3">
               <div className="relative w-full h-70 aspect-square ">
-                <Image src={a.diff.new} alt="" fill className="object-cover" />
+                <Image src={(a.diff.new as string) || "/placeholder.png"} alt="" fill className="object-cover" />
                 {showHeartAnimation && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                     <IconHeartSolid className="w-24 h-24 text-orange-500 animate-[pulse_1s_ease-in-out]" />
@@ -875,7 +875,7 @@ function FeedItem({
         </div>
       ) : a.diff?.field ? (
         <div className="mx-3 sm:mx-4 mb-3 rounded-lg bg-gray-800/70 p-3 border border-gray-700/50">
-          <DiffLabel field={a.diff.field} />
+          <DiffLabel field={String(a.diff.field)} />
           <div className="mt-2 flex items-center gap-2 text-xs sm:text-sm">
             <span className="truncate rounded-md bg-gray-900 px-2 py-1 text-gray-100 shadow-sm border border-gray-700/50">
               {shorten(a.diff.old)}
@@ -922,7 +922,7 @@ function FeedItem({
             <p className="text-gray-400 text-sm sm:text-base text-center py-4 sm:py-6">No comments yet. Be the first to comment!</p>
           ) : (
             <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-              {comments.map((c: any) => (
+              {comments.map((c) => (
                 <div key={c.id} className="text-sm text-gray-200">
                   <strong>{c.user_id.slice(0, 6)}:</strong> {c.body}
                 </div>
@@ -942,8 +942,8 @@ function FeedItem({
                 }
               }}
             />
-            <button 
-              onClick={onAddComment} 
+            <button
+              onClick={onAddComment}
               disabled={!newComment.trim()}
               className="px-4 py-2 text-blue-400 font-semibold hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
