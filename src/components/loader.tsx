@@ -148,17 +148,17 @@ export default function Loader({ isLoading }: LoaderProps) {
             {/* Dark Overlay */}
             <motion.div
               className="absolute inset-0 bg-black"
-              initial={{ opacity: 0.3 }}
+              initial={{ opacity: 0.5 }}
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
+              transition={{ duration: 0, ease: 'easeInOut' }}
             />
           </motion.div>
 
           {/* Content */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
             {/* Paw Animation Placeholder/Container */}
-            <div className="w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 flex items-center justify-center relative">
+            <div className="w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-90 lg:h-90 flex items-center justify-center relative">
               {pawData && (
                 <motion.div
                   className="w-full h-full flex items-center justify-center"
@@ -169,18 +169,22 @@ export default function Loader({ isLoading }: LoaderProps) {
                     filter:
                       'drop-shadow(0 0 8px rgba(255,255,255,0.7)) brightness(1.5)',
                   }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  exit={{ opacity: 0, scale: 1 }}
                   transition={{
                     duration: 1.2,
-                    ease: [0.16, 1, 0.3, 1], // Custom bezier matching expo.out
+                    ease: [0.16, 1, 0.3, 1],
                   }}
                 >
                   <Lottie
                     animationData={pawData}
                     loop
                     autoplay
-                    style={{ width: '100%', height: '100%' }}
-                    rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
+                    style={{ width: '100%', height: '100%', willChange: 'transform' }} // Optimize transform
+                    rendererSettings={{
+                      preserveAspectRatio: 'xMidYMid slice',
+                      progressiveLoad: true, // Help with loading performance
+                      hideOnTransparent: true,
+                    }}
                   />
                 </motion.div>
               )}
@@ -189,11 +193,11 @@ export default function Loader({ isLoading }: LoaderProps) {
             {/* Title */}
             <div
               ref={titleRef}
-              className="font-[var(--font-inter)] text-5xl lg:text-7xl font-bold tracking-wide text-white/80"
+              className="font-[var(--font-inter)] -mt-10 text-5xl lg:text-7xl font-bold tracking-wide text-white/80 will-change-[opacity,transform]"
               style={{
                 letterSpacing: '0.2em',
                 fontWeight: '700',
-                textShadow: '0 0 16px rgba(255,255,255,0.5)',
+                textShadow: '0 0 16px rgba(255,255,255,0.5)', // Keep visual, but rely on GPU where possible 
                 minHeight: '1.2em',
               }}
             />
