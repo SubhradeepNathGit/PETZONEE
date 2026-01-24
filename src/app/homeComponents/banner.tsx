@@ -91,7 +91,8 @@ const Banner = () => {
         firstVideo.playsInline = true;
 
         const handleFirstVideoLoad = () => {
-          if (firstVideo.readyState >= 2) {
+          // Use HAVE_ENOUGH_DATA (4) for 0-lag with large files (34MB+)
+          if (firstVideo.readyState >= 4) {
             loadedVideosRef.current.add(0);
             setVideosLoaded(true);
 
@@ -115,11 +116,11 @@ const Banner = () => {
           }
         };
 
-        if (firstVideo.readyState >= 2) {
+        if (firstVideo.readyState >= 4) {
           handleFirstVideoLoad();
         } else {
-          firstVideo.addEventListener('loadeddata', handleFirstVideoLoad, { once: true });
-          firstVideo.load();
+          // Listen to canplaythrough for absolute stability
+          firstVideo.addEventListener('canplaythrough', handleFirstVideoLoad, { once: true });
         }
 
       } catch (error) {
@@ -129,12 +130,20 @@ const Banner = () => {
       }
     };
 
-    preloadTimeoutRef.current = setTimeout(preloadVideos, 300);
+    preloadVideos();
 
     return () => {
       if (preloadTimeoutRef.current) {
         clearTimeout(preloadTimeoutRef.current);
       }
+      // Proactive cleanup of resources
+      videoRefs.current.forEach((video) => {
+        if (video) {
+          video.pause();
+          video.src = '';
+          video.load();
+        }
+      });
     };
   }, [mounted]);
 
@@ -143,7 +152,7 @@ const Banner = () => {
     if (!hasUserInteracted && mounted) {
       setHasUserInteracted(true);
       const currentVideo = videoRefs.current[currentSlide];
-      if (currentVideo && currentVideo.readyState >= 2) {
+      if (currentVideo && currentVideo.readyState >= 3) {
         currentVideo.play().catch((error) => {
           console.warn('Video play failed:', error);
         });
@@ -179,17 +188,13 @@ const Banner = () => {
   useEffect(() => {
     if (!mounted || !videosLoaded || hasUserInteracted) return;
 
-    const autoPlayTimer = setTimeout(() => {
-      const currentVideo = videoRefs.current[currentSlide];
-      if (currentVideo && currentVideo.readyState >= 2) {
-        currentVideo.muted = true;
-        currentVideo.play().catch(() => {
-          // Silent fail - will work after user interaction
-        });
-      }
-    }, 1200);
-
-    return () => clearTimeout(autoPlayTimer);
+    const currentVideo = videoRefs.current[currentSlide];
+    if (currentVideo && currentVideo.readyState >= 3) {
+      currentVideo.muted = true;
+      currentVideo.play().catch(() => {
+        // Silent fail - will work after user interaction
+      });
+    }
   }, [videosLoaded, hasUserInteracted, currentSlide, mounted]);
 
   /* ================== Slide Timer ================== */
@@ -227,7 +232,7 @@ const Banner = () => {
         });
 
         // Play current video if ready
-        if (currentVideo.readyState >= 2) {
+        if (currentVideo.readyState >= 3) {
           currentVideo.muted = isMuted;
           currentVideo.currentTime = 0;
           await currentVideo.play();
@@ -296,37 +301,56 @@ const Banner = () => {
   /* ================== JSX ================== */
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Video Backgrounds */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-        >
-          <video
-            ref={(el) => {
-              videoRefs.current[index] = el;
-            }}
-            className={`absolute inset-0 w-full h-full object-cover ${index === 0 ? 'banner-video' : ''
+      {/* Video Backgrounds - Windowing implementation to reduce network load */}
+      {slides.map((slide, index) => {
+        // Only render the current video and the next video for seamless transitions
+        const isCurrent = index === currentSlide;
+        const isNext = index === (currentSlide + 1) % slides.length;
+        const shouldRender = isCurrent || isNext;
+
+        return (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${isCurrent ? 'opacity-100' : 'opacity-0'
               }`}
-            muted={isMuted}
-            loop
-            playsInline
-            preload={index === 0 ? 'auto' : 'none'}
-            onLoadedData={() => {
-              if (index === 0 && !videosLoaded) {
-                setVideosLoaded(true);
-              }
-            }}
-            onError={(e) => {
-              console.warn(`Video ${index} failed to load:`, e);
-            }}
           >
-            <source src={slide.videoSrc} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-      ))}
+            {shouldRender ? (
+              <video
+                ref={(el) => {
+                  videoRefs.current[index] = el;
+                }}
+                className={`absolute inset-0 w-full h-full object-cover transform-gpu ${index === 0 ? 'banner-video' : ''
+                  }`}
+                muted={isMuted}
+                loop
+                playsInline
+                crossOrigin="anonymous"
+                style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
+                preload={isCurrent || isNext ? 'auto' : 'metadata'}
+                onLoadedData={() => {
+                  if (index === 0 && !videosLoaded) {
+                    setVideosLoaded(true);
+                  }
+                  loadedVideosRef.current.add(index);
+                }}
+                onCanPlayThrough={() => {
+                  if (index === 0) setVideosLoaded(true);
+                }}
+                onError={(e) => {
+                  console.warn(`Video ${index} failed to load:`, e);
+                  if (index === 0) setVideosLoaded(true);
+                }}
+              >
+                <source src={slide.videoSrc} type="video/mp4" />
+              </video>
+            ) : (
+              // Simple placeholder for non-active slides to keep DOM structure light
+              <div className="absolute inset-0 bg-black" />
+            )}
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        );
+      })}
 
       {/* Content */}
       <div className="relative z-10 h-full flex items-center justify-center">
@@ -398,8 +422,8 @@ const Banner = () => {
             key={index}
             onClick={() => handleSlideChange(index)}
             className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                ? 'bg-white scale-125'
-                : 'bg-white/50 hover:bg-white/75'
+              ? 'bg-white scale-125'
+              : 'bg-white/50 hover:bg-white/75'
               }`}
             aria-label={`Go to slide ${index + 1}`}
           />

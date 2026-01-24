@@ -112,6 +112,7 @@ export default function AboutPage() {
                     width={500}
                     height={500}
                     priority
+                    sizes="(max-width: 768px) 100vw, 500px"
                     className="object-contain"
                 />
             </div>
@@ -178,8 +179,9 @@ export default function AboutPage() {
                                     <Image
                                         src="/icons/ppl2.png"
                                         alt="Client Avatars"
-                                        width={100}
-                                        height={50}
+                                        width={120}
+                                        height={52}
+                                        sizes="120px"
                                         className="object-cover w-full h-full"
                                     />
                                 </motion.div>
@@ -201,10 +203,11 @@ export default function AboutPage() {
                         <Image
                             src="/icons/about-cutout.png"
                             alt="Happy woman with golden retriever"
-                            width={600}
-                            height={600}
+                            width={500}
+                            height={500}
                             priority
                             quality={100}
+                            sizes="(max-width: 768px) 288px, (max-width: 1024px) 384px, 500px"
                             className="relative w-72 sm:w-96 lg:w-[500px] h-auto"
                             style={{
                                 transform: 'translateY(120px)',

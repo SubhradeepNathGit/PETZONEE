@@ -264,19 +264,33 @@ export default function PetzoneeAuth() {
 
 /* ---------- Presentational blocks (orange + video) ---------- */
 
-function VideoCard({ mode }: { mode: 'signup' | 'signin' }) {
-  const src = mode === 'signup' ? '/videos/signup.mp4' : '/videos/login.mp4';
+function VideoSkeleton() {
   return (
     <div className="relative mx-auto max-w-[500px] overflow-hidden rounded-[20px] shadow-lg">
+      <div className="relative aspect-[4/5] w-full animate-pulse bg-white/10 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+      </div>
+    </div>
+  );
+}
+
+function VideoCard({ mode }: { mode: 'signup' | 'signin' }) {
+  const [isReady, setIsReady] = useState(false);
+  const src = mode === 'signup' ? '/videos/signup.mp4' : '/videos/login.mp4';
+
+  return (
+    <div className="relative mx-auto max-w-[500px] overflow-hidden rounded-[20px] shadow-lg">
+      {!isReady && <VideoSkeleton />}
       <div className="relative aspect-[4/5] w-full">
         <video
           key={mode}
           src={src}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-opacity duration-300 ${isReady ? 'opacity-100' : 'opacity-0'}`}
           autoPlay
           muted
           loop
           playsInline
+          onCanPlay={() => setIsReady(true)}
         />
       </div>
     </div>

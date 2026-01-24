@@ -60,8 +60,7 @@ export default function OfferBanner({ endDate }: OfferBannerProps) {
           ".ob-sub",
           { y: 20, opacity: 0, duration: 0.6, stagger: 0.1 },
           "-=0.3"
-        )
-        .from(".ob-cta", { scale: 0.95, opacity: 0, duration: 0.4 }, "-=0.2");
+        );
     }, rootRef);
 
     return () => ctx.revert();
@@ -91,6 +90,7 @@ export default function OfferBanner({ endDate }: OfferBannerProps) {
           alt="Woman cuddling a dog"
           fill
           priority
+          sizes="(max-width: 768px) 100vw, 100vw"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/45 md:bg-black/35" />

@@ -50,15 +50,19 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         setShowContent(true);
       };
 
-      video.addEventListener("canplaythrough", handleVideoReady, { once: true });
+      if (video.readyState >= 4) { // HAVE_ENOUGH_DATA
+        handleVideoReady();
+      } else {
+        // Use 'canplaythrough' for 0-lag experience on production
+        video.addEventListener("canplaythrough", handleVideoReady, { once: true });
 
-      timeout = setTimeout(() => {
-        setLoading(false);
-        setShowContent(true);
-      }, 3000);
+        timeout = setTimeout(() => {
+          handleVideoReady();
+        }, 8000); // 8s fallback for production networks
+      }
 
       return () => {
-        video.removeEventListener("canplaythrough", handleVideoReady);
+        video.removeEventListener("canplay", handleVideoReady);
         clearTimeout(timeout);
       };
     } else {
@@ -85,7 +89,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         setScrollUnlock(true);
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
-      }, 1000);
+      }, 100);
       return () => clearTimeout(timeout);
     }
   }, [loading]);
@@ -124,7 +128,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
       {!skipLoader && (
         <div
-          className={`fixed inset-0 z-50 transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
+          className={`fixed inset-0 z-50 transition-opacity duration-600 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
         >
           <Loader isLoading={loading} />
@@ -133,7 +137,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
 
       <div
-        className={`transition-opacity duration-1000 ${showContent || skipLoader ? "opacity-100" : "opacity-0"
+        className={`transition-opacity duration-600 ${showContent || skipLoader ? "opacity-100" : "opacity-0"
           }`}
       >
         {!hideLayout && <Navbar />}

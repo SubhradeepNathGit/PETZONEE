@@ -115,7 +115,7 @@ const PricingSection = () => {
     <section className="w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-20">
       <div className="max-w-7xl mx-auto px-4">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -136,21 +136,19 @@ const PricingSection = () => {
           <div className="inline-flex items-center bg-white rounded-full p-1 shadow-lg border border-blue-100">
             <button
               onClick={() => setIsYearly(false)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                !isYearly
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${!isYearly
                   ? "bg-gradient-to-r from-[#5F97C9] to-[#64B5F6] text-white shadow-md"
                   : "text-slate-600 hover:text-[#5F97C9]"
-              }`}
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setIsYearly(true)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 relative ${
-                isYearly
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 relative ${isYearly
                   ? "bg-gradient-to-r from-[#5F97C9] to-[#64B5F6] text-white shadow-md"
                   : "text-slate-600 hover:text-[#5F97C9]"
-              }`}
+                }`}
             >
               Yearly
               <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -169,11 +167,10 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
               viewport={{ once: true }}
-              className={`relative bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl ${
-                plan.popular 
-                  ? 'ring-2 ring-[#5F97C9] scale-105' 
+              className={`relative bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl ${plan.popular
+                  ? 'ring-2 ring-[#5F97C9] scale-105'
                   : 'hover:ring-2 hover:ring-[#64B5F6]/50'
-              }`}
+                }`}
             >
               {plan.popular && (
                 <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#5F97C9] to-[#64B5F6] text-white text-center py-2 font-semibold text-sm">
@@ -230,11 +227,10 @@ const PricingSection = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-4 rounded-2xl font-semibold text-lg transition-all duration-300 ${
-                    plan.popular
+                  className={`w-full py-4 rounded-2xl font-semibold text-lg transition-all duration-300 ${plan.popular
                       ? 'bg-gradient-to-r from-[#5F97C9] to-[#64B5F6] text-white shadow-lg hover:shadow-xl'
                       : 'bg-slate-100 text-slate-800 hover:bg-gradient-to-r hover:from-[#5F97C9] hover:to-[#64B5F6] hover:text-white'
-                  }`}
+                    }`}
                 >
                   Get Started
                 </motion.button>
@@ -244,7 +240,7 @@ const PricingSection = () => {
         </div>
 
         {/* Bottom Note */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -252,7 +248,7 @@ const PricingSection = () => {
           className="text-center mt-12"
         >
           <p className="text-slate-600">
-            All plans include free consultations and can be cancelled anytime. 
+            All plans include free consultations and can be cancelled anytime.
             <span className="text-[#5F97C9] font-medium"> Questions? Contact our care team.</span>
           </p>
         </motion.div>
@@ -267,20 +263,21 @@ const VeterinaryServices: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Hero Banner */}
-     {/* Top Banner */}
+      {/* Top Banner */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
         <Image
           src="/images/statbg9.jpg"
           alt="Products Banner"
           fill
           priority
+          sizes="100vw"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
           <h1 className="text-3xl md:text-5xl font-bold text-white">
             Veterinary Support
           </h1>
-           <p className="text-sm md:text-base text-gray-200 mt-2">
+          <p className="text-sm md:text-base text-gray-200 mt-2">
             Home / Health
           </p>
 
@@ -315,7 +312,7 @@ const VeterinaryServices: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          
+
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -334,10 +331,11 @@ const VeterinaryServices: React.FC = () => {
                   src={service.image}
                   alt={service.alt}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
+
                 {/* Overlay Icon */}
                 <div className="absolute top-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                   <svg className="w-6 h-6 text-[#5F97C9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -354,7 +352,7 @@ const VeterinaryServices: React.FC = () => {
                 <p className="text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
                   {service.description}
                 </p>
-                
+
                 {/* Learn More Link */}
                 <div className="mt-6 flex items-center text-[#5F97C9] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                   <span className="mr-2">Learn More</span>
@@ -374,11 +372,12 @@ const VeterinaryServices: React.FC = () => {
           src="/images/Vetbanner.jpg"
           alt="Give your pet the care they deserve"
           fill
+          sizes="100vw"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#5F97C9]/80 via-[#64B5F6]/70 to-[#5F97C9]/80">
           <div className="flex flex-col justify-center items-center h-full text-center px-4">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}

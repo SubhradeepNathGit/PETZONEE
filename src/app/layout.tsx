@@ -36,13 +36,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preload critical loader image */}
-        <link rel="preload" as="image" href="/images/loader5.jpg" />
+        {/* DNS Prefetch & Preconnect for performance */}
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+        <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
-        {/* ✅ External scripts using next/script */}
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
-          strategy="beforeInteractive"
+        {/* Critical Video Preloads - Vercel Edge Optimized */}
+        <link
+          rel="preload"
+          href="/videos/petzone-loader.mp4"
+          as="video"
+          type="video/mp4"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/videos/Banner12.mp4"
+          as="video"
+          type="video/mp4"
+          crossOrigin="anonymous"
         />
       </head>
       <body

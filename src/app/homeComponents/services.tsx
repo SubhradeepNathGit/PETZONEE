@@ -55,6 +55,7 @@ export default function PetServices() {
           width={250}
           height={200}
           priority
+          sizes="(max-width: 768px) 180px, 250px"
           className="object-contain w-[180px] lg:w-[250px] h-auto"
         />
       </div>
@@ -65,6 +66,7 @@ export default function PetServices() {
           width={120}
           height={120}
           priority
+          sizes="(max-width: 768px) 80px, 110px"
           className="object-contain w-[80px] lg:w-[110px] h-auto"
         />
       </div>
@@ -92,7 +94,7 @@ export default function PetServices() {
           >
             {/* Flip wrapper */}
             <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-              
+
               {/* Front side */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center 
                               rounded-3xl shadow-lg p-6 bg-transparent text-[#0F172A]
@@ -117,12 +119,13 @@ export default function PetServices() {
                   src={service.back}
                   alt={`${service.title} background`}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center text-center p-4">
                   <h3 className="text-lg sm:text-xl font-bold text-white mt-35 ">{service.title}</h3>
                   <p className="text-sm text-gray-200 mb-4">{service.desc}</p>
-                  
+
                 </div>
               </div>
 

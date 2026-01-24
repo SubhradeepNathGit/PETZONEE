@@ -17,6 +17,7 @@ export default function Loader({ isLoading }: LoaderProps) {
   const titleRef = useRef<HTMLDivElement | null>(null);
   const subtitleRef = useRef<HTMLDivElement | null>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   /* ================== State Sync ================== */
   useEffect(() => setShow(isLoading), [isLoading]);
@@ -59,49 +60,94 @@ export default function Loader({ isLoading }: LoaderProps) {
       span.textContent = ch;
       span.style.opacity = '0';
       span.style.display = 'inline-block';
-      span.style.transform = 'translateY(12px)';
+      span.style.transform = 'translateY(20px)';
+      span.style.willChange = 'transform, opacity'; // Hardware acceleration
       titleEl.appendChild(span);
       spans.push(span);
     }
     return spans;
   }, []);
 
+  const [videoReady, setVideoReady] = useState(false);
+
+  // Robust video ready check
+  useEffect(() => {
+    if (videoRef.current && videoRef.current.readyState >= 3) {
+      setVideoReady(true);
+    }
+
+    // Fallback: Show text after 1s regardless of video state
+    const fallback = setTimeout(() => setVideoReady(true), 1500);
+    return () => clearTimeout(fallback);
+  }, []);
+
+  // Safely trigger video play/pause to avoid AbortError and free resources
+  useEffect(() => {
+    if (show && videoReady && videoRef.current) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => { });
+      }
+    } else if (!show && videoRef.current) {
+      videoRef.current.pause();
+      // Clear src to free up hardware decoder immediately
+      videoRef.current.removeAttribute('src');
+      videoRef.current.load();
+    }
+  }, [videoReady, show]);
+
   /* ================== Animate Title + Subtitle ================== */
   useEffect(() => {
     if (!show) return cleanupAnimation();
     if (!titleRef.current) return;
 
+    // Wait for video readiness or fallback
+    if (!videoReady) return;
+
     cleanupAnimation();
     const spans = createSpans();
-
     const tl = gsap.timeline();
 
     // Ensure initial state for animation
-    gsap.set(spans, { y: 20, opacity: 0 });
+    gsap.set(spans, {
+      y: 20,
+      opacity: 0,
+      filter: 'blur(10px)',
+      letterSpacing: '-0.5em'
+    });
 
+    // Elegant "liquid" letter-by-letter reveal
     tl.to(spans, {
       opacity: 1,
       y: 0,
-      duration: 1.2, // Slower, more elegant
-      ease: 'expo.out', // Premium silky ease
-      stagger: 0.12, // Distinct typewriter flow
+      filter: 'blur(0px)',
+      letterSpacing: '0.15em',
+      duration: 1.2,
+      ease: 'expo.out',
+      stagger: {
+        each: 0.08,
+        from: "start"
+      },
+      force3D: true,
     });
 
-    // Animate subtitle after title finishes
+    // Animate subtitle with a more premium feel
     if (subtitleRef.current) {
-      gsap.set(subtitleRef.current, { y: 15, opacity: 0 }); // Ensure initial state
+      gsap.set(subtitleRef.current, { y: 15, opacity: 0, filter: 'blur(5px)' });
       tl.to(subtitleRef.current, {
         opacity: 1,
         y: 0,
-        duration: 1.5,
+        filter: 'blur(0px)',
+        duration: 1.2,
         ease: 'expo.out',
-      }, "-=0.8"); // Overlap significantly for smooth flow
+        force3D: true,
+      }, "-=0.8");
     }
 
     timelineRef.current = tl;
 
     return () => cleanupAnimation();
-  }, [show, cleanupAnimation, createSpans]);
+  }, [show, cleanupAnimation, createSpans, videoReady]);
 
   /* ================== Container Fade ================== */
   const containerVariants: Variants = {
@@ -112,7 +158,7 @@ export default function Loader({ isLoading }: LoaderProps) {
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.6, ease: 'easeInOut' },
+      transition: { duration: 0.4, ease: [0.33, 1, 0.68, 1] },
     },
   };
 
@@ -124,8 +170,7 @@ export default function Loader({ isLoading }: LoaderProps) {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 flex items-center justify-center overflow-hidden z-[9999] will-change-opacity"
-          style={{ backgroundColor: '#1a1a1a' }} // Prevent white flash before image loads
+          className="fixed inset-0 flex items-center justify-center overflow-hidden z-[9999] will-change-opacity bg-black"
         >
           {/* Smooth Background */}
           <motion.div
@@ -137,21 +182,28 @@ export default function Loader({ isLoading }: LoaderProps) {
             }}
             className="absolute inset-0 will-change-transform"
           >
-            <Image
-              src="/images/loader5.jpg"
-              alt="Background"
-              fill
-              sizes="100vw"
-              className="object-cover"
-              priority
+            {/* Background Video - Priority mounting for speed */}
+            <video
+              ref={videoRef}
+              src="/videos/petzone-loader.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              crossOrigin="anonymous"
+              onLoadedMetadata={() => setVideoReady(true)}
+              onCanPlay={() => setVideoReady(true)}
+              onPlaying={() => setVideoReady(true)}
+              className="absolute inset-0 w-full h-full object-cover z-10"
+              style={{ filter: 'brightness(0.7)', transition: 'opacity 0.5s ease' }}
             />
             {/* Dark Overlay */}
             <motion.div
-              className="absolute inset-0 bg-black"
+              className="absolute inset-0 bg-black z-30 pointer-events-none"
               initial={{ opacity: 0.5 }}
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0, ease: 'easeInOut' }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
             />
           </motion.div>
 
@@ -162,7 +214,7 @@ export default function Loader({ isLoading }: LoaderProps) {
               {pawData && (
                 <motion.div
                   className="w-full h-full flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.8, filter: 'drop-shadow(0 0 0px rgba(255,255,255,0)) brightness(1)' }}
                   animate={{
                     opacity: 1,
                     scale: 1,
@@ -190,17 +242,21 @@ export default function Loader({ isLoading }: LoaderProps) {
               )}
             </div>
 
-            {/* Title */}
-            <div
-              ref={titleRef}
-              className="font-[var(--font-inter)] -mt-10 text-5xl lg:text-7xl font-bold tracking-wide text-white/80 will-change-[opacity,transform]"
-              style={{
-                letterSpacing: '0.2em',
-                fontWeight: '700',
-                textShadow: '0 0 16px rgba(255,255,255,0.5)', // Keep visual, but rely on GPU where possible 
-                minHeight: '1.2em',
-              }}
-            />
+            {/* Title Container */}
+            <div className="relative flex items-center justify-center">
+              <div
+                ref={titleRef}
+                className="font-[var(--font-inter)] -mt-10 text-5xl lg:text-7xl font-bold text-white/90 will-change-[opacity,transform,filter]"
+                style={{
+                  letterSpacing: '0.15em',
+                  fontWeight: '800',
+                  textShadow: '0 0 20px rgba(255,255,255,0.4)',
+                  minHeight: '1.2em',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              />
+            </div>
 
             {/* Subtitle */}
             <div
