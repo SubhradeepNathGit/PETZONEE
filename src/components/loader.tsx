@@ -124,7 +124,7 @@ export default function Loader({ isLoading }: LoaderProps) {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 flex items-center justify-center overflow-hidden z-[9999]"
+          className="fixed inset-0 flex items-center justify-center overflow-hidden z-[9999] will-change-opacity"
           style={{ backgroundColor: '#1a1a1a' }} // Prevent white flash before image loads
         >
           {/* Smooth Background */}

@@ -117,23 +117,51 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Prevent white screen flash during loading */
-  html, body {
-    background-color: #f5f5dc !important;
+  html,
+  body {
+    background-color: #000000 !important;
   }
-  
+
   /* Smooth transitions for loader */
   .loader-container {
     transition: opacity 0.8s ease-in-out;
   }
-  
+
   /* Prevent layout shifts */
   .min-h-screen {
     min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100dvh;
+    /* Dynamic viewport height for mobile */
+  }
+
+  /* Custom Narrow Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #444444;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #333333 #000000;
   }
 }

@@ -71,8 +71,44 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
     }
   }, [pathname, skipLoader]);
 
+  const [scrollUnlock, setScrollUnlock] = useState(false);
+
+  // Lock body scroll during loading
+  useEffect(() => {
+    if (loading) {
+      setScrollUnlock(false);
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Delay unlocking to match the fade animation duration (1000ms)
+      const timeout = setTimeout(() => {
+        setScrollUnlock(true);
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading]);
 
   useEffect(() => {
+    if (!scrollUnlock) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, [scrollUnlock]);
+
+
+
+  useEffect(() => {
+    if (!scrollUnlock) return;
+
     requestAnimationFrame(() => {
       if (lastPathname.current !== pathname) {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -81,14 +117,14 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
     });
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, scrollUnlock]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className={`relative min-h-screen ${!scrollUnlock ? "h-screen overflow-hidden" : "overflow-x-hidden"}`}>
 
       {!skipLoader && (
         <div
-          className={`absolute inset-0 z-50 transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
+          className={`fixed inset-0 z-50 transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
         >
           <Loader isLoading={loading} />
