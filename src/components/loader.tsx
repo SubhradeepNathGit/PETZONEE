@@ -75,22 +75,27 @@ export default function Loader({ isLoading }: LoaderProps) {
     const spans = createSpans();
 
     const tl = gsap.timeline();
+
+    // Ensure initial state for animation
+    gsap.set(spans, { y: 20, opacity: 0 });
+
     tl.to(spans, {
       opacity: 1,
       y: 0,
-      duration: 0.5,
-      ease: 'power3.out',
-      stagger: 0.12,
+      duration: 1.2, // Slower, more elegant
+      ease: 'expo.out', // Premium silky ease
+      stagger: 0.12, // Distinct typewriter flow
     });
 
     // Animate subtitle after title finishes
     if (subtitleRef.current) {
+      gsap.set(subtitleRef.current, { y: 15, opacity: 0 }); // Ensure initial state
       tl.to(subtitleRef.current, {
         opacity: 1,
         y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-      }, "+=0.2");
+        duration: 1.5,
+        ease: 'expo.out',
+      }, "-=0.8"); // Overlap significantly for smooth flow
     }
 
     timelineRef.current = tl;
@@ -152,32 +157,34 @@ export default function Loader({ isLoading }: LoaderProps) {
 
           {/* Content */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-            {/* Paw Animation */}
-            {pawData && (
-              <motion.div
-                className="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"
-                initial={{ opacity: 1, scale: 1 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  filter:
-                    'drop-shadow(0 0 8px rgba(255,255,255,0.7)) brightness(1.5)',
-                }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{
-                  duration: 0.3,
-                  ease: 'easeOut',
-                }}
-              >
-                <Lottie
-                  animationData={pawData}
-                  loop
-                  autoplay
-                  style={{ width: '100%', height: '100%' }}
-                  rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
-                />
-              </motion.div>
-            )}
+            {/* Paw Animation Placeholder/Container */}
+            <div className="w-56 h-56 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 flex items-center justify-center relative">
+              {pawData && (
+                <motion.div
+                  className="w-full h-full flex items-center justify-center"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    filter:
+                      'drop-shadow(0 0 8px rgba(255,255,255,0.7)) brightness(1.5)',
+                  }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1], // Custom bezier matching expo.out
+                  }}
+                >
+                  <Lottie
+                    animationData={pawData}
+                    loop
+                    autoplay
+                    style={{ width: '100%', height: '100%' }}
+                    rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
+                  />
+                </motion.div>
+              )}
+            </div>
 
             {/* Title */}
             <div
