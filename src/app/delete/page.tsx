@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key"
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://irjyhbnwelupvsxulrzm.supabase.co",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyanloYm53ZWx1cHZzeHVscnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzE4NjQsImV4cCI6MjA3MjU0Nzg2NH0.vM9_Yp8kArDviCGQ5NHff_frGBh6F0tYj4SO7XWFc1w"
 );
 
 interface UserProfile {
@@ -210,8 +210,8 @@ export default function DeleteUserPage() {
 
               <div
                 className={`p-4 rounded-xl border ${relatedData.pets > 0
-                    ? "bg-orange-500/10 border-orange-500/20"
-                    : "bg-green-500/10 border-green-500/20"
+                  ? "bg-orange-500/10 border-orange-500/20"
+                  : "bg-green-500/10 border-green-500/20"
                   }`}
               >
                 <h4
@@ -268,8 +268,8 @@ export default function DeleteUserPage() {
               onClick={handleDelete}
               disabled={!canDelete || loading}
               className={`flex-1 px-6 py-3 text-sm font-semibold rounded-xl transition ${!canDelete || loading
-                  ? "bg-gray-600/50 text-gray-400"
-                  : "bg-gradient-to-r from-red-500 to-orange-500 text-white hover:scale-105"
+                ? "bg-gray-600/50 text-gray-400"
+                : "bg-gradient-to-r from-red-500 to-orange-500 text-white hover:scale-105"
                 }`}
             >
               {loading ? (

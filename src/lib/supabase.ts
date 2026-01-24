@@ -10,10 +10,14 @@ import type { Product, ProductDetail } from "@/types/product";
  * NEXT_PUBLIC_SUPABASE_URL=...
  * NEXT_PUBLIC_SUPABASE_ANON_KEY=...
  */
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://irjyhbnwelupvsxulrzm.supabase.co",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyanloYm53ZWx1cHZzeHVscnptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5NzE4NjQsImV4cCI6MjA3MjU0Nzg2NH0.vM9_Yp8kArDviCGQ5NHff_frGBh6F0tYj4SO7XWFc1w"
+);
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (typeof window !== "undefined" && (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === "https://placeholder.supabase.co")) {
+  console.warn("⚠️ PETZONEE: NEXT_PUBLIC_SUPABASE_URL is missing. Using hardcoded fallback.");
+}
 
 /**
  * 2. Utility to merge Tailwind classes
