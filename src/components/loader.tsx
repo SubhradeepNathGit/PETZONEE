@@ -81,7 +81,6 @@ export default function Loader({ isLoading }: LoaderProps) {
       duration: 0.5,
       ease: 'power3.out',
       stagger: 0.12,
-      delay: 0.2,
     });
 
     // Animate subtitle after title finishes
@@ -101,10 +100,10 @@ export default function Loader({ isLoading }: LoaderProps) {
 
   /* ================== Container Fade ================== */
   const containerVariants: Variants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 }, // Start fully visible
     visible: {
       opacity: 1,
-      transition: { duration: 0.6, ease: 'easeInOut' },
+      transition: { duration: 0 }, // No fade-in transition
     },
     exit: {
       opacity: 0,
@@ -125,11 +124,10 @@ export default function Loader({ isLoading }: LoaderProps) {
           {/* Smooth Background */}
           <motion.div
             initial={{ scale: 1 }}
-            animate={{ scale: 1.05 }}
+            animate={{ scale: 1 }}
             exit={{ scale: 1 }}
             transition={{
-              duration: 2.0,
-              ease: [0.16, 1, 0.3, 1],
+              duration: 0,
             }}
             className="absolute inset-0 will-change-transform"
           >
@@ -157,7 +155,7 @@ export default function Loader({ isLoading }: LoaderProps) {
             {pawData && (
               <motion.div
                 className="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 flex items-center justify-center"
-                initial={{ opacity: 0, scale: 1.2 }}
+                initial={{ opacity: 1, scale: 1 }}
                 animate={{
                   opacity: 1,
                   scale: 1,
@@ -166,7 +164,7 @@ export default function Loader({ isLoading }: LoaderProps) {
                 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{
-                  duration: 1.2,
+                  duration: 0.3,
                   ease: 'easeOut',
                 }}
               >

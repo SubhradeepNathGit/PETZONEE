@@ -12,32 +12,25 @@ interface ClientLayoutProps {
 
 
 function ClientLayoutContent({ children }: ClientLayoutProps) {
-  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-
   const lastPathname = useRef<string | null>(null);
-
 
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-
-
   const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup");
 
-
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-
-  useEffect(() => {
-    if (!mounted || skipLoader) return;
+    if (skipLoader) {
+      setLoading(false);
+      setShowContent(true);
+      return;
+    }
 
     if (pathname === "/404" || pathname === "/not-found") {
       setLoading(false);
@@ -59,7 +52,6 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
       video.addEventListener("canplaythrough", handleVideoReady, { once: true });
 
-
       timeout = setTimeout(() => {
         setLoading(false);
         setShowContent(true);
@@ -77,12 +69,10 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
       return () => clearTimeout(timeout);
     }
-  }, [pathname, mounted, skipLoader]);
+  }, [pathname, skipLoader]);
 
 
   useEffect(() => {
-    if (!mounted) return;
-
     requestAnimationFrame(() => {
       if (lastPathname.current !== pathname) {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -91,33 +81,29 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
     });
-  }, [pathname, searchParams, mounted]);
+  }, [pathname, searchParams]);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      
+
       {!skipLoader && (
         <div
-          className={`absolute inset-0 z-50 transition-opacity duration-1000 ${
-            loading ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`absolute inset-0 z-50 transition-opacity duration-1000 ${loading ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
         >
           <Loader isLoading={loading} />
         </div>
       )}
 
-      
-      {mounted && (
-        <div
-          className={`transition-opacity duration-1000 ${
-            showContent || skipLoader ? "opacity-100" : "opacity-0"
+
+      <div
+        className={`transition-opacity duration-1000 ${showContent || skipLoader ? "opacity-100" : "opacity-0"
           }`}
-        >
-          {!hideLayout && <Navbar />}
-          <main>{children}</main>
-          {!hideLayout && <Footer />}
-        </div>
-      )}
+      >
+        {!hideLayout && <Navbar />}
+        <main>{children}</main>
+        {!hideLayout && <Footer />}
+      </div>
     </div>
   );
 }
