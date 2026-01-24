@@ -81,7 +81,7 @@ export default function Loader({ isLoading }: LoaderProps) {
       duration: 0.5,
       ease: 'power3.out',
       stagger: 0.12,
-      delay: 0.6,
+      delay: 0.2,
     });
 
     // Animate subtitle after title finishes
@@ -91,7 +91,7 @@ export default function Loader({ isLoading }: LoaderProps) {
         y: 0,
         duration: 0.8,
         ease: 'power3.out',
-      }, "+=0.3");
+      }, "+=0.2");
     }
 
     timelineRef.current = tl;
