@@ -36,6 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preload critical loader image */}
+        <link rel="preload" as="image" href="/images/loader5.jpg" />
+
         {/* ✅ External scripts using next/script */}
         <Script
           src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"

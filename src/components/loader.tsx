@@ -120,6 +120,7 @@ export default function Loader({ isLoading }: LoaderProps) {
           animate="visible"
           exit="exit"
           className="fixed inset-0 flex items-center justify-center overflow-hidden z-[9999]"
+          style={{ backgroundColor: '#1a1a1a' }} // Prevent white flash before image loads
         >
           {/* Smooth Background */}
           <motion.div

@@ -198,7 +198,9 @@ export default function VetKycPendingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">Submission Date</label>
-                  <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                  <div className="text-sm">
+                    <span suppressHydrationWarning>{new Date().toLocaleDateString()}</span>
+                  </div>
                 </div>
               </div>
             </div>

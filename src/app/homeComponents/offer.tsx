@@ -20,25 +20,29 @@ interface OfferBannerProps {
 }
 
 export default function OfferBanner({ endDate }: OfferBannerProps) {
-  const defaultTarget = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    d.setHours(d.getHours() + 8);
-    d.setMinutes(d.getMinutes() + 30);
-    d.setSeconds(d.getSeconds() + 52);
-    return d;
-  }, []);
-
-  const target = endDate ?? defaultTarget;
-
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
-    diffFromNow(target)
-  );
+  /* 
+   * FIX: Hydration Mismatch
+   * We cannot initialize `target` or `timeLeft` based on `new Date()` during render,
+   * because server time !== client time. We must start with 0 and update on mount.
+   */
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, mins: 0, secs: 0 });
 
   useEffect(() => {
-    const id = setInterval(() => setTimeLeft(diffFromNow(target)), 1000);
+    // Calculate target only on client
+    const d = endDate ? new Date(endDate) : new Date();
+    if (!endDate) {
+      d.setDate(d.getDate() + 7);
+      d.setHours(d.getHours() + 8);
+      d.setMinutes(d.getMinutes() + 30);
+      d.setSeconds(d.getSeconds() + 52);
+    }
+
+    // Initial calculation
+    setTimeLeft(diffFromNow(d));
+
+    const id = setInterval(() => setTimeLeft(diffFromNow(d)), 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [endDate]);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
 
