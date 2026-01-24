@@ -2,6 +2,8 @@ import { getProductById } from "@/lib/utils";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ id: string }>;
 }

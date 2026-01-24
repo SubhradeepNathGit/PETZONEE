@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // server-only key
-  { auth: { persistSession: false }, global: { headers: { "x-application-name": "checkout-webhook" } } }
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+export const supabaseAdmin = (supabaseUrl && supabaseServiceKey)
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { persistSession: false },
+    global: { headers: { "x-application-name": "checkout-webhook" } },
+  })
+  : (null as any);
