@@ -46,7 +46,7 @@ export default function PetzoneeAuth() {
   const [role, setRole] = useState<Role>('user');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string>('');
-  const fileRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
+  const fileRef = useRef<HTMLInputElement>(null);
 
   /* ---------- Handlers ---------- */
 
@@ -88,14 +88,13 @@ export default function PetzoneeAuth() {
       first_name: String(fd.get('first_name') || ''),
       last_name: String(fd.get('last_name') || ''),
       email: String(fd.get('email') || ''),
-      phone: String(fd.get('phone') || ''), // optional in UI; fine if empty
+      phone: String(fd.get('phone') || ''),
       password: String(fd.get('password') || ''),
       location_city: String(fd.get('location_city') || ''),
       location_state: String(fd.get('location_state') || ''),
       location_country: String(fd.get('location_country') || ''),
     };
 
-    // Create auth user (stores role + names in metadata so a DB trigger can auto-provision)
     const { data: sign, error: signErr } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
@@ -103,7 +102,6 @@ export default function PetzoneeAuth() {
     });
     if (signErr) { setBusy(false); return setMsg(signErr.message); }
 
-    // Geocode before writing to profile
     const geo = await geocodeCityState(
       payload.location_city,
       payload.location_state,
@@ -113,7 +111,6 @@ export default function PetzoneeAuth() {
 
     const uid = sign.user?.id;
     if (uid) {
-      // Idempotent profile write: works whether a trigger already inserted the row or not.
       const { error: upErr } = await supabase
         .from('users')
         .upsert(
@@ -152,7 +149,6 @@ export default function PetzoneeAuth() {
     const password = String(fd.get('password') || '');
     const file = (fd.get('medical_pdf') as File) ?? null;
 
-    // 1️⃣ Create auth user
     const { data: sign, error: signErr } = await supabase.auth.signUp({
       email,
       password,
@@ -163,7 +159,6 @@ export default function PetzoneeAuth() {
     const uid = sign.user?.id;
     if (!uid) { setBusy(false); return setMsg('Signup succeeded but no UID found.'); }
 
-    // 2️⃣ Upload PDF to Supabase storage (medical-docs bucket)
     let medicalDocUrl: string | null = null;
     if (file && file.size > 0) {
       const path = `${uid}/${Date.now()}-${file.name}`;
@@ -176,23 +171,20 @@ export default function PetzoneeAuth() {
         return setMsg(`File upload failed: ${uploadErr.message}`);
       }
 
-      // Get public URL after upload
       const { data: pub } = supabase.storage.from('medical-docs').getPublicUrl(path);
       medicalDocUrl = pub.publicUrl;
     }
 
-    // 3️⃣ Insert vet record into DB with medical_doc_url
     const { error: dbErr } = await supabase.from('veterinarian').insert([{
       id: uid,
       name,
       email,
       phone,
-      medical_doc_url: medicalDocUrl, // ✅ Now storing full URL
+      medical_doc_url: medicalDocUrl,
       kyc_status: 'pending',
     }]);
     if (dbErr) { setBusy(false); return setMsg(`Vet insert failed: ${dbErr.message}`); }
 
-    // ✅ Done
     setBusy(false);
     setMsg('Vet account created! Please confirm your email. KYC is pending.');
     setMode('signin');
@@ -201,100 +193,152 @@ export default function PetzoneeAuth() {
   const isSignup = mode === 'signup';
 
   return (
-    <main className="min-h-[100dvh] w-full bg-black/90 lg:h-screen lg:overflow-hidden lg:flex lg:items-center lg:justify-center">
+    <main className="min-h-screen lg:h-screen w-full bg-[#FF8A65] flex flex-col lg:overflow-hidden">
+      {/* Brand Title */}
+      <div className="pt-0 pb-3 mt-5 lg:pt-4 lg:pb-2 text-center flex-shrink-0">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
+          PETZONEE
+        </h1>
+        <p className="mt-1 text-white/90 text-xs sm:text-sm"> Your Pets Trusted All-in-One Companion</p>
+      </div>
 
-      {/* Fixed width 900px on desktop, responsive on mobile */}
-      <div className="w-full px-4 max-w-[500px] lg:max-w-none lg:w-[900px] lg:px-0 mx-auto">
-        <div className="rounded-[24px] bg-[#FF8A65] p-5 sm:p-6 md:p-8 shadow-xl">
-          {/* toggle */}
-          <div className="mb-5 flex justify-center">
-            <div className="relative inline-flex rounded-full bg-white/20 p-1">
-              <button onClick={() => setMode('signup')} className={`relative z-10 rounded-full px-5 py-1.5 text-sm font-semibold text-gray-600 ${isSignup ? '' : 'opacity-80'}`}>
-                Register
-              </button>
-              <button onClick={() => setMode('signin')} className={`relative z-10 rounded-full px-5 py-1.5 text-sm font-semibold text-gray-600 ${!isSignup ? '' : 'opacity-80'}`}>
-                Signin
-              </button>
-              <motion.span layout className="absolute inset-y-1 w-1/2 rounded-full bg-white" initial={false} animate={{ x: isSignup ? 0 : '100%' }} transition={{ type: 'spring', stiffness: 420, damping: 32 }} />
-            </div>
+      <div className="flex-1 flex flex-col lg:overflow-hidden px-4 lg:px-40">
+        {/* Toggle */}
+        <div className="mb-0 lg:mb-3 flex justify-center flex-shrink-0">
+          <div className="relative inline-flex rounded-full bg-white/30 p-1 shadow-lg">
+            <button
+              onClick={() => setMode('signup')}
+              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${
+                isSignup ? 'text-[#FF8A65]' : 'text-white'
+              }`}
+            >
+              Register
+            </button>
+            <button
+              onClick={() => setMode('signin')}
+              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${
+                !isSignup ? 'text-[#FF8A65]' : 'text-white'
+              }`}
+            >
+              Signin
+            </button>
+            <motion.span
+              className="absolute inset-y-1 rounded-full bg-white shadow-md"
+              initial={false}
+              animate={{
+                left: isSignup ? '4px' : '50%',
+                right: isSignup ? '50%' : '4px',
+              }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="order-1">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0 flex-1 lg:overflow-hidden pb-0 lg:pb-6">
+          {/* Left Column */}
+          <div className="flex lg:overflow-hidden items-center justify-center">
+            <div className="w-160 h-full lg:max-h-800 lg:max-w-[100%]">
               <AnimatePresence mode="wait">
                 {isSignup ? (
-                  <motion.div key="signup-form" initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -20, opacity: 0 }} transition={{ duration: 0.35, ease: 'easeOut' }}>
-                    <RegisterCard role={role} setRole={setRole} busy={busy} onSubmitUser={onSignupUser} onSubmitVet={onSignupVet} fileRef={fileRef} onSwap={() => setMode('signin')} />
+                  <motion.div
+                    key="signup-form"
+                    className="h-full"
+                    initial={{ x: -40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -20, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  >
+                    <RegisterCard
+                      role={role}
+                      setRole={setRole}
+                      busy={busy}
+                      onSubmitUser={onSignupUser}
+                      onSubmitVet={onSignupVet}
+                      fileRef={fileRef}
+                      onSwap={() => setMode('signin')}
+                    />
                   </motion.div>
                 ) : (
-                  <motion.div key="signin-video" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+                  <motion.div
+                    key="signin-video"
+                    className="h-full hidden lg:block"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     <VideoCard mode="signin" />
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
+          </div>
 
-            <div className="order-2">
+          {/* Right Column */}
+          <div className="flex items-center justify-center lg:overflow-hidden">
+            <div className="w-full h-full lg:max-h-[calc(100vh-200px)] lg:max-w-[100%]">
               <AnimatePresence mode="wait">
                 {isSignup ? (
-                  <motion.div key="signup-video" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+                  <motion.div
+                    key="signup-video"
+                    className="h-full hidden lg:block"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     <VideoCard mode="signup" />
                   </motion.div>
                 ) : (
-                  <motion.div key="signin-form" initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 20, opacity: 0 }} transition={{ duration: 0.35, ease: 'easeOut' }}>
+                  <motion.div
+                    key="signin-form"
+                    className="h-full"
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 20, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  >
                     <LoginCard busy={busy} onSubmit={onLogin} onSwap={() => setMode('signup')} />
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           </div>
+        </div>
 
-          {msg && (
-            <p className="mt-4 rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-[#7a2f00] text-center">
+        {msg && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="pb-4 flex-shrink-0"
+          >
+            <p className="rounded-xl bg-white/95 px-4 py-2 text-xs lg:text-sm font-medium text-[#7a2f00] text-center shadow-lg max-w-2xl mx-auto">
               {msg}
             </p>
-          )}
-        </div>
+          </motion.div>
+        )}
       </div>
     </main>
   );
 }
 
-/* --- Presentational components (unchanged) --- */
-// VideoCard, LoginCard, RegisterCard, Input ... (keep your existing implementations)
-
-/* ---------- Presentational blocks (orange + video) ---------- */
-
-function VideoSkeleton() {
-  return (
-    <div className="relative mx-auto max-w-[420px] overflow-hidden rounded-[20px] shadow-lg">
-      <div className="relative aspect-[4/5] w-full animate-pulse bg-white/10 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full border-3 border-white/20 border-t-white animate-spin" />
-      </div>
-    </div>
-  );
-}
+/* ---------- Presentational blocks ---------- */
 
 function VideoCard({ mode }: { mode: 'signup' | 'signin' }) {
-  const [isReady, setIsReady] = useState(false);
   const src = mode === 'signup' ? '/videos/signup.mp4' : '/videos/login.mp4';
 
   return (
-    <div className="relative mx-auto max-w-[420px] overflow-hidden rounded-[20px] shadow-lg h-full">
-      {!isReady && <VideoSkeleton />}
-      <div className="relative aspect-[4/5] w-full h-full">
-        <video
-          key={mode}
-          src={src}
-          className={`h-full w-full object-cover transition-opacity duration-300 ${isReady ? 'opacity-100' : 'opacity-0'}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          onCanPlay={() => setIsReady(true)}
-        />
-      </div>
+    <div className="relative mx-auto w-140 h-130 mt-7 overflow-hidden rounded-2xl lg:rounded-3xl">
+      <video
+        key={mode}
+        src={src}
+        className="h-full w-full object-cover"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
     </div>
   );
 }
@@ -309,25 +353,33 @@ function LoginCard({
   onSwap: () => void;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[420px] text-white">
-      <h2 className="mb-2 text-center text-3xl lg:text-3xl font-extrabold leading-none drop-shadow-sm">Login</h2>
-      <p className="mb-6 text-center text-sm opacity-90">Welcome back</p>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <Input name="email" type="email" placeholder="Email Id *" />
-        <Input name="password" type="password" placeholder="Password *" />
-        <button
-          disabled={busy}
-          className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
-        >
-          {busy ? 'Signing in…' : 'Login'}
-        </button>
-      </form>
-      <p className="mt-4 text-center text-sm">
-        New here?{' '}
-        <button type="button" onClick={onSwap} className="underline decoration-white/60 underline-offset-2 hover:opacity-90">
-          Create account
-        </button>
-      </p>
+    <div className="mx-auto w-full h-full flex flex-col justify-start -mt-35 lg:-mt-10 lg:justify-center lg:pt-0 text-white px-4 py-6 lg:py-0">
+      <div className="max-w-[500px] lg:max-w-[450px] mx-auto w-full">
+        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+          Sign in
+        </h2>
+        <p className="mb-5 lg:mb-6 text-center text-xs lg:text-sm opacity-90">Welcome back, sign in to continue</p>
+        <form onSubmit={onSubmit} className="space-y-3 lg:space-y-4">
+          <Input name="email" type="email" placeholder="Email Id *" />
+          <Input name="password" type="password" placeholder="Password *" />
+          <button
+            disabled={busy}
+            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {busy ? 'Signing in…' : 'Login'}
+          </button>
+        </form>
+        <p className="mt-4 text-center text-xs lg:text-sm">
+          New here?{' '}
+          <button
+            type="button"
+            onClick={onSwap}
+            className="underline decoration-white/60 underline-offset-2 hover:opacity-90 font-medium transition-opacity"
+          >
+            Create account
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
@@ -350,95 +402,111 @@ function RegisterCard({
   onSwap: () => void;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[420px] text-white">
-      <h2 className="mb-1 text-center text-3xl lg:text-3xl font-extrabold leading-none drop-shadow-sm">Signup</h2>
-      <p className="mb-4 text-center text-xs lg:text-sm opacity-90">
-        Create account to start your journey
-      </p>
+    <div className="mx-auto w-full h-full flex flex-col justify-start lg:justify-center text-white overflow-y-auto lg:overflow-hidden px-0 lg:px-0 py-8 lg:py-0">
+      <div className="max-w-[450px] mx-auto w-full">
+        <h2 className="mb-1 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+          Sign up
+        </h2>
+        <p className="mb-3 lg:mb-4 text-center text-xs opacity-90">
+          Create account to start your journey
+        </p>
 
-      {/* Role tabs (orange styling) */}
-      <div className="mb-4 flex justify-center">
-        <div className="relative inline-flex rounded-full bg-white/25 p-1">
-          <button
-            type="button"
-            onClick={() => setRole('user')}
-            className={`z-10 rounded-full px-4 py-1.5 text-sm font-semibold ${role === 'user' ? 'text-[#e17824]' : 'text-white'}`}
-          >
-            Pet Owner
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('vet')}
-            className={`z-10 rounded-full px-3 py-1.5 text-sm font-semibold ${role === 'vet' ? 'text-[#e17824]' : 'text-white'}`}
-          >
-            Veterinarian
-          </button>
-          <motion.span
-            layout
-            className="absolute inset-y-1 w-1/2 rounded-full bg-white"
-            initial={false}
-            animate={{ x: role === 'user' ? 0 : '100%' }}
-            transition={{ type: 'spring', stiffness: 420, damping: 20 }}
-          />
-        </div>
-      </div>
-
-      {role === 'user' ? (
-        <form onSubmit={onSubmitUser} className="space-y-3">
-          <Input name="first_name" placeholder="First Name *" />
-          <Input name="last_name" placeholder="Last Name *" />
-          <Input name="email" type="email" placeholder="Email Id *" />
-          {/* <Input name="phone" placeholder="Phone Number" /> */}
-          <Input name="location_city" placeholder="City *" />
-          <Input name="location_state" placeholder="State *" />
-          {/* Optional hidden country, defaulting to India */}
-          <input name="location_country" defaultValue="India" hidden readOnly />
-          <Input name="password" type="password" placeholder="Password *" />
-          <button
-            disabled={busy}
-            className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
-          >
-            {busy ? 'Creating…' : 'Register'}
-          </button>
-          <p className="text-center text-sm">
-            Already have an account?{' '}
-            <button type="button" onClick={onSwap} className="underline decoration-white/60 underline-offset-2 hover:opacity-90">
-              Login
+        {/* Role tabs */}
+        <div className="mb-4 flex justify-center">
+          <div className="relative inline-flex rounded-full bg-white/30 p-1 shadow-lg">
+            <button
+              type="button"
+              onClick={() => setRole('user')}
+              className={`relative z-10 rounded-full px-4 lg:px-5 py-2 text-xs lg:text-sm font-semibold transition-colors duration-200 ${
+                role === 'user' ? 'text-[#FF8A65]' : 'text-white'
+              }`}
+            >
+              Pet Owner
             </button>
-          </p>
-        </form>
-      ) : (
-        <form onSubmit={onSubmitVet} className="space-y-3">
-          <Input name="name" placeholder="Full Name *" />
-          <Input name="email" type="email" placeholder="Email Id *" />
-          <Input name="phone" placeholder="Phone Number *" />
-          <Input name="password" type="password" placeholder="Password *" />
-          <div>
-            <label className="mb-1 block text-sm font-medium text-white/90">
-              Medical Document (PDF)*
-            </label>
-            <input
-              ref={fileRef}
-              name="medical_pdf"
-              type="file"
-              accept="application/pdf"
-              className="w-full rounded-full border-0 bg-white/95 px-4 py-3 text-sm text-gray-600 shadow"
+            <button
+              type="button"
+              onClick={() => setRole('vet')}
+              className={`relative z-10 rounded-full px-4 lg:px-5 py-1.5 text-xs lg:text-sm font-semibold transition-colors duration-200 ${
+                role === 'vet' ? 'text-[#FF8A65]' : 'text-white'
+              }`}
+            >
+              Veterinarian
+            </button>
+            <motion.span
+              className="absolute inset-y-1 rounded-full bg-white shadow-md"
+              initial={false}
+              animate={{
+                left: role === 'user' ? '4px' : '50%',
+                right: role === 'user' ? '50%' : '4px',
+              }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           </div>
-          <button
-            disabled={busy}
-            className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
-          >
-            {busy ? 'Creating…' : 'Register as Vet'}
-          </button>
-          <p className="text-center text-sm">
-            Already have an account?{' '}
-            <button type="button" onClick={onSwap} className="underline decoration-white/60 underline-offset-2 hover:opacity-90">
-              Login
+        </div>
+
+        {role === 'user' ? (
+          <form onSubmit={onSubmitUser} className="space-y-2.5 lg:space-y-3">
+            <Input name="first_name" placeholder="First Name *" />
+            <Input name="last_name" placeholder="Last Name *" />
+            <Input name="email" type="email" placeholder="Email Id *" />
+            <Input name="location_city" placeholder="City *" />
+            <Input name="location_state" placeholder="State *" />
+            <input name="location_country" defaultValue="India" hidden readOnly />
+            <Input name="password" type="password" placeholder="Password *" />
+            <button
+              disabled={busy}
+              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-lg hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {busy ? 'Creating…' : 'Register'}
             </button>
-          </p>
-        </form>
-      )}
+            <p className="text-center text-xs lg:text-sm pt-1">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={onSwap}
+                className="underline decoration-white/60 underline-offset-2 hover:opacity-90 font-medium transition-opacity"
+              >
+                Login
+              </button>
+            </p>
+          </form>
+        ) : (
+          <form onSubmit={onSubmitVet} className="space-y-2.5 lg:space-y-3">
+            <Input name="name" placeholder="Full Name *" />
+            <Input name="email" type="email" placeholder="Email Id *" />
+            <Input name="phone" placeholder="Phone Number *" />
+            <Input name="password" type="password" placeholder="Password *" />
+            <div>
+              <label className="mb-1 block text-xs lg:text-sm font-medium text-white/95">
+                Medical Document (PDF)*
+              </label>
+              <input
+                ref={fileRef}
+                name="medical_pdf"
+                type="file"
+                accept="application/pdf"
+                className="w-full rounded-full border-0 bg-white px-4 py-2.5 text-xs lg:text-sm text-gray-600 shadow-md file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FF8A65] file:text-white hover:file:bg-[#ff7a50] file:cursor-pointer"
+              />
+            </div>
+            <button
+              disabled={busy}
+              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-lg hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {busy ? 'Creating…' : 'Register as Vet'}
+            </button>
+            <p className="text-center text-xs lg:text-sm pt-1">
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={onSwap}
+                className="underline decoration-white/60 underline-offset-2 hover:opacity-90 font-medium transition-opacity"
+              >
+                Login
+              </button>
+            </p>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
@@ -461,7 +529,7 @@ function Input({
         name={name}
         type={isPassword && show ? 'text' : type}
         placeholder={placeholder}
-        className="w-full rounded-full border-0 bg-white px-5 py-3 text-sm text-[#1b2b34] placeholder-[#9aa6ad]"
+        className="w-full rounded-full border-0 bg-white px-4 lg:px-4 py-2.5 lg:py-3.5 text-xs lg:text-sm text-[#1b2b34] placeholder-[#9aa6ad] shadow-md focus:ring-2 focus:ring-white/50 focus:outline-none transition-shadow"
         required
         autoComplete={isPassword ? 'new-password' : 'on'}
       />
@@ -469,11 +537,11 @@ function Input({
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-orange-500 transition-colors"
           aria-label={show ? 'Hide password' : 'Show password'}
         >
           <span className="sr-only">{show ? 'Hide password' : 'Show password'}</span>
-          {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          {show ? <EyeOff className="h-4 w-4 lg:h-5 lg:w-5 " /> : <Eye className="h-4 w-4 lg:h-5 lg:w-5" />}
         </button>
       )}
     </div>
