@@ -201,17 +201,18 @@ export default function PetzoneeAuth() {
   const isSignup = mode === 'signup';
 
   return (
-    <main className="min-h-[100dvh] w-full bg-black/90">
+    <main className="min-h-[100dvh] w-full bg-black/90 lg:h-screen lg:overflow-hidden lg:flex lg:items-center lg:justify-center">
 
-      <div className="mx-auto max-w-[1100px]  py-10">
-        <div className="rounded-[24px] bg-[#FF8A65] p-4 sm:p-6 md:p-8 shadow-xl">
+      {/* Fixed width 900px on desktop, responsive on mobile */}
+      <div className="w-full px-4 max-w-[500px] lg:max-w-none lg:w-[900px] lg:px-0 mx-auto">
+        <div className="rounded-[24px] bg-[#FF8A65] p-5 sm:p-6 md:p-8 shadow-xl">
           {/* toggle */}
-          <div className="mb-6 flex justify-center">
+          <div className="mb-5 flex justify-center">
             <div className="relative inline-flex rounded-full bg-white/20 p-1">
-              <button onClick={() => setMode('signup')} className={`relative z-10 rounded-full px-5 py-2 text-sm font-semibold text-gray-600 ${isSignup ? '' : 'opacity-80'}`}>
+              <button onClick={() => setMode('signup')} className={`relative z-10 rounded-full px-5 py-1.5 text-sm font-semibold text-gray-600 ${isSignup ? '' : 'opacity-80'}`}>
                 Register
               </button>
-              <button onClick={() => setMode('signin')} className={`relative z-10 rounded-full px-5 py-2 text-sm font-semibold text-gray-600 ${!isSignup ? '' : 'opacity-80'}`}>
+              <button onClick={() => setMode('signin')} className={`relative z-10 rounded-full px-5 py-1.5 text-sm font-semibold text-gray-600 ${!isSignup ? '' : 'opacity-80'}`}>
                 Signin
               </button>
               <motion.span layout className="absolute inset-y-1 w-1/2 rounded-full bg-white" initial={false} animate={{ x: isSignup ? 0 : '100%' }} transition={{ type: 'spring', stiffness: 420, damping: 32 }} />
@@ -249,7 +250,7 @@ export default function PetzoneeAuth() {
           </div>
 
           {msg && (
-            <p className="mt-6 rounded-xl bg-white/90 px-4 py-3 text-sm font-medium text-[#7a2f00] text-center">
+            <p className="mt-4 rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-[#7a2f00] text-center">
               {msg}
             </p>
           )}
@@ -266,9 +267,9 @@ export default function PetzoneeAuth() {
 
 function VideoSkeleton() {
   return (
-    <div className="relative mx-auto max-w-[500px] overflow-hidden rounded-[20px] shadow-lg">
+    <div className="relative mx-auto max-w-[420px] overflow-hidden rounded-[20px] shadow-lg">
       <div className="relative aspect-[4/5] w-full animate-pulse bg-white/10 flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+        <div className="w-10 h-10 rounded-full border-3 border-white/20 border-t-white animate-spin" />
       </div>
     </div>
   );
@@ -279,9 +280,9 @@ function VideoCard({ mode }: { mode: 'signup' | 'signin' }) {
   const src = mode === 'signup' ? '/videos/signup.mp4' : '/videos/login.mp4';
 
   return (
-    <div className="relative mx-auto max-w-[500px] overflow-hidden rounded-[20px] shadow-lg">
+    <div className="relative mx-auto max-w-[420px] overflow-hidden rounded-[20px] shadow-lg h-full">
       {!isReady && <VideoSkeleton />}
-      <div className="relative aspect-[4/5] w-full">
+      <div className="relative aspect-[4/5] w-full h-full">
         <video
           key={mode}
           src={src}
@@ -290,6 +291,7 @@ function VideoCard({ mode }: { mode: 'signup' | 'signin' }) {
           muted
           loop
           playsInline
+          preload="auto"
           onCanPlay={() => setIsReady(true)}
         />
       </div>
@@ -307,15 +309,15 @@ function LoginCard({
   onSwap: () => void;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[520px] text-white">
-      <h2 className="mb-2 text-center text-[40px] font-extrabold leading-none drop-shadow-sm">Login</h2>
-      <p className="mb-6 text-center text-[14px] opacity-90">Welcome back</p>
+    <div className="mx-auto w-full max-w-[420px] text-white">
+      <h2 className="mb-2 text-center text-3xl lg:text-3xl font-extrabold leading-none drop-shadow-sm">Login</h2>
+      <p className="mb-6 text-center text-sm opacity-90">Welcome back</p>
       <form onSubmit={onSubmit} className="space-y-4">
         <Input name="email" type="email" placeholder="Email Id *" />
         <Input name="password" type="password" placeholder="Password *" />
         <button
           disabled={busy}
-          className="w-full rounded-full bg-[#0e2a36] py-4 text-[16px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
+          className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
         >
           {busy ? 'Signing in…' : 'Login'}
         </button>
@@ -348,26 +350,26 @@ function RegisterCard({
   onSwap: () => void;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[520px] text-white">
-      <h2 className="mb-2 text-center text-[40px] font-extrabold leading-none drop-shadow-sm">Signup</h2>
-      <p className="mb-6 text-center text-[14px] opacity-90">
-        Create account to start your exciting journey with PETZONEE
+    <div className="mx-auto w-full max-w-[420px] text-white">
+      <h2 className="mb-1 text-center text-3xl lg:text-3xl font-extrabold leading-none drop-shadow-sm">Signup</h2>
+      <p className="mb-4 text-center text-xs lg:text-sm opacity-90">
+        Create account to start your journey
       </p>
 
       {/* Role tabs (orange styling) */}
-      <div className="mb-5 flex justify-center">
+      <div className="mb-4 flex justify-center">
         <div className="relative inline-flex rounded-full bg-white/25 p-1">
           <button
             type="button"
             onClick={() => setRole('user')}
-            className={`z-10 rounded-full px-4 py-2 text-sm font-semibold ${role === 'user' ? 'text-[#e17824]' : 'text-white'}`}
+            className={`z-10 rounded-full px-4 py-1.5 text-sm font-semibold ${role === 'user' ? 'text-[#e17824]' : 'text-white'}`}
           >
             Pet Owner
           </button>
           <button
             type="button"
             onClick={() => setRole('vet')}
-            className={`z-10 rounded-full px-3 py-2 text-sm font-semibold ${role === 'vet' ? 'text-[#e17824]' : 'text-white'}`}
+            className={`z-10 rounded-full px-3 py-1.5 text-sm font-semibold ${role === 'vet' ? 'text-[#e17824]' : 'text-white'}`}
           >
             Veterinarian
           </button>
@@ -382,7 +384,7 @@ function RegisterCard({
       </div>
 
       {role === 'user' ? (
-        <form onSubmit={onSubmitUser} className="space-y-4">
+        <form onSubmit={onSubmitUser} className="space-y-3">
           <Input name="first_name" placeholder="First Name *" />
           <Input name="last_name" placeholder="Last Name *" />
           <Input name="email" type="email" placeholder="Email Id *" />
@@ -394,7 +396,7 @@ function RegisterCard({
           <Input name="password" type="password" placeholder="Password *" />
           <button
             disabled={busy}
-            className="w-full rounded-full bg-[#0e2a36] py-4 text-[16px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
+            className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
           >
             {busy ? 'Creating…' : 'Register'}
           </button>
@@ -406,7 +408,7 @@ function RegisterCard({
           </p>
         </form>
       ) : (
-        <form onSubmit={onSubmitVet} className="space-y-4">
+        <form onSubmit={onSubmitVet} className="space-y-3">
           <Input name="name" placeholder="Full Name *" />
           <Input name="email" type="email" placeholder="Email Id *" />
           <Input name="phone" placeholder="Phone Number *" />
@@ -420,12 +422,12 @@ function RegisterCard({
               name="medical_pdf"
               type="file"
               accept="application/pdf"
-              className="w-full rounded-full border-0 bg-white/95 px-4 py-4 text-[14px] text-gray-600 shadow"
+              className="w-full rounded-full border-0 bg-white/95 px-4 py-3 text-sm text-gray-600 shadow"
             />
           </div>
           <button
             disabled={busy}
-            className="w-full rounded-full bg-[#0e2a36] py-4 text-[16px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
+            className="w-full rounded-full bg-[#0e2a36] py-3 text-[15px] font-semibold text-white shadow-md hover:opacity-95 disabled:opacity-60"
           >
             {busy ? 'Creating…' : 'Register as Vet'}
           </button>
@@ -459,7 +461,7 @@ function Input({
         name={name}
         type={isPassword && show ? 'text' : type}
         placeholder={placeholder}
-        className="w-full rounded-full border-0 bg-white px-5 py-4 text-[14px] text-[#1b2b34] placeholder-[#9aa6ad]"
+        className="w-full rounded-full border-0 bg-white px-5 py-3 text-sm text-[#1b2b34] placeholder-[#9aa6ad]"
         required
         autoComplete={isPassword ? 'new-password' : 'on'}
       />
@@ -471,7 +473,7 @@ function Input({
           aria-label={show ? 'Hide password' : 'Show password'}
         >
           <span className="sr-only">{show ? 'Hide password' : 'Show password'}</span>
-          {show ? <EyeOff className="h-6 w-6" /> : <Eye className="h-6 w-6" />}
+          {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
         </button>
       )}
     </div>
