@@ -1,10 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRef, useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 type Mode = 'signup' | 'signin';
 type Role = 'user' | 'vet';
@@ -40,19 +41,24 @@ async function geocodeCityState(
   }
 }
 
-export default function PetzoneeAuth() {
+function AuthContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>('signup');
   const [role, setRole] = useState<Role>('user');
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'signin') {
+      setMode('signin');
+    }
+  }, [searchParams]);
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string>('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   /* ---------- Handlers ---------- */
 
   async function onLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setMsg('');
     setBusy(true);
 
     const fd = new FormData(e.currentTarget);
@@ -61,7 +67,7 @@ export default function PetzoneeAuth() {
 
     const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return setMsg(error.message);
+    if (error) { toast.error(error.message); return; }
 
     const user = data.user;
     const userRole = (user?.user_metadata as { role?: string })?.role;
@@ -80,7 +86,6 @@ export default function PetzoneeAuth() {
 
   async function onSignupUser(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setMsg('');
     setBusy(true);
 
     const fd = new FormData(e.currentTarget);
@@ -98,16 +103,19 @@ export default function PetzoneeAuth() {
     const { data: sign, error: signErr } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
-      options: { data: { role: 'user', first_name: payload.first_name, last_name: payload.last_name } },
+      options: {
+        data: { role: 'user', first_name: payload.first_name, last_name: payload.last_name },
+        emailRedirectTo: `${window.location.origin}/signup?mode=signin`,
+      },
     });
-    if (signErr) { setBusy(false); return setMsg(signErr.message); }
+    if (signErr) { setBusy(false); toast.error(signErr.message); return; }
 
     const geo = await geocodeCityState(
       payload.location_city,
       payload.location_state,
       payload.location_country || 'India'
     );
-    if (!geo) { setBusy(false); return setMsg('Could not locate that city/state. Please check the spelling.'); }
+    if (!geo) { setBusy(false); toast.error('Could not locate that city/state. Please check the spelling.'); return; }
 
     const uid = sign.user?.id;
     if (uid) {
@@ -129,18 +137,18 @@ export default function PetzoneeAuth() {
           { onConflict: 'id' }
         );
 
-      if (upErr) { setBusy(false); return setMsg(upErr.message); }
+      if (upErr) { setBusy(false); toast.error(upErr.message); return; }
     }
 
     setBusy(false);
-    setMsg('User account created! Please confirm your email.');
+    setBusy(false);
+    toast.success('User account created! Please confirm your email.');
     setMode('signin');
   }
 
   async function onSignupVet(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
-    setMsg('');
 
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get('name') || '');
@@ -152,12 +160,15 @@ export default function PetzoneeAuth() {
     const { data: sign, error: signErr } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role: 'vet', display_name: name } },
+      options: {
+        data: { role: 'vet', display_name: name },
+        emailRedirectTo: `${window.location.origin}/signup?mode=signin`,
+      },
     });
-    if (signErr) { setBusy(false); return setMsg(signErr.message); }
+    if (signErr) { setBusy(false); toast.error(signErr.message); return; }
 
     const uid = sign.user?.id;
-    if (!uid) { setBusy(false); return setMsg('Signup succeeded but no UID found.'); }
+    if (!uid) { setBusy(false); toast.error('Signup succeeded but no UID found.'); return; }
 
     let medicalDocUrl: string | null = null;
     if (file && file.size > 0) {
@@ -168,7 +179,8 @@ export default function PetzoneeAuth() {
 
       if (uploadErr) {
         setBusy(false);
-        return setMsg(`File upload failed: ${uploadErr.message}`);
+        toast.error(`File upload failed: ${uploadErr.message}`);
+        return;
       }
 
       const { data: pub } = supabase.storage.from('medical-docs').getPublicUrl(path);
@@ -183,10 +195,11 @@ export default function PetzoneeAuth() {
       medical_doc_url: medicalDocUrl,
       kyc_status: 'pending',
     }]);
-    if (dbErr) { setBusy(false); return setMsg(`Vet insert failed: ${dbErr.message}`); }
+    if (dbErr) { setBusy(false); toast.error(`Vet insert failed: ${dbErr.message}`); return; }
 
     setBusy(false);
-    setMsg('Vet account created! Please confirm your email. KYC is pending.');
+    setBusy(false);
+    toast.success('Vet account created! Please confirm your email. KYC is pending.');
     setMode('signin');
   }
 
@@ -208,17 +221,15 @@ export default function PetzoneeAuth() {
           <div className="relative inline-flex rounded-full bg-white/30 p-1 shadow-lg">
             <button
               onClick={() => setMode('signup')}
-              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${
-                isSignup ? 'text-[#FF8A65]' : 'text-white'
-              }`}
+              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${isSignup ? 'text-[#FF8A65]' : 'text-white'
+                }`}
             >
               Register
             </button>
             <button
               onClick={() => setMode('signin')}
-              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${
-                !isSignup ? 'text-[#FF8A65]' : 'text-white'
-              }`}
+              className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${!isSignup ? 'text-[#FF8A65]' : 'text-white'
+                }`}
             >
               Signin
             </button>
@@ -306,17 +317,6 @@ export default function PetzoneeAuth() {
           </div>
         </div>
 
-        {msg && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="pb-4 flex-shrink-0"
-          >
-            <p className="rounded-xl bg-white/95 px-4 py-2 text-xs lg:text-sm font-medium text-[#7a2f00] text-center shadow-lg max-w-2xl mx-auto">
-              {msg}
-            </p>
-          </motion.div>
-        )}
       </div>
     </main>
   );
@@ -398,7 +398,7 @@ function RegisterCard({
   busy: boolean;
   onSubmitUser: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   onSubmitVet: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  fileRef: React.RefObject<HTMLInputElement>;
+  fileRef: React.RefObject<HTMLInputElement | null>;
   onSwap: () => void;
 }) {
   return (
@@ -417,18 +417,16 @@ function RegisterCard({
             <button
               type="button"
               onClick={() => setRole('user')}
-              className={`relative z-10 rounded-full px-4 lg:px-5 py-2 text-xs lg:text-sm font-semibold transition-colors duration-200 ${
-                role === 'user' ? 'text-[#FF8A65]' : 'text-white'
-              }`}
+              className={`relative z-10 rounded-full px-4 lg:px-5 py-2 text-xs lg:text-sm font-semibold transition-colors duration-200 ${role === 'user' ? 'text-[#FF8A65]' : 'text-white'
+                }`}
             >
               Pet Owner
             </button>
             <button
               type="button"
               onClick={() => setRole('vet')}
-              className={`relative z-10 rounded-full px-4 lg:px-5 py-1.5 text-xs lg:text-sm font-semibold transition-colors duration-200 ${
-                role === 'vet' ? 'text-[#FF8A65]' : 'text-white'
-              }`}
+              className={`relative z-10 rounded-full px-4 lg:px-5 py-1.5 text-xs lg:text-sm font-semibold transition-colors duration-200 ${role === 'vet' ? 'text-[#FF8A65]' : 'text-white'
+                }`}
             >
               Veterinarian
             </button>
@@ -545,5 +543,13 @@ function Input({
         </button>
       )}
     </div>
+  );
+}
+
+export default function PetzoneeAuth() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FF8A65]" />}>
+      <AuthContent />
+    </Suspense>
   );
 }

@@ -68,7 +68,7 @@ export default function AdminDashboard({
       <Card className="border-white/10">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
-            <AvatarPicker currentUrl={profileAvatar} meId={meId} table="users" showMessage={showMessage} onUploaded={onAvatarChange} />
+            <AvatarPicker name={firstName || "Admin"} currentUrl={profileAvatar} meId={meId} table="users" showMessage={showMessage} onUploaded={onAvatarChange} />
             <div>
               <h2 className="text-2xl font-bold text-white mb-1">Hello, {firstName || 'Admin'}</h2>
               <p className="text-gray-300">Here is what happening on Pet Verse today.</p>

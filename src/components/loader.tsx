@@ -87,7 +87,7 @@ export default function Loader({ isLoading }: LoaderProps) {
     if (show && videoReady && videoRef.current) {
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => { });
       }
     } else if (!show && videoRef.current) {
       videoRef.current.pause();
@@ -131,7 +131,7 @@ export default function Loader({ isLoading }: LoaderProps) {
         });
 
         if (subtitleRef.current) {
-          gsap.fromTo(
+          tl.fromTo(
             subtitleRef.current,
             { y: 12, opacity: 0 },
             {

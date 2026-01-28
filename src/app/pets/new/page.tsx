@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-toastify';
 
 type Species = 'Dog' | 'Cat' | 'Bird' | 'Rabbit' | 'Fish' | 'Reptile' | 'Other';
 
@@ -64,8 +65,8 @@ export default function NewMultiplePetsPage() {
 
     // basic validation
     for (const [i, r] of rows.entries()) {
-      if (!r.name.trim()) return alert(`Row ${i + 1}: name is required`);
-      if (r.weight && isNaN(Number(r.weight))) return alert(`Row ${i + 1}: weight must be a number`);
+      if (!r.name.trim()) return toast.warning(`Row ${i + 1}: name is required`);
+      if (r.weight && isNaN(Number(r.weight))) return toast.warning(`Row ${i + 1}: weight must be a number`);
     }
 
     try {
@@ -109,9 +110,10 @@ export default function NewMultiplePetsPage() {
       // 3) go somewhere—either list or first pet
       if (data && data.length > 0) router.replace(`/pets/${data[0].id}`);
       else router.replace('/pets');
+      toast.success('Pets saved successfully!');
     } catch (err: unknown) {
       console.error(err);
-      alert((err as Error)?.message ?? 'Failed to save pets.');
+      toast.error((err as Error)?.message ?? 'Failed to save pets.');
     } finally {
       setSaving(false);
     }

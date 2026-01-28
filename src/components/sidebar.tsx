@@ -34,22 +34,30 @@ export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
     <aside className="w-72 h-screen relative overflow-hidden flex flex-col">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FFB799] via-[#FF8A70] to-[#E65700]"></div>
-      
+
       {/* Glass overlay */}
       <div className="absolute inset-0 bg-black/10 backdrop-blur-md"></div>
-      
+
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
         {/* Profile Section */}
         <div className="flex flex-col pt-8 items-center px-6">
           <div className="relative mb-4">
-            <Image
-              src={avatarUrl || "/default-avatar.png"}
-              alt={name}
-              width={80}
-              height={80}
-              className="w-20 h-20 rounded-full object-cover ring-4 ring-[#f6f6dc] shadow-lg"
-            />
+            <div className="relative mb-4">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={name}
+                  width={80}
+                  height={80}
+                  className="w-20 h-20 rounded-full object-cover ring-4 ring-[#f6f6dc] shadow-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full ring-4 ring-[#f6f6dc] shadow-lg bg-gradient-to-br from-[#FF8A65] to-[#FF5722] flex items-center justify-center text-white text-3xl font-bold">
+                  {(name || "U").charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
           </div>
           <h2 className="font-bold text-white text-xl mb-1 drop-shadow-sm">{name}</h2>
           <p className="text-sm text-white/80 capitalize bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">

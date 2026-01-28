@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-toastify';
 
 type Pet = {
   id: string;
@@ -93,7 +94,7 @@ export default function EditPetPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!pet || !meId) return;
-    if (!name.trim()) return alert('Please enter a name');
+    if (!name.trim()) { toast.warning('Please enter a name'); return; }
 
     try {
       setSaving(true);
@@ -152,7 +153,7 @@ export default function EditPetPage() {
       router.replace(`/pets/${pet.id}`);
     } catch (e: unknown) {
       console.error(e);
-      alert((e as Error)?.message ?? 'Failed to save changes.');
+      toast.error((e as Error)?.message ?? 'Failed to save changes.');
       setSaving(false);
     }
   }

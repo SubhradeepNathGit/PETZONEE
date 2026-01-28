@@ -119,12 +119,14 @@ export function AvatarPicker({
   table,
   showMessage,
   onUploaded,
+  name,
 }: {
   currentUrl: string | null;
   meId: string | null;
   table: 'users' | 'veterinarian';
   showMessage: (msg: string, type?: 'success' | 'error' | 'info') => void;
   onUploaded: (url: string | null) => void;
+  name?: string;
 }) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -181,14 +183,20 @@ export function AvatarPicker({
 
   return (
     <div className="relative group">
-      <div className="h-35 w-35 rounded-full overflow-hidden ring-6 ring-yellow-200 shadow-lg">
-        <Image
-          src={currentUrl || '/images/avatar-placeholder.png'}
-          alt="Profile"
-          width={80}
-          height={80}
-          className="h-full w-full object-cover"
-        />
+      <div className="h-35 w-35 rounded-full overflow-hidden ring-6 ring-yellow-200 shadow-lg bg-white/10 flex items-center justify-center">
+        {currentUrl ? (
+          <Image
+            src={currentUrl}
+            alt="Profile"
+            width={80}
+            height={80}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-[#FF8A65] to-[#FF5722] flex items-center justify-center text-white text-6xl font-bold">
+            {(name || "U").charAt(0).toUpperCase()}
+          </div>
+        )}
       </div>
       <button
         onClick={handlePick}

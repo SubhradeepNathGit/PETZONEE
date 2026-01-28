@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Trash2 } from "lucide-react";
+import { toast } from 'react-toastify';
 
 type PetRow = {
   id: string;
@@ -39,7 +40,6 @@ export default function PetProfilePage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [err, setErr] = useState<string>('');
-  const [msg, setMsg] = useState<string>('');
 
   const [gallery, setGallery] = useState<PetMediaRow[]>([]);
   const [galleryLoading, setGalleryLoading] = useState(true);
@@ -114,7 +114,7 @@ export default function PetProfilePage() {
       router.replace('/pets');
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to delete';
-      alert(errorMessage);
+      toast.error(errorMessage);
       setDeleting(false);
     }
   }
@@ -179,14 +179,14 @@ export default function PetProfilePage() {
 
       // 5) update UI
       setGallery(prev => prev.filter(p => p.id !== row.id));
-      setMsg('Photo deleted');
+      toast.success('Photo deleted');
       // fix lightbox index if needed
       setLightboxIdx(i => Math.min(Math.max(0, i - (i >= gallery.length - 1 ? 1 : 0)), Math.max(0, gallery.length - 2)));
       if (gallery.length - 1 <= 0) setLightboxOpen(false);
     } catch (e: unknown) {
       console.error(e);
       const errorMessage = e instanceof Error ? e.message : 'Failed to delete photo';
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setDeletingPhotoId(null);
     }
@@ -491,7 +491,6 @@ export default function PetProfilePage() {
                 petName={pet.name}
                 ownerId={pet.owner_id}
                 actorId={meId!}
-                setMsg={setMsg}
                 onUploaded={(url: string) => {
                   setGallery((prev) => [
                     { id: crypto.randomUUID(), pet_id: pet.id, url, created_at: new Date().toISOString() },
@@ -620,8 +619,6 @@ export default function PetProfilePage() {
           )}
         </section>
 
-        {msg && <p className="mt-3 text-sm text-emerald-700">{msg}</p>}
-
         {/* Quick links */}
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/pets/new" className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold hover:bg-slate-50">
@@ -633,21 +630,20 @@ export default function PetProfilePage() {
           </Link>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
 
 /* -------- Gallery uploader -------- */
 
 function UploadPetPhoto({
-  petId, petName, ownerId, actorId, onUploaded, setMsg,
+  petId, petName, ownerId, actorId, onUploaded,
 }: {
   petId: string;
   petName: string;
   ownerId: string;
   actorId: string;
   onUploaded: (url: string) => void;
-  setMsg: (s: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
   const inputId = `gallery-input-${petId}`;
@@ -690,12 +686,12 @@ function UploadPetPhoto({
         console.warn('activity insert failed', e);
       }
 
-      setMsg('Photo uploaded!');
+      toast.success('Photo uploaded!');
       onUploaded(url);
     } catch (err: unknown) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
-      setMsg(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setBusy(false);
       if (input) input.value = '';

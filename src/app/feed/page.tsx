@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/sidebar';
+import { toast } from 'react-toastify';
 
 type Role = 'admin' | 'vet' | 'user' | 'none' | 'loading';
 type Activity = {
@@ -24,6 +25,7 @@ type Activity = {
   comments_count?: number;
   liked_by_me?: boolean;
   user_name?: string | null;
+  actor_profiles?: { first_name: string | null; avatar_url: string | null } | null;
 };
 type ActivityComment = {
   id: number;
@@ -31,6 +33,8 @@ type ActivityComment = {
   user_id: string;
   body: string;
   created_at: string;
+  parent_id?: number | null;
+  user_profiles?: { first_name: string | null; avatar_url: string | null };
 };
 type SidebarItem = {
   label: string;
@@ -42,8 +46,11 @@ type SidebarItem = {
 
 const PAGE = 20;
 
-export default function FeedPage() {
+function FeedPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('id');
+
   const [meId, setMeId] = useState<string | null>(null);
   const [role, setRole] = useState<Role>('loading');
   const [firstName, setFirstName] = useState('');
@@ -177,10 +184,23 @@ export default function FeedPage() {
     async function fetchComments() {
       const { data, error } = await supabase.from('activity_comments').select('*');
       if (!error && data) {
+        const rawComments = data as ActivityComment[];
+        const userIds = [...new Set(rawComments.map((c) => c.user_id))];
+
+        const { data: profiles } = await supabase
+          .from('users')
+          .select('id, first_name, avatar_url')
+          .in('id', userIds);
+
+        const profileMap = Object.fromEntries((profiles ?? []).map((p) => [p.id, p]));
+
         const grouped: Record<number, ActivityComment[]> = {};
-        data.forEach((c) => {
+        rawComments.forEach((c) => {
           if (!grouped[c.activity_id]) grouped[c.activity_id] = [];
-          grouped[c.activity_id].push(c);
+          grouped[c.activity_id].push({
+            ...c,
+            user_profiles: profileMap[c.user_id],
+          });
         });
         setComments(grouped);
       }
@@ -190,7 +210,7 @@ export default function FeedPage() {
 
   // Toggle Like
   const handleLike = async (activityId: number) => {
-    if (!meId) return alert('Please sign in first');
+    if (!meId) { toast.warning('Please sign in first'); return; }
 
     if (userLiked[activityId]) {
       // Unlike
@@ -212,23 +232,86 @@ export default function FeedPage() {
   };
 
   // Add new comment
-  const handleAddComment = async (activityId: number) => {
-    if (!meId) return alert('Please sign in first');
+  const handleAddComment = async (activityId: number, parentId: number | null = null) => {
+    if (!meId) { toast.warning('Please sign in first'); return; }
     const text = newComment[activityId]?.trim();
     if (!text) return;
 
     const { data, error } = await supabase
       .from('activity_comments')
-      .insert([{ activity_id: activityId, user_id: meId, body: text }])
+      .insert([{
+        activity_id: activityId,
+        user_id: meId,
+        body: text,
+        parent_id: parentId
+      }])
       .select();
 
-    if (!error && data) {
+    if (error) {
+      console.error('Add comment error:', error);
+      toast.error(`Error: ${error.message || 'Failed to add comment'}. Did you run the SQL command?`);
+      return;
+    }
+
+    if (data) {
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('first_name, avatar_url')
+        .eq('id', meId)
+        .maybeSingle();
+
+      const commentWithProfile = {
+        ...(data[0] as ActivityComment),
+        user_profiles: userProfile,
+      };
+
       setComments({
         ...comments,
-        [activityId]: [...(comments[activityId] || []), data[0]],
+        [activityId]: [...(comments[activityId] || []), commentWithProfile] as ActivityComment[],
       });
       setNewComment({ ...newComment, [activityId]: '' });
+      toast.success('Comment added');
     }
+  };
+
+  const handleEditComment = async (activityId: number, commentId: number, newBody: string) => {
+    if (!meId) return;
+    const { error } = await supabase
+      .from('activity_comments')
+      .update({ body: newBody })
+      .eq('id', commentId)
+      .eq('user_id', meId);
+
+    if (error) {
+      toast.error('Failed to update comment');
+      return;
+    }
+
+    setComments(prev => ({
+      ...prev,
+      [activityId]: prev[activityId].map(c => c.id === commentId ? { ...c, body: newBody } : c)
+    }));
+    toast.success('Comment updated');
+  };
+
+  const handleDeleteComment = async (activityId: number, commentId: number) => {
+    if (!meId) return;
+    const { error } = await supabase
+      .from('activity_comments')
+      .delete()
+      .eq('id', commentId)
+      .eq('user_id', meId);
+
+    if (error) {
+      toast.error('Failed to delete comment');
+      return;
+    }
+
+    setComments(prev => ({
+      ...prev,
+      [activityId]: prev[activityId].filter(c => c.id !== commentId)
+    }));
+    toast.success('Comment deleted');
   };
 
   const loadMore = useCallback(
@@ -239,6 +322,18 @@ export default function FeedPage() {
       const to = from + PAGE - 1;
       const userId = currentUserId || meId;
 
+      let rows: Activity[] = [];
+
+      // If reset and we have a highlight ID, fetch that post first
+      if (reset && highlightId) {
+        const { data: highlightPost } = await supabase
+          .from('activities')
+          .select('*')
+          .eq('id', highlightId)
+          .maybeSingle();
+        if (highlightPost) rows.push(highlightPost as Activity);
+      }
+
       const { data, error } = await supabase
         .from('activities')
         .select('*')
@@ -246,15 +341,33 @@ export default function FeedPage() {
         .range(from, to);
 
       if (error) {
-        console.error('feed load error:', error);
+        console.error('feed load error:', JSON.stringify(error, null, 2));
         setLoading(false);
         setMoreLoading(false);
         return;
       }
 
-      let rows = (data ?? []) as Activity[];
+      if (data) {
+        const fetchedRows = data as Activity[];
+        // Filter out the highlight post if it was already fetched to avoid duplicates
+        const filtered = fetchedRows.filter(r => r.id !== Number(highlightId));
+        rows = [...rows, ...filtered];
+      }
 
       if (rows.length > 0) {
+        const actorIds = [...new Set(rows.map((r) => r.actor_id))];
+        const { data: profiles } = await supabase
+          .from('users')
+          .select('id, first_name, avatar_url')
+          .in('id', actorIds);
+
+        const profileMap = Object.fromEntries((profiles ?? []).map((p) => [p.id, p]));
+
+        rows = rows.map((r) => ({
+          ...r,
+          actor_profiles: profileMap[r.actor_id],
+        }));
+
         const ids = rows.map((r) => r.id);
 
         const { data: likesData } = await supabase
@@ -301,8 +414,20 @@ export default function FeedPage() {
       setHasMore(rows.length === PAGE);
       setLoading(false);
       setMoreLoading(false);
+
+      // If we have a highlight, try scrolling to it after a short delay
+      if (reset && highlightId) {
+        setTimeout(() => {
+          const el = document.getElementById(`post-${highlightId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.classList.add('ring-2', 'ring-orange-500', 'ring-offset-2', 'ring-offset-gray-900');
+            setTimeout(() => el.classList.remove('ring-2', 'ring-orange-500', 'ring-offset-2', 'ring-offset-gray-900'), 3000);
+          }
+        }, 800);
+      }
     },
-    [moreLoading, items, meId]
+    [moreLoading, items, meId, highlightId]
   );
 
   useEffect(() => {
@@ -336,14 +461,21 @@ export default function FeedPage() {
               .select('activity_id')
               .eq('activity_id', row.id);
 
+            const { data: actorProfile } = await supabase
+              .from('users')
+              .select('first_name, avatar_url')
+              .eq('id', row.actor_id)
+              .maybeSingle();
+
             const activityWithCounts = {
               ...row,
+              actor_profiles: actorProfile,
               likes_count: likesCount?.length ?? 0,
               comments_count: commentsCount?.length ?? 0,
               liked_by_me: false,
             };
 
-            setItems((prev) => (prev.some((p) => p.id === row.id) ? prev : [withSafeCounters(activityWithCounts), ...prev]));
+            setItems((prev: Activity[]) => (prev.some((p) => p.id === row.id) ? prev : [withSafeCounters(activityWithCounts), ...prev]));
           }
         })
         .subscribe();
@@ -371,15 +503,21 @@ export default function FeedPage() {
 
       const chComments = supabase
         .channel('rt_activity_comments')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_comments' }, (payload) => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_comments' }, async (payload) => {
           const r = (payload.new ?? payload.old) as ActivityComment;
           const aId = r?.activity_id;
           if (!aId) return;
 
           if (payload.eventType === 'INSERT') {
+            const { data: userProfile } = await supabase
+              .from('users')
+              .select('first_name, avatar_url')
+              .eq('id', r.user_id)
+              .maybeSingle();
+
             setComments((prev) => ({
               ...prev,
-              [aId]: [...(prev[aId] || []), r],
+              [aId]: [...(prev[aId] || []), { ...r, user_profiles: userProfile } as ActivityComment],
             }));
           } else if (payload.eventType === 'DELETE') {
             setComments((prev) => ({
@@ -447,7 +585,7 @@ export default function FeedPage() {
               </div>
             ) : (
               <div className="space-y-4 sm:space-y-6">
-                {items.map((a) => (
+                {items.map((a: Activity) => (
                   <FeedItem
                     key={a.id}
                     a={a}
@@ -460,7 +598,9 @@ export default function FeedPage() {
                     onToggleLike={() => handleLike(a.id)}
                     onToggleComments={() => toggleThread(a.id)}
                     onCommentChange={(text) => setNewComment({ ...newComment, [a.id]: text })}
-                    onAddComment={() => handleAddComment(a.id)}
+                    onAddComment={(pid) => handleAddComment(a.id, pid || null)}
+                    onEditComment={(cid, text) => handleEditComment(a.id, cid, text)}
+                    onDeleteComment={(cid) => handleDeleteComment(a.id, cid)}
                   />
                 ))}
               </div>
@@ -549,7 +689,7 @@ const humanizeVerb = (a: Activity) => {
 const shorten = (v: unknown, max = 40) => {
   if (!v) return '—';
   const s = String(v);
-  if (s.startsWith('http')) return s.length > max ? s.slice(0, max) + '...' : s;
+  if (s.startsWith('http')) return s.length > max ? s.slice(0, max) : s;
   return s.length > max ? s.slice(0, max) + '...' : s;
 };
 
@@ -653,12 +793,17 @@ const IconMore = () => (
 );
 
 const IconShare = ({ className = '' }: { className?: string }) => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="18" cy="5" r="3" />
-    <circle cx="6" cy="12" r="3" />
-    <circle cx="18" cy="19" r="3" />
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
   </svg>
 );
 
@@ -739,6 +884,39 @@ const IconPackage = () => (
   </svg>
 );
 
+const IconWhatsApp = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+  </svg>
+);
+
+const IconFacebook = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const IconInstagram = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
+const IconTwitter = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+const IconLink = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </svg>
+);
+
 const IconShoppingBag = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
     <path d="M6 2h12l2 7H4l2-7Z" stroke="currentColor" strokeWidth="1.6" />
@@ -790,6 +968,8 @@ function FeedItem({
   onToggleComments,
   onCommentChange,
   onAddComment,
+  onEditComment,
+  onDeleteComment,
 }: {
   a: Activity;
   meId: string | null;
@@ -801,9 +981,55 @@ function FeedItem({
   onToggleLike: () => void;
   onToggleComments: () => void;
   onCommentChange: (text: string) => void;
-  onAddComment: () => void;
+  onAddComment: (parentId?: number) => void;
+  onEditComment: (commentId: number, text: string) => void;
+  onDeleteComment: (commentId: number) => void;
 }) {
   const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [replyingToId, setReplyingToId] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleShare = async (platform?: 'whatsapp' | 'facebook' | 'instagram' | 'twitter' | 'copy') => {
+    // Force production origin if available, otherwise fallback
+    const origin = window.location.origin.includes('localhost') ? 'https://petzonee.vercel.app' : window.location.origin;
+    const shareUrl = `${origin}/feed?id=${a.id}`;
+    const shareText = `Check out this post on Petzonee: ${a.summary || 'Interesting activity!'}`;
+
+    if (!platform && navigator.share) {
+      try {
+        await navigator.share({ title: 'Petzonee', text: shareText, url: shareUrl });
+        return;
+      } catch (err) { console.log('Native share failed:', err); }
+    }
+
+    if (platform === 'whatsapp') {
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`, '_blank');
+    } else if (platform === 'facebook') {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    } else if (platform === 'twitter') {
+      window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    } else if (platform === 'instagram') {
+      navigator.clipboard.writeText(shareUrl);
+      toast.info('Link copied! Open Instagram to share.');
+      window.open('https://www.instagram.com/', '_blank');
+    } else if (platform === 'copy') {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success('Link copied to clipboard!');
+    }
+    setShowShareMenu(false);
+  };
+
+  const handleReply = (commentId: number, userName: string) => {
+    setReplyingToId(commentId);
+    onCommentChange(`@${userName} `);
+    // Focus the input after state update
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
 
   const title = humanizeVerb(a);
   const isBeforeAfter =
@@ -811,8 +1037,11 @@ function FeedItem({
     a.diff?.field === 'avatar_url' ||
     a.verb === 'pet.photo_updated' ||
     a.verb === 'user.avatar_updated';
-  const rawName = a.actor_id === meId ? 'You' : a.user_name?.trim() || 'User';
-  const safeInitials = (rawName || 'U').slice(0, 2).toUpperCase();
+
+  const actorName = a.actor_profiles?.first_name || a.user_name || 'User';
+  const rawName = a.actor_id === meId ? 'You' : actorName;
+  const avatarUrl = a.actor_profiles?.avatar_url;
+  const safeInitials = (actorName || 'U').slice(0, 1).toUpperCase();
 
   const handleLikeWithAnimation = () => {
     if (!userLiked) {
@@ -823,13 +1052,13 @@ function FeedItem({
   };
 
   return (
-    <article className="bg-gray-800/70 rounded-xl border border-gray-700/50 shadow-sm hover:shadow-gray-800/40 transition-shadow duration-300 overflow-hidden">
+    <article id={`post-${a.id}`} className="bg-gray-800/70 rounded-xl border border-gray-700/50 shadow-sm hover:shadow-gray-800/40 transition-shadow duration-300 overflow-hidden">
       <header className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-gray-700 p-0.5 flex-shrink-0">
             <div className="h-full w-full rounded-full overflow-hidden bg-gray-800">
-              {a.photo_url ? (
-                <Image src={a.photo_url} alt="" fill className="object-cover" />
+              {avatarUrl ? (
+                <Image src={avatarUrl} alt="" fill className="object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gray-700 text-white text-xs sm:text-sm font-semibold">
                   {safeInitials}
@@ -905,9 +1134,63 @@ function FeedItem({
               <IconChat className="h-6 w-6 sm:h-7 sm:w-7 text-gray-400 hover:text-gray-200" />
               <span className="text-xs sm:text-sm font-medium text-gray-300">{comments.length}</span>
             </button>
-            <button className="flex items-center space-x-1 transition-transform active:scale-95">
-              <IconShare className="h-6 w-6 sm:h-7 sm:w-7 text-gray-400 hover:text-gray-200" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowShareMenu(!showShareMenu)}
+                className="flex items-center space-x-1 transition-transform active:scale-95"
+              >
+                <IconShare className="h-6 w-6 sm:h-7 sm:w-7 text-gray-400 hover:text-gray-200" />
+              </button>
+
+              {showShareMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowShareMenu(false)}
+                  />
+                  <div className="absolute left-0 bottom-full mb-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="p-2 space-y-1">
+                      <button
+                        onClick={() => handleShare('whatsapp')}
+                        className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group"
+                      >
+                        <IconWhatsApp className="h-4 w-4 text-green-500 group-hover:scale-110 transition-transform" />
+                        <span>WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={() => handleShare('facebook')}
+                        className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group"
+                      >
+                        <IconFacebook className="h-4 w-4 text-blue-600 group-hover:scale-110 transition-transform" />
+                        <span>Facebook</span>
+                      </button>
+                      <button
+                        onClick={() => handleShare('instagram')}
+                        className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group"
+                      >
+                        <IconInstagram className="h-4 w-4 text-pink-500 group-hover:scale-110 transition-transform" />
+                        <span>Instagram</span>
+                      </button>
+                      <button
+                        onClick={() => handleShare('twitter')}
+                        className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group"
+                      >
+                        <IconTwitter className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
+                        <span>Twitter (X)</span>
+                      </button>
+                      <div className="h-px bg-gray-800 my-1 mx-2" />
+                      <button
+                        onClick={() => handleShare('copy')}
+                        className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group"
+                      >
+                        <IconLink className="h-4 w-4 text-gray-400 group-hover:scale-110 transition-transform" />
+                        <span>Copy Link</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           {a.subject_type === 'pet' && (
             <button className="transition-transform active:scale-95">
@@ -917,37 +1200,223 @@ function FeedItem({
         </div>
       </div>
       {open && (
-        <div className="px-3 sm:px-4 py-3 sm:py-4 border-t border-gray-700/50">
+        <div className="px-3 sm:px-4 py-3 border-t border-gray-700/30 bg-gray-900/10">
           {comments.length === 0 ? (
-            <p className="text-gray-400 text-sm sm:text-base text-center py-4 sm:py-6">No comments yet. Be the first to comment!</p>
+            <p className="text-gray-500 text-xs sm:text-sm text-center py-4">No comments yet</p>
           ) : (
-            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-              {comments.map((c) => (
-                <div key={c.id} className="text-sm text-gray-200">
-                  <strong>{c.user_id.slice(0, 6)}:</strong> {c.body}
-                </div>
-              ))}
+            <div className="space-y-4 py-2">
+              {comments.filter(c => !c.parent_id).map((c) => {
+                const isMyComment = c.user_id === meId;
+                const cName = c.user_profiles?.first_name || 'User';
+                const cAvatar = c.user_profiles?.avatar_url;
+                const cInitials = cName.slice(0, 1).toUpperCase();
+                const isEditing = editingCommentId === c.id;
+
+                // Get replies for this comment
+                const replies = comments.filter(r => r.parent_id === c.id);
+
+                return (
+                  <div key={c.id} className="space-y-3">
+                    <div className="group flex items-start space-x-3">
+                      <div className="relative h-8 w-8 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 mt-0.5">
+                        {cAvatar ? (
+                          <Image src={cAvatar} alt="" fill className="object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-orange-500/20 text-[10px] font-bold text-orange-400">
+                            {cInitials}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-xs sm:text-sm font-bold text-white hover:text-gray-300 cursor-pointer">{cName}</span>
+                          <span className="text-[10px] text-gray-500">{timeAgo(c.created_at)}</span>
+                        </div>
+
+                        {isEditing ? (
+                          <div className="mt-1 flex flex-col space-y-2">
+                            <textarea
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                              rows={2}
+                            />
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => { onEditComment(c.id, editText); setEditingCommentId(null); }}
+                                className="text-[10px] font-bold text-blue-400"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingCommentId(null)}
+                                className="text-[10px] font-bold text-gray-400"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs sm:text-sm text-gray-200 mt-0.5 leading-snug">{c.body}</p>
+                        )}
+
+                        <div className="flex items-center space-x-3 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleReply(c.id, cName)}
+                            className="text-[10px] font-bold text-gray-500 hover:text-gray-300"
+                          >
+                            Reply
+                          </button>
+                          {isMyComment && !isEditing && (
+                            <>
+                              <button
+                                onClick={() => { setEditingCommentId(c.id); setEditText(c.body); }}
+                                className="text-[10px] font-bold text-blue-500/80 hover:text-blue-400"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => onDeleteComment(c.id)}
+                                className="text-[10px] font-bold text-red-500/80 hover:text-red-400"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Render Replies */}
+                    {replies.length > 0 && (
+                      <div className="ml-11 border-l border-gray-800 pl-4 space-y-4 pt-1">
+                        {replies.map((r) => {
+                          const isMyReply = r.user_id === meId;
+                          const rName = r.user_profiles?.first_name || 'User';
+                          const rAvatar = r.user_profiles?.avatar_url;
+                          const rInitials = rName.slice(0, 1).toUpperCase();
+                          const isEditingReply = editingCommentId === r.id;
+
+                          return (
+                            <div key={r.id} className="group flex items-start space-x-3">
+                              <div className="relative h-6 w-6 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 mt-0.5">
+                                {rAvatar ? (
+                                  <Image src={rAvatar} alt="" fill className="object-cover" />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center bg-orange-500/20 text-[8px] font-bold text-orange-400">
+                                    {rInitials}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-baseline space-x-2">
+                                  <span className="text-xs font-bold text-white hover:text-gray-300 cursor-pointer">{rName}</span>
+                                  <span className="text-[10px] text-gray-500">{timeAgo(r.created_at)}</span>
+                                </div>
+
+                                {isEditingReply ? (
+                                  <div className="mt-1 flex flex-col space-y-2">
+                                    <textarea
+                                      value={editText}
+                                      onChange={(e) => setEditText(e.target.value)}
+                                      className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                                      rows={2}
+                                    />
+                                    <div className="flex space-x-2">
+                                      <button
+                                        onClick={() => { onEditComment(r.id, editText); setEditingCommentId(null); }}
+                                        className="text-[10px] font-bold text-blue-400"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingCommentId(null)}
+                                        className="text-[10px] font-bold text-gray-400"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-gray-200 mt-0.5 leading-snug">{r.body}</p>
+                                )}
+
+                                <div className="flex items-center space-x-3 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button
+                                    onClick={() => handleReply(c.id, rName)}
+                                    className="text-[10px] font-bold text-gray-500 hover:text-gray-300"
+                                  >
+                                    Reply
+                                  </button>
+                                  {isMyReply && !isEditingReply && (
+                                    <>
+                                      <button
+                                        onClick={() => { setEditingCommentId(r.id); setEditText(r.body); }}
+                                        className="text-[10px] font-bold text-blue-500/80 hover:text-blue-400"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => onDeleteComment(r.id)}
+                                        className="text-[10px] font-bold text-red-500/80 hover:text-red-400"
+                                      >
+                                        Delete
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
-          <div className="flex mt-2 gap-2">
-            <input
-              type="text"
-              value={newComment}
-              onChange={(e) => onCommentChange(e.target.value)}
-              placeholder="Add a comment..."
-              className="w-full px-3 py-2 text-sm bg-gray-900/70 text-gray-100 rounded-xl outline-none border border-gray-700/50 focus:border-gray-600"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && newComment.trim()) {
-                  onAddComment();
-                }
-              }}
-            />
+
+          {replyingToId && (
+            <div className="flex items-center justify-between px-1 mb-2">
+              <span className="text-[10px] text-gray-500">
+                Replying to <span className="text-orange-400 font-semibold">@{comments.find(c => c.id === replyingToId)?.user_profiles?.first_name || 'User'}</span>
+              </span>
+              <button
+                onClick={() => setReplyingToId(null)}
+                className="text-[10px] text-gray-400 hover:text-white"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-3 pt-3 border-t border-gray-700/30">
+            <div className="flex-1 relative">
+              <input
+                ref={inputRef}
+                type="text"
+                value={newComment}
+                onChange={(e) => onCommentChange(e.target.value)}
+                placeholder={replyingToId ? "Reply..." : "Add a comment..."}
+                className="w-full bg-transparent text-xs sm:text-sm text-white focus:outline-none py-1"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newComment.trim()) {
+                    onAddComment(replyingToId || undefined);
+                    setReplyingToId(null);
+                  }
+                }}
+              />
+            </div>
             <button
-              onClick={onAddComment}
+              onClick={() => {
+                onAddComment(replyingToId || undefined);
+                setReplyingToId(null);
+              }}
               disabled={!newComment.trim()}
-              className="px-4 py-2 text-blue-400 font-semibold hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-xs sm:text-sm font-bold text-blue-500 hover:text-blue-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
-              Send
+              Post
             </button>
           </div>
         </div>
@@ -964,5 +1433,13 @@ function FeedItem({
         </div>
       )}
     </article>
+  );
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center text-white font-medium">Loading PETZONEE Feed...</div>}>
+      <FeedPageContent />
+    </Suspense>
   );
 }

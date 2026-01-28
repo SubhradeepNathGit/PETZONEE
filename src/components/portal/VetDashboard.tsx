@@ -110,6 +110,7 @@ export default function VetDashboard({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
             <AvatarPicker
+              name={name}
               currentUrl={avatarUrl}
               meId={meId}
               table="veterinarian"

@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   description: "Connecting Pets, Owners & Services in One Happy Place 🐾",
 };
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// ... existing imports
+
 export default function RootLayout({
   children,
 }: {
@@ -62,6 +67,7 @@ export default function RootLayout({
         {/* ✅ Global Providers */}
         <TanstackProvider>
           <ClientLayout>{children}</ClientLayout>
+          <ToastContainer position="top-right" theme="colored" />
         </TanstackProvider>
       </body>
     </html>

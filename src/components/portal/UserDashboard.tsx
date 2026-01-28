@@ -19,11 +19,11 @@ export default function UserDashboard({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="">
-              <AvatarPicker currentUrl={profileAvatar} meId={meId} table="users" showMessage={showMessage} onUploaded={onAvatarChange} />
+              <AvatarPicker name={firstName} currentUrl={profileAvatar} meId={meId} table="users" showMessage={showMessage} onUploaded={onAvatarChange} />
             </div>
             <div>
               <h2 className="text-4xl font-bold text-white ml-5 mb-1">Hello{firstName ? `, ${firstName}` : ''}</h2>
-              <p className="text-gray-200">Your journey starts here with PetMate</p>
+              <p className="text-gray-200">Your journey starts here with PETZONEE</p>
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function UserDashboard({
         <div className="space-y-3 mt-3">
           <div className="flex items-center gap-3 p-3 rounded-lg">
             <div className="flex-1">
-              <p className="font-medium text-white">Welcome to PetMate</p>
+              <p className="font-medium text-white">Welcome to PETZONEE</p>
               <p className="text-sm text-gray-300">Complete your profile to get personalized recommendations</p>
             </div>
             <span className="text-xs text-gray-400 mr-3">Just now</span>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Image from 'next/image';
@@ -15,12 +15,12 @@ import { resolvePetPhotoUrl } from '@/components/portal/shared/utils';
 import { Card, LoadingCard } from '@/components/portal/shared/ui';
 import {
   IconHome, IconCalendar, IconUsers, IconUser, IconBell, IconChart, IconShield, IconPackage,
-  IconShoppingBag, IconCompass, IconPlus, IconHeart, IconSettings, IconTrash, IconLogOut, IconX
+  IconShoppingBag, IconCompass, IconPlus, IconHeart, IconSettings, IconTrash, IconLogOut, IconX, IconPawPrint, IconDog
 } from '@/components/portal/shared/icons';
 
 const AdminDashboard = dynamic(() => import('@/components/portal/AdminDashboard'), { ssr: false });
-const VetDashboard   = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
-const UserDashboard  = dynamic(() => import('@/components/portal/UserDashboard'), { ssr: false });
+const VetDashboard = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
+const UserDashboard = dynamic(() => import('@/components/portal/UserDashboard'), { ssr: false });
 import { loadPendingVets, loadAdminStats } from '@/components/portal/AdminDashboard';
 import { KycPending } from '@/components/portal/VetDashboard';
 
@@ -352,14 +352,14 @@ export default function Portal() {
   return (
     <ErrorBoundary>
       <main className="min-h-screen relative bg-black/90 text-white">
-       
+
 
         <div className="min-h-screen bg-transparent flex">
           <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 xl:w-72 bg-black/80 backdrop-blur-xl border-r border-gray-800 z-30">
-          {sidebar}
-        </aside>
+            {sidebar}
+          </aside>
 
-         <div className="flex-1 min-w-0 lg:ml-64 xl:ml-72">
+          <div className="flex-1 min-w-0 lg:ml-64 xl:ml-72">
             <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
               <div className="backdrop-blur-xl border-t border-white/10 px-4 py-2">
                 <div className="flex justify-around">
@@ -391,7 +391,7 @@ export default function Portal() {
                       animate={{ x: 0, opacity: 1 }}
                       className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-yellow-300  bg-clip-text text-transparent"
                     >
-                      Welcome to PetMate
+                      Welcome to PETZONEE
                     </motion.h1>
                     <motion.p
                       initial={{ x: -20, opacity: 0 }}
@@ -399,7 +399,7 @@ export default function Portal() {
                       transition={{ delay: 0.1 }}
                       className="text-gray-300 text-sm"
                     >
-                      Personalise your experience and manage your pet care needs effectively 
+                      Personalise your experience and manage your pet care needs effectively
                     </motion.p>
                   </div>
                   <div className="flex items-center gap-3 text-md mr-1 font-semibold">
@@ -407,10 +407,10 @@ export default function Portal() {
                       {role === 'admin'
                         ? `Admin${firstName ? ` ${firstName}` : ''}`
                         : role === 'vet'
-                        ? `Vet ${vetKyc ?? 'pending'}`
-                        : role === 'user'
-                        ? `User${firstName ? ` ${firstName}` : ''}`
-                        : 'Guest'}
+                          ? `Vet ${vetKyc ?? 'pending'}`
+                          : role === 'user'
+                            ? `User${firstName ? ` ${firstName}` : ''}`
+                            : 'Guest'}
                     </span>
                   </div>
                 </header>
@@ -433,17 +433,16 @@ export default function Portal() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className={`mt-6 rounded-xl p-4 shadow-sm border ${
-                        msgType === 'error'
-                          ? 'bg-red-500/10 text-red-200 border-red-500/30'
-                          : msgType === 'success'
+                      className={`mt-6 rounded-xl p-4 shadow-sm border ${msgType === 'error'
+                        ? 'bg-red-500/10 text-red-200 border-red-500/30'
+                        : msgType === 'success'
                           ? 'bg-emerald-500/10 text-emerald-200 border-emerald-500/30'
                           : 'bg-blue-500/10 text-blue-200 border-blue-500/30'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start gap-3">
                         <span className="text-lg">
-                          {msgType === 'error' ? 'âŒ' : msgType === 'success' ? 'âœ…' : 'â„¹ï¸'}
+                          {msgType === 'error' ? 'Ã¢ÂÅ’' : msgType === 'success' ? 'Ã¢Å“â€¦' : 'Ã¢â€žÂ¹Ã¯Â¸Â'}
                         </span>
                         <p className="text-sm font-medium">{msg}</p>
                       </div>
@@ -494,15 +493,19 @@ export default function Portal() {
                     ))}
                   </div>
                 ) : pets.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-6xl mb-4">ðŸ±</div>
-                    <h4 className="text-xl font-semibold text-white mb-2">No pets added yet</h4>
-                    <p className="text-gray-300 mb-4">Add your first furry friend to get started!</p>
+                  <div className="text-center py-16 flex flex-col items-center justify-center">
+                    <h4 className="text-2xl font-bold text-white mb-2">No pets added yet</h4>
+                    <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+                      Your journey starts here! Add your first furry friend to personalize your experience.
+                    </p>
                     <Link
                       href="/pets/new"
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow hover:brightness-110 transition"
+                      className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white transition-all duration-300 bg-gradient-to-r from-[#FF8A65] to-[#FF7043] rounded-2xl shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-1 active:translate-y-0 active:scale-95"
                     >
-                      Add Pet
+                      <span className="relative flex items-center gap-2">
+                        Add My Pet
+                        <IconPlus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+                      </span>
                     </Link>
                   </div>
                 ) : (
@@ -592,7 +595,7 @@ class ErrorBoundary extends React.Component<
           <div className="min-h-screen flex items-center justify-center">
             <Card className="max-w-md">
               <div className="text-center text-white">
-                <div className="text-yellow-400 text-4xl mb-4">âš ï¸</div>
+                <div className="text-yellow-400 text-4xl mb-4">Ã¢Å¡Â Ã¯Â¸Â</div>
                 <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
                 <p className="text-gray-300 mb-4">We are sorry, but something unexpected happened.</p>
                 <button
