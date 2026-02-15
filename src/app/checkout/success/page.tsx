@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CheckCircle2, Home, Download, IndianRupee, Sparkles, X, Gift } from "lucide-react";
+import { CheckCircle2, Home, Printer, Gift, ArrowLeft } from "lucide-react";
 
 // Types
 type OrderItem = {
@@ -24,260 +24,286 @@ const prettyPayMode = (mode: LastOrder["payMode"] | undefined) => {
   return modes[mode || "card"] || "—";
 };
 
-const formatDate = (date: string) => new Date(date).toLocaleDateString();
-const formatDateTime = (date: string) => new Date(date).toLocaleString();
-
-// Components
-const AnimatedParticles = () => (
-  <div className="fixed inset-0 overflow-hidden pointer-events-none">
-    {[...Array(12)].map((_, i) => (
-      <motion.div key={i} className="absolute w-2 h-2 bg-green-400 rounded-full opacity-30"
-        initial={{ x: Math.random() * 1200, y: 800 }}
-        animate={{ y: -10, x: Math.random() * 1200 }}
-        transition={{ duration: Math.random() * 3 + 2, repeat: Infinity, delay: Math.random() * 2 }} />
-    ))}
-  </div>
-);
+const formatDate = (date: string) => new Date(date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' });
+const formatDateTime = (date: string) => new Date(date).toLocaleString("en-IN", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 const SuccessHeader = ({ order }: { order: LastOrder | null }) => (
-  <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-    transition={{ duration: 0.6, type: "spring" }} className="text-center">
-    <div className="relative inline-block">
-      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }}
-        className="absolute -inset-4 rounded-full bg-green-100" />
-      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4, duration: 0.5 }} className="relative">
-        <CheckCircle2 className="h-24 w-24 text-green-500 mx-auto" />
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.3 }}
-          className="absolute -top-2 -right-2">
-          <Sparkles className="h-8 w-8 text-yellow-400" />
-        </motion.div>
-      </motion.div>
+  <motion.div
+    initial={{ y: 20, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ duration: 0.5 }}
+    className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center print:shadow-none print:border-none print:p-0 print:text-left print:mb-8"
+  >
+    <div className="relative inline-block mb-4 print:hidden">
+      <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+        <CheckCircle2 className="h-10 w-10 text-green-600" />
+      </div>
     </div>
 
-    <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3, duration: 0.6 }}
-      className="mt-6 text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-      Payment Successful!
-    </motion.h1>
+    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 print:text-4xl print:text-orange-500 print:mb-1">Payment Successful!</h1>
+    <p className="text-gray-500 mb-6 font-medium print:hidden">Order placed successfully</p>
+    <p className="hidden print:block text-gray-500 mb-4">Thank you for shopping with PETZONEE</p>
 
-    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 0.6 }}
-      className="mt-4 space-y-2">
-      <p className="text-xl text-gray-700 font-medium">Your order has been confirmed and is being processed</p>
-      <div className="flex items-center justify-center gap-2 text-green-600">
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-sm font-medium">Order is being prepared</span>
-      </div>
-    </motion.div>
+    <div className="inline-flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 print:bg-transparent print:border-0 print:p-0 print:block">
+      <span className="text-sm text-gray-500">Transaction ID:</span>
+      <span className="text-sm font-mono font-bold text-gray-900 ml-2">{order?.orderId}</span>
+    </div>
 
-    <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
-      {order?.orderId && (
-        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.7, duration: 0.6 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-green-200">
-          <p className="text-sm text-gray-600">Order ID</p>
-          <p className="text-lg font-bold text-green-700">{order.orderId}</p>
-        </motion.div>
-      )}
-
-      {/* Promo Code Badge - Only shows if promo was applied */}
-      {order?.summary?.promoCode && order?.summary?.promoDiscount && order.summary.promoDiscount > 0 && (
-        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-100 to-amber-100 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-orange-300">
-          <Gift className="h-5 w-5 text-orange-600" />
-          <div>
-            <p className="text-sm text-orange-700 font-medium">Promo Applied: {order.summary.promoCode}</p>
-            <p className="text-lg font-bold text-orange-800">Saved ₹{order.summary.promoDiscount.toLocaleString()}</p>
-          </div>
-        </motion.div>
-      )}
+    <div className="mt-6 flex items-center justify-center gap-4 text-sm font-medium text-gray-500 print:hidden">
+      <span className="flex items-center gap-1.5">
+        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+        Payment Verified
+      </span>
+      <span className="hidden md:inline text-gray-300">|</span>
+      <span className="flex items-center gap-1.5">
+        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+        Order Confirmed
+      </span>
     </div>
   </motion.div>
 );
 
-const OrderSummary = ({ order, itemCount }: { order: LastOrder | null; itemCount: number }) => (
-  <section className="lg:col-span-2 rounded-3xl border bg-white/80 backdrop-blur-sm shadow-xl p-8">
-    <div className="flex items-center justify-between">
-      <h2 className="text-2xl font-bold text-gray-900">Order Summary</h2>
-      {itemCount > 0 && (
-        <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-700">
-          {itemCount} item{itemCount > 1 ? "s" : ""}
-        </span>
-      )}
-    </div>
-
-    {!order || order.items.length === 0 ? (
-      <div className="mt-8 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 p-8 text-center text-gray-600">
-        <p className="text-lg">No order to display</p>
-      </div>
-    ) : (
-      <>
-        <div className="mt-6 space-y-6">
-          {order.items.map((item, index) => (
-            <motion.div key={item.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.9 + index * 0.1, duration: 0.5 }}
-              className="flex items-center gap-6 bg-gradient-to-r from-gray-50 to-white p-4 rounded-2xl border border-gray-100">
-              <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-gray-100 shadow-md">
-                <Image src={item.image_url || "/images/placeholder.png"} alt={item.name} fill className="object-cover" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900 text-lg">{item.name}</p>
-                <p className="text-gray-600 mt-1">Qty {item.quantity} × ₹{Number(item.price).toLocaleString()}</p>
-              </div>
-              <p className="font-bold text-xl text-green-600">₹{(Number(item.price) * item.quantity).toLocaleString()}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="mt-8 bg-gradient-to-r from-gray-50 to-green-50 rounded-2xl p-6 space-y-3">
-          {[
-            ['Subtotal', order.summary.subtotal],
-            ['SGST (9%)', order.summary.sgst],
-            ['CGST (9%)', order.summary.cgst],
-            [`Delivery (${order.delivery === "standard" ? "Standard" : "Express"})`, order.summary.deliveryFee]
-          ].map(([label, value]) => (
-            <div key={label} className="flex items-center justify-between text-base">
-              <span className="text-gray-700">{label}</span>
-              <span className="font-semibold text-gray-900">₹{Number(value).toLocaleString()}</span>
-            </div>
-          ))}
-
-          {/* Promo Discount Row - Only shows if promo was applied */}
-          {order.summary.promoCode && order.summary.promoDiscount && order.summary.promoDiscount > 0 && (
-            <div className="flex items-center justify-between text-base">
-              <span className="text-orange-600 font-medium flex items-center gap-2">
-                <Gift className="h-4 w-4" />
-                Promo ({order.summary.promoCode})
-              </span>
-              <span className="font-semibold text-orange-600">
-                - ₹{order.summary.promoDiscount.toLocaleString()}
-              </span>
-            </div>
-          )}
-
-          <div className="border-t-2 border-green-200 my-4" />
-          <div className="flex items-center justify-between text-base">
-            <span className="font-bold text-gray-900">Total Paid</span>
-            <span className="font-bold text-2xl text-green-600">₹{Number(order.summary.total).toLocaleString()}</span>
-          </div>
-        </div>
-      </>
-    )}
-  </section>
-);
-
-const OrderDetails = ({ order }: { order: LastOrder | null }) => (
-  <aside className="rounded-3xl border bg-white/80 backdrop-blur-sm shadow-xl p-8 space-y-8 h-fit">
-    <motion.section initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1.0, duration: 0.6 }}>
-      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-        Payment Status
-      </h3>
-      <div className="mt-4 space-y-3">
-        <div className="flex justify-between items-start text-sm">
-          <span className="text-gray-600 font-medium">Status</span>
-          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">✓ Paid Successfully</span>
-        </div>
-        <div className="flex justify-between items-start text-sm">
-          <span className="text-gray-600 font-medium">Payment method</span>
-          <span className="text-gray-900 font-semibold">{prettyPayMode(order?.payMode)}</span>
-        </div>
-        <div className="flex justify-between items-start text-sm">
-          <span className="text-gray-600 font-medium">Transaction time</span>
-          <span className="text-gray-900 font-semibold">{order?.when ? formatDateTime(order.when) : "—"}</span>
-        </div>
-      </div>
-    </motion.section>
-
-    <motion.section initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1.1, duration: 0.6 }}>
-      <h3 className="text-xl font-bold text-gray-900">Shipping Address</h3>
-      <div className="mt-4 bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed">
-        {order?.address ? (
-          <>
-            <p className="font-semibold text-gray-900">{order.address.name}</p>
-            <p>{order.address.line1}</p>
-            {order.address.line2 && <p>{order.address.line2}</p>}
-            <p className="font-medium">{order.address.city}, {order.address.state} {order.address.pincode}</p>
-          </>
-        ) : <p>—</p>}
-      </div>
-    </motion.section>
-
-    <motion.section initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1.2, duration: 0.6 }}>
-      <h3 className="text-xl font-bold text-gray-900">Contact Details</h3>
-      <div className="mt-4 space-y-2 text-sm">
-        {[['Email', order?.contact?.email], ['Phone', order?.contact?.phone]].map(([label, value]) => (
-          <div key={label} className="bg-gray-50 rounded-lg p-3">
-            <span className="text-gray-600">{label}:</span>
-            <p className="font-medium">{value || "—"}</p>
-          </div>
-        ))}
-      </div>
-    </motion.section>
-  </aside>
-);
-
-const InvoiceModal = ({ order, onClose }: { order: LastOrder; onClose: () => void }) => {
-  // Build the invoice HTML with promo code support
-  const buildInvoiceRows = () => {
-    const rows = [
-      ['Subtotal', order.summary.subtotal],
-      ['SGST (9%)', order.summary.sgst],
-      ['CGST (9%)', order.summary.cgst],
-      [`Delivery (${order.delivery === 'standard' ? 'Standard' : 'Express'})`, order.summary.deliveryFee]
-    ];
-
-    // Add promo discount if exists
-    if (order.summary.promoCode && order.summary.promoDiscount && order.summary.promoDiscount > 0) {
-      rows.push([`Promo Discount (${order.summary.promoCode})`, -order.summary.promoDiscount]);
-    }
-
-    return rows;
-  };
-
-  const invoiceHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,sans-serif;color:#1f2937;background:#f5f5dc;padding:20px;min-height:100vh}@media print{body{padding:0;margin:0;background:#f5f5dc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;min-height:100vh}}.invoice{width:100%;max-width:800px;margin:0 auto;background:#f5f5dc;border:2px solid #FF8A65;page-break-inside:avoid;min-height:100vh;display:flex;flex-direction:column}@media print{.invoice{max-width:100%;margin:0;border:1px solid #FF8A65;box-shadow:none;width:100%;min-height:100vh}}.header{background:#FF8A65;color:#fff;padding:25px}@media print{.header{padding:15px}}.header-content{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:15px}.company h1{font-size:2rem;font-weight:800;margin-bottom:5px}@media print{.company h1{font-size:1.5rem}}.tagline{font-size:1rem;opacity:.9;margin-bottom:10px}@media print{.tagline{font-size:0.8rem}}.company-details{font-size:.85rem;opacity:.8}@media print{.company-details{font-size:0.7rem}}.invoice-meta{text-align:right;background:rgba(255,255,255,.2);padding:15px;border-radius:8px}@media print{.invoice-meta{padding:10px}}.invoice-meta h2{font-size:1.5rem;margin-bottom:8px}@media print{.invoice-meta h2{font-size:1.2rem}}.body{padding:25px;flex:1}@media print{.body{padding:15px;flex:1}}.billing{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:20px;padding:20px;background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px}@media print{.billing{padding:12px;margin-bottom:15px;gap:15px}}.billing h3{color:#FF8A65;font-size:1rem;font-weight:700;margin-bottom:10px;border-bottom:2px solid #FF8A65;padding-bottom:5px}.billing-details{line-height:1.4;color:#374151;font-size:0.85rem}@media print{.billing-details{font-size:0.75rem;line-height:1.3}}.table{width:100%;border-collapse:collapse;margin-bottom:15px;border:1px solid #FF8A65}@media print{.table{margin-bottom:10px;font-size:0.8rem}}.table thead{background:#FF8A65;color:#fff}.table th{padding:10px 8px;text-align:left;font-weight:600;font-size:0.9rem}@media print{.table th{padding:6px 4px;font-size:0.75rem}}.table th:last-child,.table td:last-child{text-align:right}.table tbody tr{border-bottom:1px solid #FF8A65}.table tbody tr:nth-child(even){background:rgba(255,138,101,0.05)}.table td{padding:8px;font-size:0.85rem}@media print{.table td{padding:4px;font-size:0.7rem}}.item-name{font-weight:600;color:#1f2937}.qty-badge{background:rgba(255,138,101,0.2);color:#FF8A65;padding:2px 8px;border-radius:12px;font-weight:600;font-size:.75rem}.price{font-weight:600;color:#1f2937}.totals{background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px;padding:20px;margin-bottom:15px}@media print{.totals{padding:12px;margin-bottom:10px}}.totals-table{width:100%;max-width:350px;margin-left:auto}.totals-table tr{border-bottom:1px solid #FF8A65}.totals-table tr:last-child{border-bottom:2px solid #FF8A65;font-weight:700}.totals-table td{padding:8px 0;font-size:0.9rem}@media print{.totals-table td{padding:4px 0;font-size:0.8rem}}.total-amount{color:#FF8A65;font-size:1.2rem;font-weight:800}@media print{.total-amount{font-size:1rem}}.promo-row{color:#e97d2a!important;font-weight:600}.payment-status{background:#FF8A65;color:#fff;padding:15px;border-radius:8px;text-align:center;margin-bottom:15px}@media print{.payment-status{padding:10px;margin-bottom:10px}}.payment-status h3{font-size:1.1rem;margin-bottom:5px}@media print{.payment-status h3{font-size:0.9rem}}.payment-details{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px;padding:15px;background:rgba(255,138,101,0.1);border:1px solid #FF8A65;border-radius:8px}@media print{.payment-details{padding:10px;margin-bottom:10px;grid-template-columns:repeat(2,1fr)}}.payment-detail{text-align:center;padding:8px;background:#f5f5dc;border:1px solid #FF8A65;border-radius:4px}@media print{.payment-detail{padding:5px}}.payment-detail .label{font-size:.75rem;color:#6b7280;margin-bottom:2px}@media print{.payment-detail .label{font-size:0.65rem}}.payment-detail .value{font-weight:700;font-size:0.8rem}@media print{.payment-detail .value{font-size:0.7rem}}.footer{background:rgba(255,138,101,0.1);padding:15px;text-align:center;border-top:2px solid #FF8A65;margin-top:auto}@media print{.footer{padding:10px;margin-top:auto}}.thank-you{font-size:1rem;font-weight:700;color:#FF8A65;margin-bottom:8px}@media print{.thank-you{font-size:0.85rem}}.support-info{color:#6b7280;font-size:.8rem}@media print{.support-info{font-size:0.7rem}}.btn{padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;border:none;margin:0 8px}.btn-primary{background:#FF8A65;color:#fff}.btn-secondary{background:#f5f5dc;color:#FF8A65;border:2px solid #FF8A65}@media print{.btn{display:none}}@media(max-width:768px){.billing{grid-template-columns:1fr}.payment-details{grid-template-columns:repeat(2,1fr)}}@page{margin:0.3in;size:A4}</style>
-</head><body><div class="invoice">
-<div class="header"><div class="header-content"><div class="company"><h1>PETZONEE PetShop</h1><div class="tagline">Premium Pet Care & Accessories</div><div class="company-details">GST: 07AABCP0123A1Z5<br>Phone: +91 98765 43210<br>Email: support@petzonee.com</div></div>
-<div class="invoice-meta"><h2>INVOICE</h2><div>Invoice No: <strong>${order.orderId}</strong></div><div>Date: <strong>${formatDate(order.when)}</strong></div><div>Payment: <strong>${prettyPayMode(order.payMode)}</strong></div></div></div></div>
-<div class="body"><div class="billing"><div><h3>Bill To</h3><div class="billing-details"><strong>${order.address.name}</strong><br>${order.address.line1}<br>${order.address.line2 ? order.address.line2 + '<br>' : ''}${order.address.city}, ${order.address.state} ${order.address.pincode}<br><strong>Email:</strong> ${order.contact.email}<br><strong>Phone:</strong> ${order.contact.phone}</div></div>
-<div><h3>Ship To</h3><div class="billing-details"><strong>${order.address.name}</strong><br>${order.address.line1}<br>${order.address.line2 ? order.address.line2 + '<br>' : ''}${order.address.city}, ${order.address.state} ${order.address.pincode}</div></div></div>
-<table class="table"><thead><tr><th>Item Description</th><th>Qty</th><th>Unit Price</th><th>Amount</th></tr></thead><tbody>
-${order.items.map(item => `<tr><td><div class="item-name">${item.name}</div></td><td><span class="qty-badge">${item.quantity}</span></td><td class="price">₹${Number(item.price).toLocaleString()}</td><td class="price">₹${(Number(item.price) * item.quantity).toLocaleString()}</td></tr>`).join('')}
-</tbody></table>
-<div class="totals"><table class="totals-table">
-${buildInvoiceRows().map(([label, value]) => {
-    const isPromo = String(label).includes('Promo');
-    const isNegative = Number(value) < 0;
-    const displayValue = isNegative ? `₹${Math.abs(Number(value)).toLocaleString()}` : `₹${Number(value).toLocaleString()}`;
-    const finalValue = isNegative ? `- ${displayValue}` : displayValue;
-    return `<tr${isPromo ? ' class="promo-row"' : ''}><td>${label}:</td><td>${finalValue}</td></tr>`;
-  }).join('')}
-<tr><td><strong>Total Amount:</strong></td><td class="total-amount">₹${order.summary.total.toLocaleString()}</td></tr>
-</table></div>
-<div class="payment-status"><h3>✓ Payment Successful</h3><p>Your payment has been processed successfully</p></div>
-<div class="payment-details">
-${[
-      ['Transaction ID', order.orderId],
-      ['Payment Method', prettyPayMode(order.payMode)],
-      ['Transaction Time', formatDateTime(order.when)],
-      ['Delivery Type', `${order.delivery === 'standard' ? 'Standard' : 'Express'} Delivery`]
-    ].map(([label, value]) => `<div class="payment-detail"><div class="label">${label}</div><div class="value">${value}</div></div>`).join('')}
-</div>
-<div style="text-align:center;margin:20px 0"><button class="btn btn-primary" onclick="window.print()">Print Invoice</button></div></div>
-<div class="footer"><div class="thank-you">Thank you for choosing PETZONEE PetShop!</div><div class="support-info">For queries: <a href="mailto:subhradeepnathprofessional@gmail.com">subhradeepnathprofessional@gmail.com</a> or +91 9876543210<br><strong>Note:</strong> This is a demo transaction</div></div></div></body></html>`;
+const OrderCard = ({ order, itemCount }: { order: LastOrder | null; itemCount: number }) => {
+  if (!order) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-        <div className="sticky top-0 bg-[#FF8A65] text-white p-4 flex justify-between items-center">
-          <h3 className="text-xl font-semibold mx-auto">PETZONEE Petshop Invoice</h3>
-          <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors p-2">
-            <X className="h-6 w-6" />
-          </button>
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full print:shadow-none print:border print:border-gray-300 print:rounded-none"
+    >
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between print:bg-gray-50 print:border-gray-300">
+        <h2 className="font-bold text-gray-900 text-lg">Order Details</h2>
+        <span className="text-sm font-medium text-gray-500">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
+      </div>
+
+      <div className="p-6 flex-1 flex flex-col justify-between">
+        <div className="space-y-6">
+          {order.items.map((item) => (
+            <div key={item.id} className="flex gap-4 items-start">
+              <div className="relative h-16 w-16 flex-shrink-0 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden print:border-gray-300">
+                <Image
+                  src={item.image_url || "/images/placeholder.png"}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 truncate print:whitespace-normal">{item.name}</h3>
+                <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity} × ₹{Number(item.price).toLocaleString()}</p>
+              </div>
+              <p className="font-bold text-gray-900">₹{(Number(item.price) * item.quantity).toLocaleString()}</p>
+            </div>
+          ))}
         </div>
-        <div className="h-[calc(90vh-80px)] overflow-auto">
-          <iframe srcDoc={invoiceHTML} className="w-full h-full border-0" title="Invoice" />
+
+        <div className="mt-8 pt-6 border-t border-dashed border-gray-200 space-y-3 print:border-gray-300">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Subtotal</span>
+            <span className="font-semibold text-gray-900">₹{order.summary.subtotal.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Delivery</span>
+            <span className="font-semibold text-gray-900 text-green-600">
+              {order.summary.deliveryFee === 0 ? 'FREE' : `₹${order.summary.deliveryFee}`}
+            </span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Tax</span>
+            <span className="font-semibold text-gray-900">₹{order.summary.totalTax.toLocaleString()}</span>
+          </div>
+
+          {order.summary.promoDiscount && order.summary.promoDiscount > 0 ? (
+            <div className="flex justify-between text-sm text-orange-600 bg-orange-50 p-2 rounded-lg print:bg-transparent print:p-0">
+              <span className="font-medium flex items-center gap-1.5"><Gift className="h-3.5 w-3.5 print:hidden" />Discount ({order.summary.promoCode})</span>
+              <span className="font-bold">- ₹{order.summary.promoDiscount.toLocaleString()}</span>
+            </div>
+          ) : null}
+
+          <div className="pt-4 mt-4 border-t border-gray-100 flex justify-between items-center print:border-gray-300">
+            <span className="font-bold text-gray-900 text-lg">Total Paid</span>
+            <span className="font-bold text-2xl text-gray-900">₹{order.summary.total.toLocaleString()}</span>
+          </div>
         </div>
-      </motion.div>
+      </div>
+
+      <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex items-center justify-between text-sm print:bg-gray-100 print:border-gray-300">
+        <div className="flex flex-col">
+          <span className="text-gray-500 text-xs">Paid via</span>
+          <span className="font-bold text-gray-900">{prettyPayMode(order.payMode)}</span>
+        </div>
+        <div className="h-8 w-[1px] bg-gray-200 print:bg-gray-400"></div>
+        <div className="flex flex-col text-right">
+          <span className="text-gray-500 text-xs">Paid on</span>
+          <span className="font-bold text-gray-900">{formatDate(order.when)}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const AddressCard = ({ order }: { order: LastOrder | null }) => {
+  if (!order) return null;
+
+  return (
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+      className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 h-full print:shadow-none print:border print:border-gray-300 print:rounded-none"
+    >
+      <h2 className="font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4 print:border-gray-300">
+        Delivery Detail
+      </h2>
+
+      <div className="space-y-6">
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-2">Shipping To</p>
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 print:bg-transparent print:border-0 print:p-0">
+            <p className="font-bold text-gray-900 text-lg mb-1">{order.address.name}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {order.address.line1}<br />
+              {order.address.line2 && <>{order.address.line2}<br /></>}
+              {order.address.city}, {order.address.state} - {order.address.pincode}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-2">Contact Info</p>
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 print:bg-transparent print:border-0 print:p-0">
+            <div className="grid grid-cols-1 gap-1">
+              <p className="text-sm flex flex-col sm:flex-row sm:items-center gap-1">
+                <span className="text-gray-500 w-16 flex-shrink-0">Email:</span>
+                <span className="text-gray-900 font-medium break-all">{order.contact.email}</span>
+              </p>
+              <p className="text-sm">
+                <span className="text-gray-500 w-16 inline-block">Phone:</span>
+                <span className="text-gray-900 font-medium">{order.contact.phone}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const PrintInvoice = ({ order }: { order: LastOrder | null }) => {
+  if (!order) return null;
+
+  return (
+    <div className="hidden print:block font-serif text-black p-8 max-w-[210mm] mx-auto bg-white h-full">
+      {/* Header */}
+      <div className="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight uppercase">INVOICE</h1>
+          <p className="text-sm text-gray-600 mt-1 uppercase tracking-widest">Original Receipt</p>
+        </div>
+        <div className="text-right">
+          <h2 className="text-2xl font-bold text-orange-600">PETZONEE</h2>
+          <p className="text-sm text-gray-600 mt-1">Premium Pet Care & Accessories</p>
+          <p className="text-xs text-gray-500 mt-1">GST: 07AABCP0123A1Z5</p>
+        </div>
+      </div>
+
+      {/* Meta & Addresses */}
+      <div className="flex justify-between items-start mb-10">
+        <div className="w-1/3">
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Billed To</h3>
+          <p className="font-bold text-gray-900 text-lg">{order.address.name}</p>
+          <div className="text-sm text-gray-600 mt-1 leading-relaxed">
+            <p>{order.address.line1}</p>
+            {order.address.line2 && <p>{order.address.line2}</p>}
+            <p>{order.address.city}, {order.address.state} - {order.address.pincode}</p>
+            <div className="mt-2 text-xs space-y-0.5">
+              <p>Ph: {order.contact.phone}</p>
+              <p className="break-all text-[10px] text-gray-500">{order.contact.email}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-1/3 text-right">
+          <div className="space-y-1">
+            <div className="flex justify-between border-b border-gray-100 pb-1">
+              <span className="text-sm text-gray-500">Invoice No:</span>
+              <span className="text-sm font-bold text-gray-900">{order.orderId}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-1">
+              <span className="text-sm text-gray-500">Date:</span>
+              <span className="text-sm font-bold text-gray-900">{formatDate(order.when)}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-1">
+              <span className="text-sm text-gray-500">Method:</span>
+              <span className="text-sm font-bold text-gray-900">{prettyPayMode(order.payMode)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Items Table */}
+      <div className="mb-8">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b-2 border-gray-800">
+              <th className="text-left py-2 font-bold text-gray-900 uppercase tracking-wider w-1/2">Item Description</th>
+              <th className="text-center py-2 font-bold text-gray-900 uppercase tracking-wider">Qty</th>
+              <th className="text-right py-2 font-bold text-gray-900 uppercase tracking-wider">Price</th>
+              <th className="text-right py-2 font-bold text-gray-900 uppercase tracking-wider">Total</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {order.items.map((item) => (
+              <tr key={item.id}>
+                <td className="py-3 text-gray-800 font-medium">{item.name}</td>
+                <td className="py-3 text-center text-gray-600">{item.quantity}</td>
+                <td className="py-3 text-right text-gray-600">₹{Number(item.price).toLocaleString()}</td>
+                <td className="py-3 text-right font-bold text-gray-900">₹{(Number(item.price) * item.quantity).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Summary */}
+      <div className="flex justify-end mb-12">
+        <div className="w-1/2 space-y-2">
+          <div className="flex justify-between text-sm py-1 border-b border-gray-100">
+            <span className="text-gray-600">Subtotal</span>
+            <span className="font-medium text-gray-900">₹{order.summary.subtotal.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1 border-b border-gray-100">
+            <span className="text-gray-600">Tax (18%)</span>
+            <span className="font-medium text-gray-900">₹{order.summary.totalTax.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1 border-b border-gray-100">
+            <span className="text-gray-600">Delivery</span>
+            <span className="font-medium text-gray-900">{order.summary.deliveryFee === 0 ? 'Free' : `₹${order.summary.deliveryFee}`}</span>
+          </div>
+          {order.summary.promoDiscount && order.summary.promoDiscount > 0 && (
+            <div className="flex justify-between text-sm py-1 border-b border-gray-100 text-orange-600">
+              <span>Discount ({order.summary.promoCode})</span>
+              <span>- ₹{order.summary.promoDiscount.toLocaleString()}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-xl font-bold border-t-2 border-gray-800 pt-3 mt-2">
+            <span className="text-gray-900">Total Paid</span>
+            <span className="text-gray-900">₹{order.summary.total.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-auto border-t border-gray-200 pt-8 text-center text-xs text-gray-500">
+        <p className="font-bold text-gray-900 mb-1">Thank you for your business!</p>
+        <p>For any queries, contact support@petzonee.com or call +91 98765 43210</p>
+        <p className="mt-4 italic">This is a computer generated invoice and does not require a physical signature.</p>
+        <div className="mt-4 text-[10px] text-gray-400">
+          Page 1 of 1 • Printed on {new Date().toLocaleDateString()}
+        </div>
+      </div>
     </div>
   );
 };
@@ -286,7 +312,6 @@ ${[
 export default function SuccessPage() {
   const router = useRouter();
   const [order, setOrder] = useState<LastOrder | null>(null);
-  const [showInvoice, setShowInvoice] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem("last_order");
@@ -297,38 +322,72 @@ export default function SuccessPage() {
 
   const itemCount = useMemo(() => order?.items?.reduce((s, it) => s + it.quantity, 0) ?? 0, [order]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
-      <AnimatedParticles />
-      <main className="relative mx-auto max-w-6xl px-6 py-14">
-        <SuccessHeader order={order} />
-        <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <OrderSummary order={order} itemCount={itemCount} />
-          <OrderDetails order={order} />
-        </motion.div>
+    <div className="relative min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0 print:h-auto print:min-h-0 print:overflow-visible">
 
-        <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1.3, duration: 0.6 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-6">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => router.push("/")}
-            className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-4 font-bold text-white shadow-lg hover:shadow-xl transition-all duration-300">
-            <Home className="h-5 w-5" />Continue Shopping
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowInvoice(true)}
-            className="flex items-center gap-3 rounded-2xl border-2 border-green-600 px-8 py-4 font-bold text-green-600 hover:bg-green-50 transition-all duration-300">
-            <Download className="h-5 w-5" />View Invoice
-          </motion.button>
-        </motion.div>
+      {/* Start: Web UI (Hidden on Print) */}
+      <div className="print:hidden">
+        {/* Background decoration - PhonePe Success Green (45% height) */}
+        <div className="absolute top-0 left-0 right-0 h-[45vh] bg-[#1aba7a]" />
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5, duration: 0.6 }} className="mt-12 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 text-sm text-gray-600 border border-gray-200">
-            <IndianRupee className="h-4 w-4" />
-            <span>This is a demo transaction - no real payment was processed</span>
+        <main className="relative mx-auto max-w-5xl px-4 pt-12 z-10">
+          <SuccessHeader order={order} />
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <OrderCard order={order} itemCount={itemCount} />
+            </div>
+            <div className="md:col-span-1 flex flex-col gap-6">
+              <AddressCard order={order} />
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-3"
+              >
+                <button
+                  onClick={handlePrint}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
+                >
+                  <Printer className="h-5 w-5" /> Print Invoice
+                </button>
+                <button
+                  onClick={() => router.push("/")}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-orange-500 text-orange-600 font-bold hover:bg-orange-50 transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" /> Continue Shopping
+                </button>
+              </motion.div>
+              <div className="text-center">
+                <p className="text-xs text-gray-400 font-medium">Need help with this order?</p>
+                <button className="text-xs text-orange-600 font-bold hover:underline mt-1">Contact Support</button>
+              </div>
+            </div>
           </div>
-        </motion.div>
-      </main>
+        </main>
+      </div>
+      {/* End: Web UI */}
 
-      {showInvoice && order && <InvoiceModal order={order} onClose={() => setShowInvoice(false)} />}
+      {/* Start: Print UI (Visible only on Print) */}
+      <PrintInvoice order={order} />
+      {/* End: Print UI */}
+
+      <style jsx global>{`
+        @media print {
+          @page {
+            margin: 0;
+            size: auto;
+          }
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            background-color: white !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

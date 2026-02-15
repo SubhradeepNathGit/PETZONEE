@@ -119,6 +119,16 @@ export default function CartPage() {
         setAppliedPromo(savedPromo);
       }
     })();
+
+    // 🎨 Force white background on body for cart page
+    document.body.style.backgroundColor = 'white';
+    document.documentElement.style.backgroundColor = 'white';
+
+    return () => {
+      // Revert to original black on unmount
+      document.body.style.backgroundColor = '';
+      document.documentElement.style.backgroundColor = '';
+    };
   }, []);
 
   const getProductRating = (productId: string): number => {
@@ -233,7 +243,7 @@ export default function CartPage() {
 
   // === UI ===
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-rose-50/30">
+    <div className="min-h-screen bg-white">
       {/* Banner */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
         <Image
@@ -317,7 +327,7 @@ export default function CartPage() {
                     <div className="relative flex items-center gap-6">
                       {/* Image */}
                       <div className="relative">
-                        <div className="relative h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200">
+                        <div className="relative h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded-2xl bg-gray-100">
                           <Image
                             src={row.image_url || "/images/placeholder.png"}
                             alt={row.name}
@@ -340,11 +350,10 @@ export default function CartPage() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.round(rating)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "fill-gray-200 text-gray-200"
-                              }`}
+                              className={`w-4 h-4 ${i < Math.round(rating)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "fill-gray-200 text-gray-200"
+                                }`}
                             />
                           ))}
                           <span className="text-sm text-gray-500 ml-1">
@@ -430,7 +439,7 @@ export default function CartPage() {
             >
               <div className="rounded-3xl border border-gray-100 bg-white p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-red-400 rounded-2xl flex items-center justify-center">
                     <ShoppingCart className="w-6 h-6 text-white" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-800">
@@ -443,16 +452,16 @@ export default function CartPage() {
                   <SummaryRow label="Delivery" value={0} free />
                   <SummaryRow label="CGST (9%)" value={cgst} />
                   <SummaryRow label="SGST (9%)" value={sgst} />
-                  
+
                   {actualSavings > 0 && (
                     <SummaryRow label="You Save" value={-actualSavings} savings />
                   )}
-                  
+
                   {appliedPromo && (
-                    <SummaryRow 
-                      label="Promo Discount (10%)" 
-                      value={-promoDiscount} 
-                      savings 
+                    <SummaryRow
+                      label="Promo Discount (10%)"
+                      value={-promoDiscount}
+                      savings
                       promoCode={appliedPromo}
                       onRemove={removePromoCode}
                     />
@@ -472,7 +481,7 @@ export default function CartPage() {
                       onChange={(e) => setPromoCode(e.target.value)}
                       className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
                     />
-                    <button 
+                    <button
                       onClick={applyPromoCode}
                       className="px-4 py-2 bg-gray-800 text-white rounded-xl text-sm font-semibold transition-colors"
                     >
@@ -486,9 +495,8 @@ export default function CartPage() {
                     <motion.p
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`text-xs text-center mt-2 ${
-                        appliedPromo ? "text-green-600" : "text-red-600"
-                      }`}
+                      className={`text-xs text-center mt-2 ${appliedPromo ? "text-green-600" : "text-red-600"
+                        }`}
                     >
                       {promoMessage}
                     </motion.p>
@@ -578,9 +586,8 @@ function SummaryRow({
           <span className="text-green-600 font-semibold">FREE</span>
         ) : (
           <span
-            className={`${bold ? "font-bold text-gray-800" : "text-gray-800"} ${
-              savings ? "text-green-600" : ""
-            }`}
+            className={`${bold ? "font-bold text-gray-800" : "text-gray-800"} ${savings ? "text-green-600" : ""
+              }`}
           >
             {savings ? "-" : ""}₹{Math.abs(value).toLocaleString()}
           </span>
@@ -622,7 +629,7 @@ function EnhancedEmptyCart({ router }: { router: ReturnType<typeof useRouter> })
         </p>
         <button
           onClick={() => router.push("/products")}
-          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-500 px-6 py-3 font-bold text-white transition-all"
+          className="inline-flex items-center gap-2 rounded-2xl bg-red-400 px-6 py-3 font-bold text-white transition-all"
         >
           Start Shopping <ArrowRight className="h-4 w-4" />
         </button>

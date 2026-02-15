@@ -24,16 +24,16 @@ function ScrollManager() {
   // The original logic had `loading` state in ClientLayoutContent.
   // And `scrollUnlock` state derived/managed there.
   // The `window.scrollTo` in original line 113 depended on `scrollUnlock`.
-  
+
   // To keep meaningful separation without prop drilling hell or context:
   // We can just keep the scroll restoration logic here that depends on searchParams.
   // BUT `window.scrollTo` was conditioned on `scrollUnlock`.
-  
+
   // Actually, the simplest way to solve the "useSearchParams causing de-opt" 
   // without breaking the layout is:
   // 1. Keep `ClientLayoutContent` mostly as is.
   // 2. Put `useSearchParams` usages inside a component wrapped in Suspense *inside* ClientLayoutContent.
-  
+
   // Let's refine the plan inline to be safe.
   // The parts using `useSearchParams` are:
   // - The `useEffect` at line 113: `[pathname, searchParams, scrollUnlock]`
@@ -72,13 +72,13 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
   const pathname = usePathname();
   // Removed top-level useSearchParams to avoid suspending the entire component
-  
+
   const lastPathname = useRef<string | null>(null);
 
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-  const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup");
+  const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup") || pathname === "/cart";
 
   useEffect(() => {
     if (skipLoader) {
@@ -128,7 +128,8 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
       return () => clearTimeout(timeout);
     }
-  }, [pathname, skipLoader]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Lock body scroll during loading
   useEffect(() => {
@@ -163,7 +164,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
 
   return (
-    <div className={`relative min-h-screen ${!scrollUnlock ? "h-screen overflow-hidden" : "overflow-x-hidden"}`}>
+    <div className={`relative min-h-screen ${!scrollUnlock ? "h-screen overflow-hidden" : "overflow-x-hidden"} ${pathname === "/cart" || pathname.startsWith("/checkout") ? "bg-white" : ""}`}>
 
       {/* Put ScrollHandler in Suspense to isolate useSearchParams dependency */}
       <Suspense fallback={null}>
@@ -195,6 +196,6 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
 export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
-      <ClientLayoutContent>{children}</ClientLayoutContent>
+    <ClientLayoutContent>{children}</ClientLayoutContent>
   );
 }

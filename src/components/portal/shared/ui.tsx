@@ -1,5 +1,6 @@
 ﻿
 'use client';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useRef, useState } from 'react';
@@ -88,8 +89,8 @@ export function FeatureCard({
   href?: string;
   onClick?: () => void;
 }) {
-  const Comp: 'a' | 'button' = href ? 'a' : 'button';
-  const props = href ? { href } : { onClick, type: 'button' as const };
+  const buttonClass = `inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${gradient} text-white rounded-lg font-medium text-sm shadow-md hover:brightness-110 transition group-hover:translate-x-1`;
+  const arrow = <span className="group-hover:translate-x-0.5 transition-transform duration-300">→</span>;
 
   return (
     <div className="group relative overflow-hidden rounded-2xl p-6 bg-white/5 border border-white/10 shadow-sm transition-all duration-300">
@@ -100,13 +101,18 @@ export function FeatureCard({
         <div className="text-4xl mb-4">{icon}</div>
         <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
         <p className="text-gray-300 text-sm mb-6 leading-relaxed">{description}</p>
-        <Comp
-          {...props}
-          className={`inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${gradient} text-white rounded-lg font-medium text-sm shadow-md hover:brightness-110 transition group-hover:translate-x-1`}
-        >
-          {action}
-          <span className="group-hover:translate-x-0.5 transition-transform duration-300">→</span>
-        </Comp>
+
+        {href ? (
+          <Link href={href} className={buttonClass}>
+            {action}
+            {arrow}
+          </Link>
+        ) : (
+          <button onClick={onClick} type="button" className={buttonClass}>
+            {action}
+            {arrow}
+          </button>
+        )}
       </div>
     </div>
   );

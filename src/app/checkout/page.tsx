@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Loader2,
-  Lock,
+  ShoppingBag,
   MapPin,
   Phone,
   Mail,
@@ -15,6 +15,11 @@ import {
   Wallet,
   Landmark,
   IndianRupee,
+  Shield,
+  CheckCircle2,
+  Package,
+  User,
+  Home,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import SpinnerLoader from "@/components/SpinnerLoader";
@@ -213,7 +218,7 @@ export default function CheckoutPage() {
         localStorage.removeItem(PROMO_LOCAL_KEY);
       }
 
-      router.push("/checkout/success");
+      router.push("/checkout/processing");
     } catch (err) {
       console.error("placeOrder error:", err);
       setMsg(err instanceof Error ? err.message : "Could not place order. Try again.");
@@ -227,25 +232,34 @@ export default function CheckoutPage() {
   if (busy) return <SpinnerLoader text="Placing your order…" />;
 
   return (
-    <>
-      {/* Top Banner */}
-      <div className="relative mb-8 h-48 w-full sm:h-64 md:h-72 lg:h-80">
-        <Image
-          src="/images/statbg4.jpg"
-          alt="Checkout Banner"
-          fill
-          priority
-          className="object-cover"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-center">
-          <h1 className="text-3xl font-bold text-white md:text-5xl">Checkout</h1>
-          <p className="mt-2 text-sm text-gray-200 md:text-base">
-            Home / Shop / Cart / Checkout
-          </p>
+    <div className="min-h-screen bg-white">
+      {/* Secure Checkout Header */}
+      <div className="border-b bg-gradient-to-r from-white to-gray-50">
+        <div className="mx-auto max-w-6xl px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Secure Checkout</h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                  <p className="text-xs text-gray-600 font-medium">256-bit SSL Encrypted</p>
+                </div>
+              </div>
+            </div>
+            <div className="hidden sm:flex items-center gap-4">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg border border-green-200">
+                <ShoppingBag className="h-4 w-4 text-green-600" />
+                <span className="text-xs font-semibold text-green-700">Secure Payment</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <main className="mx-auto max-w-6xl px-4 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-8">
         {!userId ? (
           <p className="mt-6 text-rose-600">{msg || "Please sign in to continue."}</p>
         ) : items.length === 0 ? (
@@ -259,12 +273,13 @@ export default function CheckoutPage() {
                 <SectionTitle
                   icon={<CreditCard className="h-5 w-5" />}
                   title="Payment method"
+                  subtitle="Select your preferred payment option"
                 />
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <PayTile
                     checked={payMode === "card"}
                     onClick={() => setPayMode("card")}
-                    title="Card"
+                    title="Debit/Credit Card"
                     subtitle="Visa, Mastercard, RuPay"
                     icons={<CardIcons />}
                   />
@@ -278,39 +293,43 @@ export default function CheckoutPage() {
                   <PayTile
                     checked={payMode === "netbanking"}
                     onClick={() => setPayMode("netbanking")}
-                    title="Netbanking"
+                    title="Net Banking"
                     subtitle="All major banks"
-                    icons={<Landmark className="h-5 w-5 text-rose-600" />}
+                    icons={<Landmark className="h-5 w-5 text-blue-600" />}
                   />
                   <PayTile
                     checked={payMode === "wallet"}
                     onClick={() => setPayMode("wallet")}
                     title="Wallets"
-                    subtitle="Popular wallets supported"
-                    icons={<Wallet className="h-5 w-5 text-rose-600" />}
+                    subtitle="Paytm, PhonePe & more"
+                    icons={<Wallet className="h-5 w-5 text-purple-600" />}
                   />
                 </div>
-                <p className="mt-3 flex items-center gap-1 text-xs text-gray-500">
-                  <IndianRupee className="h-4 w-4" /> Demo checkout. No real
-                  payment processed.
-                </p>
+                <div className="mt-4 flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-xl border border-blue-100">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  <p className="text-xs text-blue-700 font-medium">
+                    Demo checkout - No real payment will be processed
+                  </p>
+                </div>
               </Card>
 
               {/* Contact */}
               <Card>
                 <SectionTitle
                   icon={<Mail className="h-5 w-5" />}
-                  title="Contact details"
+                  title="Contact information"
+                  subtitle="We'll send order updates here"
                 />
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Input
-                    label="Email"
+                    label="Email address"
                     placeholder="you@example.com"
                     value={contact.email}
                     onChange={(v) => setContact({ ...contact, email: v })}
+                    icon={<Mail className="h-4 w-4 text-gray-400" />}
                   />
                   <Input
-                    label="Phone"
+                    label="Phone number"
                     placeholder="+91 9xxxxxxxxx"
                     value={contact.phone}
                     onChange={(v) => setContact({ ...contact, phone: v })}
@@ -322,37 +341,58 @@ export default function CheckoutPage() {
               {/* Address */}
               <Card>
                 <SectionTitle
-                  icon={<MapPin className="h-5 w-5" />}
-                  title="Shipping address"
+                  icon={<Home className="h-5 w-5" />}
+                  title="Delivery address"
+                  subtitle="Where should we deliver your order?"
                 />
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Input
                     label="Full name"
+                    placeholder="John Doe"
                     value={addr.name}
                     onChange={(v) => setAddr({ ...addr, name: v })}
+                    icon={<User className="h-4 w-4 text-gray-400" />}
                   />
                   <Input
-                    label="Address line 1"
-                    value={addr.line1}
-                    onChange={(v) => setAddr({ ...addr, line1: v })}
+                    label="Phone number"
+                    placeholder="+91 9xxxxxxxxx"
+                    value={contact.phone}
+                    onChange={(v) => setContact({ ...contact, phone: v })}
+                    icon={<Phone className="h-4 w-4 text-gray-400" />}
                   />
-                  <Input
-                    label="Address line 2 (optional)"
-                    value={addr.line2}
-                    onChange={(v) => setAddr({ ...addr, line2: v })}
-                  />
+                  <div className="sm:col-span-2">
+                    <Input
+                      label="Address line 1"
+                      placeholder="House no., Building name"
+                      value={addr.line1}
+                      onChange={(v) => setAddr({ ...addr, line1: v })}
+                      icon={<Home className="h-4 w-4 text-gray-400" />}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Input
+                      label="Address line 2 (optional)"
+                      placeholder="Street, Area, Landmark"
+                      value={addr.line2}
+                      onChange={(v) => setAddr({ ...addr, line2: v })}
+                      icon={<MapPin className="h-4 w-4 text-gray-400" />}
+                    />
+                  </div>
                   <Input
                     label="City"
+                    placeholder="Mumbai"
                     value={addr.city}
                     onChange={(v) => setAddr({ ...addr, city: v })}
                   />
                   <Input
                     label="State"
+                    placeholder="Maharashtra"
                     value={addr.state}
                     onChange={(v) => setAddr({ ...addr, state: v })}
                   />
                   <Input
                     label="Pincode"
+                    placeholder="400001"
                     value={addr.pincode}
                     onChange={(v) => setAddr({ ...addr, pincode: v })}
                   />
@@ -362,21 +402,22 @@ export default function CheckoutPage() {
               {/* Delivery */}
               <Card>
                 <SectionTitle
-                  icon={<Truck className="h-5 w-5" />}
-                  title="Delivery method"
+                  icon={<Package className="h-5 w-5" />}
+                  title="Delivery options"
+                  subtitle="Choose your delivery speed"
                 />
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <RadioTile
                     checked={delivery === "standard"}
                     onClick={() => setDelivery("standard")}
-                    title="Standard"
+                    title="Standard Delivery"
                     subtitle="3–5 business days"
-                    price="Free"
+                    price="FREE"
                   />
                   <RadioTile
                     checked={delivery === "express"}
                     onClick={() => setDelivery("express")}
-                    title="Express"
+                    title="Express Delivery"
                     subtitle="1–2 business days"
                     price="₹99"
                   />
@@ -385,13 +426,19 @@ export default function CheckoutPage() {
             </section>
 
             {/* Right: Summary */}
-            <aside className="h-fit rounded-2xl border bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold">Order Summary</h2>
+            <aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-lg sticky top-4">
+              <div className="flex items-center justify-between border-b pb-4">
+                <h2 className="text-xl font-bold text-gray-900">Order Summary</h2>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+                </div>
+              </div>
 
-              <div className="mt-4 space-y-3">
+              <div className="mt-5 space-y-4 max-h-full overflow-y-auto">
                 {items.map((r) => (
-                  <div key={r.id} className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-gray-100">
+                  <div key={r.id} className="flex items-start gap-3 pb-3 border-b last:border-0">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 border border-gray-200">
                       <Image
                         src={r.image_url || "/images/placeholder.png"}
                         alt={r.name}
@@ -399,60 +446,77 @@ export default function CheckoutPage() {
                         className="object-cover"
                       />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="truncate font-medium">{r.name}</p>
-                        <span className="text-sm">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-semibold text-sm text-gray-900 line-clamp-2">{r.name}</p>
+                        <span className="text-sm font-bold text-gray-900 flex-shrink-0">
                           {formatINR(Number(r.price) * r.quantity)}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500">
-                        Qty {r.quantity} · {formatINR(Number(r.price))}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-gray-500">Qty: {r.quantity}</span>
+                        <span className="text-xs text-gray-400">•</span>
+                        <span className="text-xs text-gray-500">{formatINR(Number(r.price))} each</span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="my-4 h-px bg-gray-200" />
+              <div className="mt-5 pt-4 border-t space-y-2.5">
+                <Row label="Subtotal" value={subtotal} />
+                <Row label="SGST (9%)" value={sgst} />
+                <Row label="CGST (9%)" value={cgst} />
+                <Row
+                  label={`Delivery (${delivery === "standard" ? "Standard" : "Express"})`}
+                  value={deliveryFee}
+                />
+                {promoDiscount > 0 && promoCode && (
+                  <div className="flex items-center justify-between py-2 px-3 bg-green-50 rounded-lg">
+                    <span className="text-sm font-medium text-green-700">Promo ({promoCode})</span>
+                    <span className="text-sm font-bold text-green-700">
+                      - ₹{Math.abs(promoDiscount).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-              <Row label="Subtotal" value={subtotal} />
-              <Row label="SGST (9%)" value={sgst} />
-              <Row label="CGST (9%)" value={cgst} />
-              <Row
-                label={`Delivery (${delivery === "standard" ? "Standard" : "Express"})`}
-                value={deliveryFee}
-              />
-              {promoDiscount > 0 && promoCode && (
-                <Row label={`Promo (${promoCode})`} value={-promoDiscount} />
-              )}
-              <div className="my-2 h-px bg-gray-200" />
-              <Row label="Total" value={total} bold />
+              <div className="mt-4 pt-4 border-t-2 border-gray-200">
+                <Row label="Total Amount" value={total} bold />
+              </div>
 
               <button
                 onClick={placeOrder}
                 disabled={busy || !validForm}
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FF5E5E] px-4 py-3 font-semibold text-white hover:bg-red-600 disabled:opacity-60"
+                className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-400 to-red-400 px-4 py-3.5 font-bold text-white shadow-lg hover:shadow-xl hover:from-green-700/80 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 {busy ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <Lock className="h-5 w-5" />
+                  <ShoppingBag className="h-5 w-5" />
                 )}
-                Place order
+                {busy ? 'Processing...' : 'Place Order'}
               </button>
 
               {!validForm && (
-                <p className="mt-3 text-xs text-rose-600">
-                  Fill contact & shipping details to enable the button.
-                </p>
+                <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                  <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-rose-700 font-medium">
+                    Please complete all required fields to proceed with checkout
+                  </p>
+                </div>
               )}
-              {msg && <p className="mt-3 text-sm text-rose-700">{msg}</p>}
+              {msg && (
+                <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                  <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-rose-700 font-medium">{msg}</p>
+                </div>
+              )}
             </aside>
           </div>
         )}
       </main>
-    </>
+    </div>
   );
 }
 
@@ -463,13 +527,18 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
+function SectionTitle({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle?: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="grid h-9 w-9 place-items-center rounded-xl bg-rose-50 text-rose-600">
-        {icon}
+    <div>
+      <div className="flex items-center gap-3">
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-rose-50 to-orange-50 text-rose-600">
+          {icon}
+        </div>
+        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
+      {subtitle && (
+        <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
+      )}
     </div>
   );
 }
@@ -520,9 +589,8 @@ function RadioTile({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition hover:bg-gray-50 ${
-        checked ? "border-rose-500 ring-2 ring-rose-200" : "border-gray-200"
-      }`}
+      className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition hover:bg-gray-50 ${checked ? "border-rose-500 ring-2 ring-rose-200" : "border-gray-200"
+        }`}
     >
       <div>
         <p className="font-semibold">{title}</p>
@@ -552,9 +620,8 @@ function PayTile({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition hover:bg-gray-50 ${
-        checked ? "border-rose-500 ring-2 ring-rose-200" : "border-gray-200"
-      }`}
+      className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition hover:bg-gray-50 ${checked ? "border-rose-500 ring-2 ring-rose-200" : "border-gray-200"
+        }`}
     >
       <div>
         <p className="font-semibold">{title}</p>
@@ -592,9 +659,9 @@ function UpiBadge() {
 function Row({ label, value, bold = false }: { label: string; value: number; bold?: boolean }) {
   const positive = value >= 0;
   return (
-    <div className="mt-1 flex items-center justify-between">
-      <span className={bold ? "font-semibold" : ""}>{label}</span>
-      <span className={bold ? "font-semibold" : ""}>
+    <div className="flex items-center justify-between">
+      <span className={`text-sm ${bold ? "font-bold text-gray-900" : "text-gray-600"}`}>{label}</span>
+      <span className={`text-sm ${bold ? "font-bold text-gray-900 text-lg" : "text-gray-900 font-semibold"}`}>
         {positive
           ? `₹${value.toLocaleString()}`
           : `- ₹${Math.abs(value).toLocaleString()}`}
