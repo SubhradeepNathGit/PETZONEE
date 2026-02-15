@@ -78,7 +78,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-  const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup") || pathname === "/cart";
+  const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup") || pathname === "/cart" || (pathname.startsWith("/products/") && pathname !== "/products");
 
   useEffect(() => {
     if (skipLoader) {
