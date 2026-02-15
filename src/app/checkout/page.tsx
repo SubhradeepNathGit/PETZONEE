@@ -1,8 +1,8 @@
 // app/checkout/page.tsx
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Loader2,
@@ -11,16 +11,17 @@ import {
   Phone,
   Mail,
   CreditCard,
-  Truck,
   Wallet,
   Landmark,
-  IndianRupee,
   Shield,
   CheckCircle2,
   Package,
   User,
   Home,
+  Globe,
+  Lock,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import SpinnerLoader from "@/components/SpinnerLoader";
 
@@ -55,7 +56,16 @@ type Address = {
 const PROMO_LOCAL_KEY = "applied_promo_code"; // 🔑 same as Cart
 
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<SpinnerLoader text="Preparing checkout..." />}>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // state
   const [userId, setUserId] = useState<string | null>(null);
@@ -76,8 +86,14 @@ export default function CheckoutPage() {
   const [delivery, setDelivery] = useState<"standard" | "express">("standard");
   const [payMode, setPayMode] = useState<PayMode>("card");
 
+  // Payment specific states
+  const [cardData, setCardData] = useState({ number: "", name: "", expiry: "", cvv: "" });
+  const [upiId, setUpiId] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
+
   // promo
   const [promoCode, setPromoCode] = useState<string | null>(null);
+  const [isPlanCheckout, setIsPlanCheckout] = useState(false);
 
   /* ---------- Init: auth + cart + promo ---------- */
   useEffect(() => {
@@ -96,17 +112,39 @@ export default function CheckoutPage() {
         }
         if (mounted) setUserId(auth.user.id);
 
-        const { data, error } = await supabase
-          .from("cart")
-          .select("*")
-          .eq("user_id", auth.user.id)
-          .order("inserted_at", { ascending: false });
+        // Check for plan in URL
+        const planName = searchParams.get("plan");
+        const planPrice = searchParams.get("price");
+        const planPeriod = searchParams.get("period");
+        const planImg = searchParams.get("img");
 
-        if (error) {
-          console.error("Failed to load cart:", error);
-          if (mounted) setMsg("Could not load your cart.");
-        } else if (mounted) {
-          setItems((data as CartRow[]) ?? []);
+        if (planName && planPrice) {
+          if (mounted) {
+            setIsPlanCheckout(true);
+            setItems([{
+              id: `plan-${Date.now()}`,
+              user_id: auth.user.id,
+              product_id: "PLAN",
+              name: `${planName} (${planPeriod === 'year' ? 'Yearly' : 'Monthly'})`,
+              price: parseFloat(planPrice),
+              quantity: 1,
+              image_url: planImg,
+              inserted_at: new Date().toISOString()
+            }]);
+          }
+        } else {
+          const { data, error } = await supabase
+            .from("cart")
+            .select("*")
+            .eq("user_id", auth.user.id)
+            .order("inserted_at", { ascending: false });
+
+          if (error) {
+            console.error("Failed to load cart:", error);
+            if (mounted) setMsg("Could not load your cart.");
+          } else if (mounted) {
+            setItems((data as CartRow[]) ?? []);
+          }
         }
       } catch (err) {
         console.error("Checkout init error:", err);
@@ -137,9 +175,9 @@ export default function CheckoutPage() {
     [items]
   );
 
-  const deliveryFee = delivery === "standard" ? 0 : 99;
-  const sgst = Math.round(subtotal * 0.09);
-  const cgst = Math.round(subtotal * 0.09);
+  const deliveryFee = isPlanCheckout ? 0 : (delivery === "standard" ? 0 : 99);
+  const sgst = isPlanCheckout ? 0 : Math.round(subtotal * 0.09);
+  const cgst = isPlanCheckout ? 0 : Math.round(subtotal * 0.09);
   const totalTax = sgst + cgst;
 
   const promoDiscount = useMemo(() => {
@@ -151,14 +189,14 @@ export default function CheckoutPage() {
 
   const total = subtotal + totalTax + deliveryFee - promoDiscount;
 
-  const validForm =
-    contact.email.trim().includes("@") &&
-    contact.phone.trim().length >= 8 &&
-    addr.name.trim().length >= 2 &&
+  const contactValid = contact.email.trim().includes("@") && contact.phone.trim().length >= 8;
+  const addressValid = addr.name.trim().length >= 2 &&
     addr.line1.trim().length >= 3 &&
     addr.city.trim().length >= 2 &&
     addr.state.trim().length >= 2 &&
     addr.pincode.trim().length >= 4;
+
+  const validForm = isPlanCheckout ? contactValid : (contactValid && addressValid);
 
   const formatINR = (v: number) => `₹${v.toLocaleString()}`;
 
@@ -173,7 +211,7 @@ export default function CheckoutPage() {
       return;
     }
     if (!validForm) {
-      setMsg("Please fill contact & shipping details.");
+      setMsg(isPlanCheckout ? "Please fill contact details." : "Please fill contact & shipping details.");
       return;
     }
 
@@ -189,6 +227,7 @@ export default function CheckoutPage() {
           price: Number(r.price),
           quantity: r.quantity,
           image_url: r.image_url,
+          product_id: r.product_id,
         })),
         summary: {
           subtotal,
@@ -204,14 +243,21 @@ export default function CheckoutPage() {
         address: addr,
         delivery,
         payMode,
+        paymentDetails: {
+          card: payMode === "card" ? { ...cardData, cvv: "•••" } : null,
+          upi: payMode === "upi" ? { upiId } : null,
+          netbanking: payMode === "netbanking" ? { bank: selectedBank } : null,
+        },
       };
 
       if (typeof window !== "undefined") {
         localStorage.setItem("last_order", JSON.stringify(snapshot));
       }
 
-      const { error } = await supabase.from("cart").delete().eq("user_id", userId);
-      if (error) throw new Error("Could not clear cart. Please try again.");
+      if (!isPlanCheckout) {
+        const { error } = await supabase.from("cart").delete().eq("user_id", userId);
+        if (error) throw new Error("Could not clear cart. Please try again.");
+      }
 
       // 🔑 Clear promo after successful order
       if (typeof window !== "undefined") {
@@ -305,16 +351,182 @@ export default function CheckoutPage() {
                     icons={<Wallet className="h-5 w-5 text-purple-600" />}
                   />
                 </div>
+
+                {/* --- Payment Sub-sections --- */}
+                <AnimatePresence mode="wait">
+                  {payMode === "card" && (
+                    <motion.div
+                      key="card-form"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mt-6 overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-gray-50 p-5 border border-gray-100">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div className="sm:col-span-2">
+                            <Input
+                              label="Card Number"
+                              placeholder="0000 0000 0000 0000"
+                              value={cardData.number}
+                              onChange={(v) => setCardData({ ...cardData, number: v })}
+                              icon={<CreditCard className="h-4 w-4 text-gray-400" />}
+                            />
+                          </div>
+                          <Input
+                            label="Expiry Date"
+                            placeholder="MM/YY"
+                            value={cardData.expiry}
+                            onChange={(v) => setCardData({ ...cardData, expiry: v })}
+                          />
+                          <Input
+                            label="CVV"
+                            placeholder="•••"
+                            value={cardData.cvv}
+                            onChange={(v) => setCardData({ ...cardData, cvv: v })}
+                            icon={<Lock className="h-4 w-4 text-gray-400" />}
+                          />
+                          <div className="sm:col-span-2">
+                            <Input
+                              label="Cardholder Name"
+                              placeholder="FULL NAME"
+                              value={cardData.name}
+                              onChange={(v) => setCardData({ ...cardData, name: v })}
+                              icon={<User className="h-4 w-4 text-gray-400" />}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {payMode === "upi" && (
+                    <motion.div
+                      key="upi-form"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mt-6 overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-gray-50 p-5 border border-gray-100">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Popular Apps</p>
+                        <div className="flex flex-wrap gap-4 mb-6">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden p-2">
+                              <Image src="/images/Google_Pay.png" alt="GPay" width={40} height={40} className="object-contain" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-600">GPay</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden p-1.5">
+                              <Image src="/images/PhonePe.png" alt="PhonePe" width={40} height={40} className="object-contain" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-600">PhonePe</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden p-2">
+                              <Image src="/images/Paytm_logo.png" alt="Paytm" width={40} height={40} className="object-contain" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-600">Paytm</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden p-2">
+                              <Image src="/images/amazon-pay.png" alt="Amazon Pay" width={40} height={40} className="object-contain" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-600">Amazon Pay</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden p-2">
+                              <Image src="/images/Bhim.png" alt="BHIM" width={40} height={40} className="object-contain" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-600">BHIM</span>
+                          </div>
+                        </div>
+                        <Input
+                          label="Enter UPI ID"
+                          placeholder="mobile@upi"
+                          value={upiId}
+                          onChange={(v) => setUpiId(v)}
+                          icon={<Globe className="h-4 w-4 text-gray-400" />}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {payMode === "netbanking" && (
+                    <motion.div
+                      key="nb-form"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mt-6 overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-gray-50 p-5 border border-gray-100">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Select Your Bank</p>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                          {['HDFC Bank', 'SBI', 'ICICI Bank', 'Axis Bank', 'Kotak', 'Others'].map(bank => (
+                            <button
+                              key={bank}
+                              type="button"
+                              onClick={() => setSelectedBank(bank)}
+                              className={`px-4 py-3 rounded-xl border text-xs font-semibold transition-all ${selectedBank === bank
+                                ? 'bg-white border-[#FF8A65] text-[#FF8A65] shadow-sm'
+                                : 'bg-white/50 border-gray-200 text-gray-600 hover:border-gray-300'
+                                }`}
+                            >
+                              {bank}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {payMode === "wallet" && (
+                    <motion.div
+                      key="wallet-form"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mt-6 overflow-hidden"
+                    >
+                      <div className="rounded-xl bg-gray-50 p-6 border border-gray-100 flex flex-col items-center text-center">
+                        <div className="relative h-48 w-48 bg-white border-4 border-white rounded-2xl shadow-xl overflow-hidden group">
+                          <div className="absolute inset-0 p-4">
+                            <div className="h-full w-full bg-gray-50 rounded flex flex-center items-center justify-center relative">
+                              {/* Real scannable QR code using a public API (rendering as standard img to avoid next/image domain constraints) */}
+                              <img
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://github.com/SubhradeepNathGit"
+                                alt="Scanner"
+                                className="h-40 w-40 object-contain"
+                              />
+                            </div>
+                          </div>
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-white text-xs font-bold uppercase tracking-wider">SCAN TO PAY</span>
+                          </div>
+                        </div>
+                        <p className="mt-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">SCAN TO PAY from your Payment app</p>
+                        <div className="mt-4 p-2.5 bg-white rounded-lg border flex items-center gap-3">
+                          <Shield className="h-4 w-4 text-green-600" />
+                          <div className="h-4 w-[1px] bg-gray-200" />
+                          <span className="text-[10px] font-medium text-gray-500 uppercase tracking-tighter">UPI SECURE</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div className="mt-4 flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-xl border border-blue-100">
                   <Shield className="h-4 w-4 text-blue-600" />
                   <p className="text-xs text-blue-700 font-medium">
                     Demo checkout - No real payment will be processed
                   </p>
                 </div>
-              </Card>
+              </Card >
 
               {/* Contact */}
-              <Card>
+              < Card >
                 <SectionTitle
                   icon={<Mail className="h-5 w-5" />}
                   title="Contact information"
@@ -336,97 +548,105 @@ export default function CheckoutPage() {
                     icon={<Phone className="h-4 w-4 text-gray-400" />}
                   />
                 </div>
-              </Card>
+              </Card >
 
-              {/* Address */}
-              <Card>
-                <SectionTitle
-                  icon={<Home className="h-5 w-5" />}
-                  title="Delivery address"
-                  subtitle="Where should we deliver your order?"
-                />
-                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Input
-                    label="Full name"
-                    placeholder="John Doe"
-                    value={addr.name}
-                    onChange={(v) => setAddr({ ...addr, name: v })}
-                    icon={<User className="h-4 w-4 text-gray-400" />}
-                  />
-                  <Input
-                    label="Phone number"
-                    placeholder="+91 9xxxxxxxxx"
-                    value={contact.phone}
-                    onChange={(v) => setContact({ ...contact, phone: v })}
-                    icon={<Phone className="h-4 w-4 text-gray-400" />}
-                  />
-                  <div className="sm:col-span-2">
-                    <Input
-                      label="Address line 1"
-                      placeholder="House no., Building name"
-                      value={addr.line1}
-                      onChange={(v) => setAddr({ ...addr, line1: v })}
-                      icon={<Home className="h-4 w-4 text-gray-400" />}
+              {/* Address (Hidden for plans) */}
+              {
+                !isPlanCheckout && (
+                  <Card>
+                    <SectionTitle
+                      icon={<Home className="h-5 w-5" />}
+                      title="Delivery address"
+                      subtitle="Where should we deliver your order?"
                     />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Input
-                      label="Address line 2 (optional)"
-                      placeholder="Street, Area, Landmark"
-                      value={addr.line2}
-                      onChange={(v) => setAddr({ ...addr, line2: v })}
-                      icon={<MapPin className="h-4 w-4 text-gray-400" />}
-                    />
-                  </div>
-                  <Input
-                    label="City"
-                    placeholder="Mumbai"
-                    value={addr.city}
-                    onChange={(v) => setAddr({ ...addr, city: v })}
-                  />
-                  <Input
-                    label="State"
-                    placeholder="Maharashtra"
-                    value={addr.state}
-                    onChange={(v) => setAddr({ ...addr, state: v })}
-                  />
-                  <Input
-                    label="Pincode"
-                    placeholder="400001"
-                    value={addr.pincode}
-                    onChange={(v) => setAddr({ ...addr, pincode: v })}
-                  />
-                </div>
-              </Card>
+                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <Input
+                        label="Full name"
+                        placeholder="John Doe"
+                        value={addr.name}
+                        onChange={(v) => setAddr({ ...addr, name: v })}
+                        icon={<User className="h-4 w-4 text-gray-400" />}
+                      />
+                      <Input
+                        label="Phone number"
+                        placeholder="+91 9xxxxxxxxx"
+                        value={contact.phone}
+                        onChange={(v) => setContact({ ...contact, phone: v })}
+                        icon={<Phone className="h-4 w-4 text-gray-400" />}
+                      />
+                      <div className="sm:col-span-2">
+                        <Input
+                          label="Address line 1"
+                          placeholder="House no., Building name"
+                          value={addr.line1}
+                          onChange={(v) => setAddr({ ...addr, line1: v })}
+                          icon={<Home className="h-4 w-4 text-gray-400" />}
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <Input
+                          label="Address line 2 (optional)"
+                          placeholder="Street, Area, Landmark"
+                          value={addr.line2}
+                          onChange={(v) => setAddr({ ...addr, line2: v })}
+                          icon={<MapPin className="h-4 w-4 text-gray-400" />}
+                        />
+                      </div>
+                      <Input
+                        label="City"
+                        placeholder="Mumbai"
+                        value={addr.city}
+                        onChange={(v) => setAddr({ ...addr, city: v })}
+                      />
+                      <Input
+                        label="State"
+                        placeholder="Maharashtra"
+                        value={addr.state}
+                        onChange={(v) => setAddr({ ...addr, state: v })}
+                      />
+                      <Input
+                        label="Pincode"
+                        placeholder="400001"
+                        value={addr.pincode}
+                        onChange={(v) => setAddr({ ...addr, pincode: v })}
+                      />
+                    </div>
+                  </Card>
+                )
+              }
 
-              {/* Delivery */}
-              <Card>
-                <SectionTitle
-                  icon={<Package className="h-5 w-5" />}
-                  title="Delivery options"
-                  subtitle="Choose your delivery speed"
-                />
-                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <RadioTile
-                    checked={delivery === "standard"}
-                    onClick={() => setDelivery("standard")}
-                    title="Standard Delivery"
-                    subtitle="3–5 business days"
-                    price="FREE"
-                  />
-                  <RadioTile
-                    checked={delivery === "express"}
-                    onClick={() => setDelivery("express")}
-                    title="Express Delivery"
-                    subtitle="1–2 business days"
-                    price="₹99"
-                  />
-                </div>
-              </Card>
-            </section>
+              {/* Delivery (Hidden for plans) */}
+              {
+                !isPlanCheckout && (
+                  <Card>
+                    <SectionTitle
+                      icon={<Package className="h-5 w-5" />}
+                      title="Delivery options"
+                      subtitle="Choose your delivery speed"
+                    />
+                    <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <RadioTile
+                        checked={delivery === "standard"}
+                        onClick={() => setDelivery("standard")}
+                        title="Standard Delivery"
+                        subtitle="3–5 business days"
+                        price="FREE"
+                      />
+                      <RadioTile
+                        checked={delivery === "express"}
+                        onClick={() => setDelivery("express")}
+                        title="Express Delivery"
+                        subtitle="1–2 business days"
+                        price="₹99"
+                      />
+                    </div>
+                  </Card>
+                )
+              }
+            </section >
 
             {/* Right: Summary */}
-            <aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-lg sticky top-4">
+            < aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-lg sticky top-4" >
               <div className="flex items-center justify-between border-b pb-4">
                 <h2 className="text-xl font-bold text-gray-900">Order Summary</h2>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg">
@@ -498,25 +718,29 @@ export default function CheckoutPage() {
                 {busy ? 'Processing...' : 'Place Order'}
               </button>
 
-              {!validForm && (
-                <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
-                  <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-rose-700 font-medium">
-                    Please complete all required fields to proceed with checkout
-                  </p>
-                </div>
-              )}
-              {msg && (
-                <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
-                  <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-rose-700 font-medium">{msg}</p>
-                </div>
-              )}
-            </aside>
-          </div>
+              {
+                !validForm && (
+                  <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-rose-700 font-medium">
+                      Please complete all required fields to proceed with checkout
+                    </p>
+                  </div>
+                )
+              }
+              {
+                msg && (
+                  <div className="mt-3 flex items-start gap-2 p-3 bg-rose-50 rounded-lg border border-rose-100">
+                    <Shield className="h-4 w-4 text-rose-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-rose-700 font-medium">{msg}</p>
+                  </div>
+                )
+              }
+            </aside >
+          </div >
         )}
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }
 
@@ -634,25 +858,26 @@ function PayTile({
 
 function CardIcons() {
   return (
-    <div className="flex items-center gap-2">
-      <span className="rounded-md border bg-white px-2 py-1 text-[10px] font-bold text-blue-700">
-        VISA
-      </span>
-      <span className="rounded-md border bg-white px-2 py-1 text-[10px] font-bold text-black">
-        Mastercard
-      </span>
-      <span className="rounded-md border bg-white px-2 py-1 text-[10px] font-bold text-indigo-700">
-        RuPay
-      </span>
+    <div className="flex items-center gap-1.5">
+      <div className="rounded border bg-white px-1 py-0.5 shadow-sm">
+        <Image src="/images/visa.png" alt="Visa" width={24} height={12} className="object-contain" />
+      </div>
+      <div className="rounded border bg-white px-1 py-0.5 shadow-sm">
+        <Image src="/images/master-card.png" alt="Mastercard" width={24} height={12} className="object-contain" />
+      </div>
+      <div className="rounded border bg-white px-1 py-0.5 shadow-sm">
+        <Image src="/images/Rupay.png" alt="RuPay" width={24} height={12} className="object-contain" />
+      </div>
     </div>
   );
 }
 
 function UpiBadge() {
   return (
-    <span className="rounded-md border bg-white px-2 py-1 text-[10px] font-bold text-green-700">
-      UPI
-    </span>
+    <div className="flex items-center gap-1 opacity-80">
+      <Image src="/images/Bhim.png" alt="UPI" width={18} height={18} className="object-contain" />
+      <span className="text-[10px] font-bold text-gray-400">UPI</span>
+    </div>
   );
 }
 

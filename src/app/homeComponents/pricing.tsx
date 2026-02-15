@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 const plans = [
   {
@@ -44,7 +46,45 @@ const plans = [
 ];
 
 export default function PricingSection() {
+  const router = useRouter();
   const [isYearly, setIsYearly] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    // Initial auth check
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setIsSignedIn(!!data?.user);
+    };
+    checkUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsSignedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSelectPlan = (plan: any) => {
+    if (!isSignedIn) {
+      router.push("/signup?mode=signin");
+      return;
+    }
+
+    const planPrice = isYearly ? plan.price.yearly : plan.price.monthly;
+    const planPeriod = isYearly ? "year" : "month";
+
+    // Encode plan details to pass through URL params
+    const params = new URLSearchParams({
+      plan: plan.title,
+      price: planPrice.toString(),
+      period: planPeriod,
+      img: plan.img
+    });
+
+    router.push(`/checkout?${params.toString()}`);
+  };
 
   return (
     <section className="w-full bg-gray-50 py-16">
@@ -60,8 +100,8 @@ export default function PricingSection() {
           <button
             onClick={() => setIsYearly(false)}
             className={`px-6 py-2 rounded-l-full transition-colors ${!isYearly
-                ? "bg-[#FF8A65] text-white"
-                : "bg-white border text-gray-800"
+              ? "bg-[#FF8A65] text-white"
+              : "bg-white border text-gray-800"
               }`}
           >
             Monthly
@@ -69,8 +109,8 @@ export default function PricingSection() {
           <button
             onClick={() => setIsYearly(true)}
             className={`px-6 py-2 rounded-r-full transition-colors ${isYearly
-                ? "bg-[#FF8A65] text-white"
-                : "bg-white border text-gray-800"
+              ? "bg-[#FF8A65] text-white"
+              : "bg-white border text-gray-800"
               }`}
           >
             Yearly
@@ -126,6 +166,7 @@ export default function PricingSection() {
               {/* Purchase Button */}
               {/* Purchase Button */}
               <button
+                onClick={() => handleSelectPlan(plan)}
                 className="mt-6 w-full py-3 rounded-xl bg-[#FF8A65] text-white font-semibold 
              transition-transform duration-300 hover:scale-105 active:scale-95 
              group-hover:bg-white group-hover:text-[#FF8A65]"

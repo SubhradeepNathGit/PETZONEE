@@ -67,8 +67,8 @@ export default function ProcessingPage() {
                 className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
             >
                 {/* Header - Brand feel */}
-                <div className="bg-[#FF8A65] p-6 text-center">
-                    <h2 className="text-white font-bold text-xl tracking-wide">PETZONEE SECURE PAY</h2>
+                <div className="bg-[#FF8A65] p-8 text-center">
+                    <h2 className="text-white font-bold text-2xl tracking-wide">SECURE PAYMENT</h2>
                     <p className="text-orange-100 text-sm mt-1">256-bit SSL Encrypted</p>
                 </div>
 

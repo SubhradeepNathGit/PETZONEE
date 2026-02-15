@@ -8,7 +8,7 @@ import { CheckCircle2, Home, Printer, Gift, ArrowLeft } from "lucide-react";
 
 // Types
 type OrderItem = {
-  id: string; name: string; price: number; quantity: number; image_url: string | null;
+  id: string; name: string; price: number; quantity: number; image_url: string | null; product_id?: string;
 };
 type LastOrder = {
   orderId: string; when: string; items: OrderItem[];
@@ -321,6 +321,7 @@ export default function SuccessPage() {
   }, []);
 
   const itemCount = useMemo(() => order?.items?.reduce((s, it) => s + it.quantity, 0) ?? 0, [order]);
+  const isPlanOrder = useMemo(() => order?.items?.some(it => it.product_id === "PLAN"), [order]);
 
   const handlePrint = () => {
     window.print();
@@ -341,7 +342,7 @@ export default function SuccessPage() {
               <OrderCard order={order} itemCount={itemCount} />
             </div>
             <div className="md:col-span-1 flex flex-col gap-6">
-              <AddressCard order={order} />
+              {!isPlanOrder && <AddressCard order={order} />}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

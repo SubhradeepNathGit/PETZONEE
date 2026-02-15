@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { Card, FeatureCard, AvatarPicker } from './shared/ui';
 import React from 'react';
 

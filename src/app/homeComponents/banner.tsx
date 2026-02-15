@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Play, ChevronDown } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 /* ================== Types ================== */
 interface BannerSlide {
@@ -14,6 +16,7 @@ interface BannerSlide {
 }
 
 const Banner = () => {
+  const router = useRouter();
   const slides: BannerSlide[] = [
     {
       id: 1,
@@ -58,6 +61,7 @@ const Banner = () => {
   ];
 
   /* ================== State ================== */
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [videosLoaded, setVideosLoaded] = useState(false);
@@ -74,6 +78,20 @@ const Banner = () => {
   /* ================== Hydration Fix ================== */
   useEffect(() => {
     setMounted(true);
+
+    // Initial auth check
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setIsSignedIn(!!data?.user);
+    };
+    checkUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsSignedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   /* ================== Video Preloading ================== */
@@ -290,9 +308,10 @@ const Banner = () => {
   // Don't render anything until mounted
   if (!mounted) {
     return (
-      <section className="relative h-screen w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-white text-xl">Loading...</div>
+      <section className="relative h-screen w-full overflow-hidden bg-black/10 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/10 z-0" />
+        <div className="relative z-10 flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
         </div>
       </section>
     );
@@ -301,9 +320,11 @@ const Banner = () => {
   /* ================== JSX ================== */
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Video Backgrounds - Windowing implementation to reduce network load */}
+      {/* Premium Background Base - Replaces pure black */}
+      <div className="absolute inset-0 bg-black/10 z-0" />
+
+      {/* Video Backgrounds */}
       {slides.map((slide, index) => {
-        // Only render the current video and the next video for seamless transitions
         const isCurrent = index === currentSlide;
         const isNext = index === (currentSlide + 1) % slides.length;
         const shouldRender = isCurrent || isNext;
@@ -311,49 +332,65 @@ const Banner = () => {
         return (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${isCurrent ? 'opacity-100' : 'opacity-0'
-              }`}
+            className="absolute inset-0 z-0"
+            style={{
+              pointerEvents: isCurrent ? 'auto' : 'none'
+            }}
           >
-            {shouldRender ? (
-              <video
-                ref={(el) => {
-                  videoRefs.current[index] = el;
+            {shouldRender && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: isCurrent ? 1 : 0,
+                  scale: isCurrent ? 1.05 : 1 // Subtle Ken Burns starting state
                 }}
-                className={`absolute inset-0 w-full h-full object-cover transform-gpu ${index === 0 ? 'banner-video' : ''
-                  }`}
-                muted={isMuted}
-                loop
-                playsInline
-                crossOrigin="anonymous"
-                style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
-                preload={isCurrent || isNext ? 'auto' : 'metadata'}
-                onLoadedData={() => {
-                  if (index === 0 && !videosLoaded) {
-                    setVideosLoaded(true);
-                  }
-                  loadedVideosRef.current.add(index);
+                transition={{
+                  opacity: { duration: 1.5, ease: "easeInOut" },
+                  scale: { duration: 8, ease: "linear", repeat: isCurrent ? Infinity : 0, repeatType: "reverse" }
                 }}
-                onCanPlayThrough={() => {
-                  if (index === 0) setVideosLoaded(true);
-                }}
-                onError={(e) => {
-                  console.warn(`Video ${index} failed to load:`, e);
-                  if (index === 0) setVideosLoaded(true);
-                }}
+                className="absolute inset-0"
               >
-                <source src={slide.videoSrc} type="video/mp4" />
-              </video>
-            ) : (
-              // Simple placeholder for non-active slides to keep DOM structure light
-              <div className="absolute inset-0 bg-black" />
+                <video
+                  ref={(el) => {
+                    videoRefs.current[index] = el;
+                  }}
+                  className="absolute inset-0 w-full h-full object-cover transform-gpu"
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  crossOrigin="anonymous"
+                  style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
+                  preload={isCurrent || isNext ? 'auto' : 'metadata'}
+                  onLoadedData={() => {
+                    if (index === 0 && !videosLoaded) {
+                      setVideosLoaded(true);
+                    }
+                    loadedVideosRef.current.add(index);
+                  }}
+                  onCanPlayThrough={() => {
+                    if (index === 0) setVideosLoaded(true);
+                  }}
+                  onError={(e) => {
+                    console.warn(`Video ${index} failed to load:`, e);
+                    if (index === 0) setVideosLoaded(true);
+                  }}
+                >
+                  <source src={slide.videoSrc} type="video/mp4" />
+                </video>
+
+                {/* Premium Overlay Gradient */}
+
+
+              </motion.div>
             )}
-            <div className="absolute inset-0 bg-black/40" />
           </div>
         );
       })}
 
+
+
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center">
+      <div className="relative z-20 h-full flex items-center justify-center">
         <div className="text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             key={currentSlide}
@@ -364,7 +401,7 @@ const Banner = () => {
             className="space-y-4 sm:space-y-6 lg:space-y-8"
           >
             <motion.p
-              className="text-orange-500 font-semibold text-sm sm:text-base lg:text-lg tracking-wider uppercase [text-stroke:0.2px_black] [-webkit-text-stroke:0.2px_black]"
+              className="text-orange-500 font-semibold text-sm sm:text-base lg:text-lg tracking-wider uppercase [text-stroke:0.1px_rgba(0,0,0,0.5)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -373,7 +410,7 @@ const Banner = () => {
             </motion.p>
 
             <motion.h1
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight drop-shadow-2xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -382,7 +419,7 @@ const Banner = () => {
             </motion.h1>
 
             <motion.p
-              className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed px-4"
+              className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed px-4 drop-shadow-lg"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -393,17 +430,22 @@ const Banner = () => {
 
           {/* CTA Button */}
           <motion.div
-            className="mt-8 sm:mt-12 inline-flex items-center space-x-2 sm:space-x-3 bg-white/10 backdrop-blur-sm rounded-full px-4 sm:px-6 py-2 sm:py-3 cursor-pointer hover:bg-white/20 transition-colors"
+            className="mt-8 sm:mt-12 inline-flex items-center space-x-2 sm:space-x-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 sm:px-6 py-2 sm:py-3 cursor-pointer hover:bg-white/20 transition-all shadow-2xl group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
-            onClick={handleUserInteraction}
+            onClick={() => {
+              handleUserInteraction();
+              if (!isSignedIn) {
+                router.push('/signup?mode=signin');
+              }
+            }}
           >
             <motion.div
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-full flex items-center justify-center"
+              className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:bg-orange-600 transition-colors"
             >
               <Play className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
             </motion.div>
@@ -416,14 +458,14 @@ const Banner = () => {
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => handleSlideChange(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${index === currentSlide
-              ? 'bg-white scale-125'
-              : 'bg-white/50 hover:bg-white/75'
+            className={`h-1.5 rounded-full transition-all duration-500 ${index === currentSlide
+              ? 'bg-orange-500 w-8'
+              : 'bg-white/30 w-4 hover:bg-white/60'
               }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -433,11 +475,11 @@ const Banner = () => {
       {/* Scroll Indicator */}
       <motion.button
         onClick={scrollToContent}
-        className="absolute bottom-20 right-6 sm:right-8 text-white hover:text-orange-400 transition-colors duration-200 z-20"
-        animate={{ y: [0, 10, 0] }}
+        className="absolute bottom-10 right-6 sm:right-8 text-white/70 hover:text-orange-400 transition-colors duration-300 z-30 flex flex-col items-center space-y-2"
+        animate={{ y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        aria-label="Scroll to main content"
       >
+        <span className="text-[10px] uppercase tracking-widest font-medium hidden sm:block">Scroll</span>
         <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8" />
       </motion.button>
     </section>
