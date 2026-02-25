@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Play, X } from "lucide-react";
+import { Play, X, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const testimonials = [
@@ -139,7 +139,7 @@ export default function TestimonialSection() {
                     aria-label={`Rating: ${t.rating} out of 5`}
                   >
                     {Array.from({ length: t.rating }).map((_, i) => (
-                      <span key={i}>★</span>
+                      <Star key={i} className="fill-orange-400 w-4 h-4" />
                     ))}
                   </div>
                 </div>
@@ -180,9 +180,8 @@ export default function TestimonialSection() {
                 {loading && (
                   <>
                     <img
-                      src={`https://img.youtube.com/vi/${
-                        (activeVideo.split("embed/")[1] || "").split("?")[0]
-                      }/hqdefault.jpg`}
+                      src={`https://img.youtube.com/vi/${(activeVideo.split("embed/")[1] || "").split("?")[0]
+                        }/hqdefault.jpg`}
                       alt="Video thumbnail"
                       className="h-full w-full object-cover"
                     />

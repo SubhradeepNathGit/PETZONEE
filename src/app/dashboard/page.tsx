@@ -12,11 +12,12 @@ import Sidebar from '@/components/sidebar';
 import { Role, PetRow, PetUI, SidebarItem, VetRow } from '@/components/portal/shared/types';
 import { useAsyncError } from '@/components/portal/shared/hooks';
 import { resolvePetPhotoUrl } from '@/components/portal/shared/utils';
-import { Card, LoadingCard } from '@/components/portal/shared/ui';
+import { Card, LoadingCard, SkeletonDashboard } from '@/components/portal/shared/ui';
 import {
   IconHome, IconCalendar, IconUsers, IconUser, IconBell, IconChart, IconShield, IconPackage,
   IconShoppingBag, IconCompass, IconPlus, IconHeart, IconSettings, IconTrash, IconLogOut, IconX, IconPawPrint, IconDog
 } from '@/components/portal/shared/icons';
+import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint } from 'lucide-react';
 
 const AdminDashboard = dynamic(() => import('@/components/portal/AdminDashboard'), { ssr: false });
 const VetDashboard = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
@@ -234,7 +235,7 @@ export default function Portal() {
   }, [meId, handleError]);
 
   const content = useMemo(() => {
-    if (role === 'loading') return <LoadingCard />;
+    if (role === 'loading') return <SkeletonDashboard />;
 
     if (role === 'admin')
       return (
@@ -389,7 +390,7 @@ export default function Portal() {
                     <motion.h1
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-yellow-300  bg-clip-text text-transparent"
+                      className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-300 bg-clip-text text-transparent tracking-tighter"
                     >
                       Welcome to PETZONEE
                     </motion.h1>
@@ -397,7 +398,7 @@ export default function Portal() {
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.1 }}
-                      className="text-gray-300 text-sm"
+                      className="text-gray-400 text-lg font-medium mt-2"
                     >
                       Personalise your experience and manage your pet care needs effectively
                     </motion.p>
@@ -442,7 +443,7 @@ export default function Portal() {
                     >
                       <div className="flex items-start gap-3">
                         <span className="text-lg">
-                          {msgType === 'error' ? 'Ã¢ÂÅ’' : msgType === 'success' ? 'Ã¢Å“â€¦' : 'Ã¢â€žÂ¹Ã¯Â¸Â'}
+                          {msgType === 'error' ? <XCircle className="w-5 h-5" /> : msgType === 'success' ? <CheckCircle className="w-5 h-5" /> : <Info className="w-5 h-5" /> }
                         </span>
                         <p className="text-sm font-medium">{msg}</p>
                       </div>
@@ -466,19 +467,22 @@ export default function Portal() {
               }}
             >
               <motion.div
-                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-black/80 p-6 shadow-2xl border border-white/10"
-                initial={{ scale: 0.9, opacity: 0 }}
+                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0d0d14] p-6 shadow-2xl border border-white/[0.08]"
+                initial={{ scale: 0.94, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
+                exit={{ scale: 0.94, opacity: 0 }}
                 transition={{ type: 'spring', duration: 0.3 }}
               >
                 <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-white">My Pets  </h3>
+                  <div>
+                    <h3 className="text-xl font-black text-white tracking-tight">My Pets</h3>
+                    <p className="text-xs text-white/30 mt-0.5">{pets.length > 0 ? `${pets.length} companion${pets.length !== 1 ? 's' : ''}` : 'No pets yet'}</p>
+                  </div>
                   <button
                     onClick={() => setShowPets(false)}
-                    className="rounded-full bg-white/10 border border-white/10 p-2 text-gray-200 hover:bg-white/20 transition-colors"
+                    className="rounded-full bg-white/[0.07] border border-white/10 p-2 text-white/50 hover:bg-white/[0.12] hover:text-white transition-all"
                   >
-                    <IconX size={20} />
+                    <IconX size={18} />
                   </button>
                 </div>
 
@@ -486,38 +490,39 @@ export default function Portal() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Array.from({ length: 6 }).map((_, i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="h-48 bg-white/10 rounded-xl mb-3" />
-                        <div className="h-4 bg-white/10 rounded mb-2" />
-                        <div className="h-3 bg-white/10 rounded w-3/4" />
+                        <div className="h-44 bg-white/[0.04] rounded-2xl mb-3" />
+                        <div className="h-3.5 bg-white/[0.04] rounded-full mb-2" />
+                        <div className="h-3 bg-white/[0.04] rounded-full w-3/4" />
                       </div>
                     ))}
                   </div>
                 ) : pets.length === 0 ? (
                   <div className="text-center py-16 flex flex-col items-center justify-center">
-                    <h4 className="text-2xl font-bold text-white mb-2">No pets added yet</h4>
-                    <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+                    <div className="h-16 w-16 rounded-full bg-[#FF8A65]/10 border border-[#FF8A65]/15 flex items-center justify-center mb-5">
+                      <PawPrint className="text-[#FF8A65] w-8 h-8" />
+                    </div>
+                    <h4 className="text-xl font-bold text-white mb-2">No pets added yet</h4>
+                    <p className="text-white/30 mb-8 max-w-xs mx-auto text-sm">
                       Your journey starts here! Add your first furry friend to personalize your experience.
                     </p>
                     <Link
                       href="/pets/new"
-                      className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white transition-all duration-300 bg-gradient-to-r from-[#FF8A65] to-[#FF7043] rounded-2xl shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:-translate-y-1 active:translate-y-0 active:scale-95"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3 font-bold text-white bg-gradient-to-r from-[#FF8A65] to-[#FF7043] rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:brightness-110 transition-all"
                     >
-                      <span className="relative flex items-center gap-2">
-                        Add My Pet
-                        <IconPlus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                      </span>
+                      Add My Pet
+                      <IconPlus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
                     </Link>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {pets.map((pet) => {
                       const photoSrc = pet.photo_resolved || null;
                       return (
                         <div
                           key={pet.id}
-                          className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
+                          className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04] hover:border-[#FF8A65]/30 hover:bg-white/[0.07] transition-all duration-300 shadow-md hover:shadow-[0_0_20px_rgba(255,138,101,0.12)]"
                         >
-                          <div className="relative h-48 w-full bg-gradient-to-br from-[#142034] to-[#0f1a2b]">
+                          <div className="relative h-44 w-full bg-[#0e1520]">
                             {photoSrc ? (
                               <Image
                                 src={photoSrc}
@@ -525,36 +530,35 @@ export default function Portal() {
                                 fill
                                 unoptimized
                                 sizes="(max-width: 768px) 100vw, 33vw"
-                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                                 draggable={false}
                                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                   e.currentTarget.style.display = 'none';
                                 }}
                               />
                             ) : null}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                           </div>
                           <div className="p-4">
-                            <h4 className="font-bold text-lg text-white mb-1">{pet.name}</h4>
-                            <p className="text-sm text-gray-300 mb-3">
-                              {pet.species || 'Pet'}
-                              {pet.breed && ` ${pet.breed}`}
-                              {pet.dob && ` Born ${new Date(pet.dob).toLocaleDateString()}`}
-                            </p>
-                            <div className="flex gap-2">
-                              <Link
-                                href={`/pets/${pet.id}`}
-                                className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs shadow hover:brightness-110 transition"
-                              >
-                                View Profile
-                              </Link>
-                              {/* <Link
-                                href={`/pets/${pet.id}/records`}
-                                className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 text-white text-xs border border-white/10 hover:bg-white/20 transition"
-                              >
-                                Medical Records
-                              </Link> */}
+                            <h4 className="font-bold text-base text-white mb-1 truncate">{pet.name}</h4>
+                            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                              {pet.species && (
+                                <span className="rounded-full bg-[#FF8A65]/10 border border-[#FF8A65]/15 px-2 py-0.5 text-[11px] font-semibold text-[#FF8A65]">
+                                  {pet.species}
+                                </span>
+                              )}
+                              {pet.breed && (
+                                <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-[11px] font-medium text-white/40">
+                                  {pet.breed}
+                                </span>
+                              )}
                             </div>
+                            <Link
+                              href={`/pets/${pet.id}`}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-orange-500/20 hover:brightness-110 transition-all"
+                            >
+                              View Profile
+                            </Link>
                           </div>
                         </div>
                       );
@@ -595,7 +599,7 @@ class ErrorBoundary extends React.Component<
           <div className="min-h-screen flex items-center justify-center">
             <Card className="max-w-md">
               <div className="text-center text-white">
-                <div className="text-yellow-400 text-4xl mb-4">Ã¢Å¡Â Ã¯Â¸Â</div>
+                <div className="flex justify-center mb-4"><AlertTriangle className="text-yellow-400 w-12 h-12" /></div>
                 <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
                 <p className="text-gray-300 mb-4">We are sorry, but something unexpected happened.</p>
                 <button

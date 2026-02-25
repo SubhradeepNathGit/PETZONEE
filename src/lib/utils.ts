@@ -18,7 +18,7 @@ export const supabase = createClient(
 // The original check for placeholder URL used the `supabaseUrl` variable, which is now removed.
 // To maintain similar functionality, we can check the environment variable directly.
 if (typeof window !== "undefined" && (process.env.NEXT_PUBLIC_SUPABASE_URL === "https://placeholder.supabase.co" || !process.env.NEXT_PUBLIC_SUPABASE_URL)) {
-  console.warn("⚠️ PETZONEE: NEXT_PUBLIC_SUPABASE_URL is missing or is a placeholder. Please check your Vercel Environment Variables.");
+  console.warn("WARNING PETZONEE: NEXT_PUBLIC_SUPABASE_URL is missing or is a placeholder. Please check your Vercel Environment Variables.");
 }
 
 /**

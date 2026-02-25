@@ -160,11 +160,11 @@ export default function EditPetPage() {
 
   if (loading) {
     return (
-      <main className="min-h-[100dvh] bg-white">
+      <main className="min-h-[100dvh] bg-[#0a0a0f]">
         <div className="mx-auto max-w-[900px] px-4 py-10">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 w-40 rounded bg-slate-200" />
-            <div className="h-56 rounded-2xl bg-slate-200" />
+            <div className="h-7 w-44 rounded-full bg-white/5" />
+            <div className="h-56 rounded-2xl bg-white/5" />
           </div>
         </div>
       </main>
@@ -173,128 +173,148 @@ export default function EditPetPage() {
 
   if (!pet) {
     return (
-      <main className="min-h-[100dvh] bg-white">
+      <main className="min-h-[100dvh] bg-[#0a0a0f]">
         <div className="mx-auto max-w-[900px] px-4 py-10">
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800">{err || 'Not found'}</div>
-          <div className="mt-4"><Link href="/" className="text-[#0e2a36] underline">Go home</Link></div>
+          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-6 text-rose-300">{err || 'Not found'}</div>
+          <div className="mt-4"><Link href="/" className="text-[#FF8A65] hover:underline text-sm">← Go home</Link></div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-[100dvh] w-full bg-slate-800">
-      <div className="mx-auto max-w-[900px] px-4 py-8 ">
-        <section className=" rounded-[26px] border border-[#ffe2cf] mt-20 mb-20 bg-[#FF8A65] p-6 sm:p-8 text-white shadow-[0_10px_35px_rgba(0,0,0,0.15)]">
-          <header className="mb-6 flex items-center justify-between">
-            <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-sm">Edit {pet.name}</h1>
-            <Link href={`/pets/${pet.id}`} className="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/25">Back</Link>
-          </header>
+    <main className="min-h-[100dvh] w-full bg-[#0a0a0f]">
+      <div className="mx-auto max-w-[860px] px-4 pt-10 pb-20">
 
-          <motion.form
-            onSubmit={handleSave}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-[#f2f5f7] bg-white p-6 text-[#0d1b22] shadow-[0_4px_18px_rgba(0,0,0,.06)]"
+        {/* Page heading */}
+        <div className="mb-8">
+          <Link
+            href={`/pets/${pet.id}`}
+            className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-4"
           >
-            {/* Cover picker */}
-            <div className="mb-6">
-              <p className="mb-2 text-sm font-semibold text-[#0d1b22]">Cover photo</p>
-              <div className="flex items-center gap-4">
-                <div className="relative h-28 w-48 overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200">
-                  {coverPreview ? (
-                    <Image src={coverPreview} alt="Cover preview" fill sizes="192px" className="object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">No cover</div>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
+            ← Back to {pet.name}’s profile
+          </Link>
+          <h1 className="text-3xl font-black text-white tracking-tight">Edit {pet.name}</h1>
+          <p className="mt-1 text-sm text-white/30">Update photos and name for this pet profile.</p>
+        </div>
+
+        <motion.form
+          onSubmit={handleSave}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="rounded-3xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.4)] space-y-8"
+        >
+          {/* Cover picker */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">Cover photo</p>
+            <div className="flex flex-col sm:flex-row items-start gap-5">
+              <div className="relative h-32 w-56 overflow-hidden rounded-2xl border border-white/10 bg-white/5 flex-shrink-0">
+                {coverPreview ? (
+                  <Image src={coverPreview} alt="Cover preview" fill sizes="224px" className="object-cover" />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/20">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs">No cover</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => coverRef.current?.click()}
+                  className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all"
+                >
+                  {coverPreview ? 'Change cover' : 'Upload cover'}
+                </button>
+                {coverPreview && (
                   <button
                     type="button"
-                    onClick={() => coverRef.current?.click()}
-                    className="rounded-full bg-[#0e2a36] px-4 py-2 text-sm font-semibold text-white shadow hover:opacity-95"
+                    onClick={() => { setRemoveCover(true); setCoverFile(null); setCoverPreview(null); }}
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 hover:bg-rose-500/20 hover:text-rose-400 hover:border-rose-500/30 transition-all"
                   >
-                    {coverPreview ? 'Change cover' : 'Upload cover'}
+                    Remove cover
                   </button>
-                  {coverPreview && (
-                    <button
-                      type="button"
-                      onClick={() => { setRemoveCover(true); setCoverFile(null); setCoverPreview(null); }}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold hover:bg-slate-50"
-                    >
-                      Remove cover
-                    </button>
-                  )}
-                  <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={onCover} />
-                </div>
+                )}
+                <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={onCover} />
               </div>
             </div>
+          </div>
 
-            {/* Avatar picker */}
-            <div className="mb-6">
-              <p className="mb-2 text-sm font-semibold text-[#0d1b22]">Profile photo (avatar)</p>
-              <div className="flex items-center gap-4">
-                <div className="relative h-28 w-28 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
-                  {avatarPreview ? (
-                    <Image src={avatarPreview} alt="Avatar preview" fill sizes="112px" className="object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-500">No photo</div>
-                  )}
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
+          <div className="h-px bg-white/[0.06]" />
+
+          {/* Avatar picker */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">Profile photo (avatar)</p>
+            <div className="flex flex-col sm:flex-row items-start gap-5">
+              <div className="relative h-28 w-28 overflow-hidden rounded-full border border-white/10 bg-white/5 ring-2 ring-[#FF8A65]/30 flex-shrink-0">
+                {avatarPreview ? (
+                  <Image src={avatarPreview} alt="Avatar preview" fill sizes="112px" className="object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-white/20">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => avatarRef.current?.click()}
+                  className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all"
+                >
+                  {avatarPreview ? 'Change photo' : 'Upload photo'}
+                </button>
+                {avatarPreview && (
                   <button
                     type="button"
-                    onClick={() => avatarRef.current?.click()}
-                    className="rounded-full bg-[#0e2a36] px-4 py-2 text-sm font-semibold text-white shadow hover:opacity-95"
+                    onClick={() => { setRemoveAvatar(true); setAvatarFile(null); setAvatarPreview(null); }}
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 hover:bg-rose-500/20 hover:text-rose-400 hover:border-rose-500/30 transition-all"
                   >
-                    {avatarPreview ? 'Change photo' : 'Upload photo'}
+                    Remove photo
                   </button>
-                  {avatarPreview && (
-                    <button
-                      type="button"
-                      onClick={() => { setRemoveAvatar(true); setAvatarFile(null); setAvatarPreview(null); }}
-                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold hover:bg-slate-50"
-                    >
-                      Remove photo
-                    </button>
-                  )}
-                  <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={onAvatar} />
-                </div>
+                )}
+                <input ref={avatarRef} type="file" accept="image/*" className="hidden" onChange={onAvatar} />
               </div>
             </div>
+          </div>
 
-            {/* Name field */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <label className="block">
-                <span className="mb-1 block text-sm font-semibold text-[#0d1b22]">Pet name *</span>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full rounded-xl border border-[#e8edf0] px-3 py-2 outline-none"
-                  placeholder="eg. Bruno"
-                />
-              </label>
-            </div>
+          <div className="h-px bg-white/[0.06]" />
 
-            <div className="mt-6 flex items-center gap-3">
-              <button
-                disabled={saving || !name.trim()}
-                className="rounded-full bg-[#0e2a36] px-6 py-2 text-white font-semibold shadow hover:opacity-95 disabled:opacity-50"
-                type="submit"
-              >
-                {saving ? 'Saving…' : 'Save changes'}
-              </button>
-              <Link
-                href={`/pets/${pet.id}`}
-                className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold hover:bg-slate-50"
-              >
-                Cancel
-              </Link>
-            </div>
-          </motion.form>
-        </section>
+          {/* Name field */}
+          <div>
+            <label className="block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/40">Pet name *</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="input"
+                placeholder="eg. Bruno"
+              />
+            </label>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              disabled={saving || !name.trim()}
+              className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-7 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 disabled:opacity-40 transition-all"
+              type="submit"
+            >
+              {saving ? 'Saving…' : 'Save changes'}
+            </button>
+            <Link
+              href={`/pets/${pet.id}`}
+              className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/60 hover:bg-white/10 hover:text-white transition-all"
+            >
+              Cancel
+            </Link>
+          </div>
+        </motion.form>
       </div>
     </main>
   );

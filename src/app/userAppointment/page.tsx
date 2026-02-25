@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CalendarDays, Mail, Clock, User as UserIcon } from 'lucide-react';
+import { CalendarDays, Mail, Clock, User as UserIcon, XCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 /* ============================ Types ============================ */
@@ -168,7 +168,7 @@ export default function AppointmentsPage() {
       {/* === Top Banner === */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80">
         <Image
-          src="/images/statbg13.jpg" 
+          src="/images/statbg13.jpg"
           alt="My Appointments Banner"
           fill
           priority
@@ -183,13 +183,14 @@ export default function AppointmentsPage() {
       {/* Main Content - Cream Background */}
       <section className="bg-gradient-to-b from-orange-50 via-amber-50 to-orange-100 min-h-screen py-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          
+
           {/* Error Messages */}
           {error && (
             <div className="mb-6 p-4 rounded-lg border-l-4 bg-red-50 border-red-400 text-red-800">
               <div className="flex items-center">
-                <span className="text-sm font-medium">❌ {error}</span>
-              </div>
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <XCircle className="h-4 w-4" /> {error}
+                </span>              </div>
             </div>
           )}
 
@@ -229,7 +230,7 @@ export default function AppointmentsPage() {
               </Section>
 
               {/* Past Appointments */}
-              <Section 
+              <Section
                 title="Past Appointments"
                 subtitle={`${past.length} completed appointments`}
               >
@@ -341,13 +342,12 @@ function AppointmentCard({
               )}
             </div>
             {/* Status indicator */}
-            <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 border-2 border-white rounded-full ${
-              appt.status === 'accepted' ? 'bg-green-500' : 
-              appt.status === 'rejected' ? 'bg-red-500' : 
-              'bg-orange-500'
-            }`}></div>
+            <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 border-2 border-white rounded-full ${appt.status === 'accepted' ? 'bg-green-500' :
+                appt.status === 'rejected' ? 'bg-red-500' :
+                  'bg-orange-500'
+              }`}></div>
           </div>
-          
+
           <div className="min-w-0 flex-1">
             <h3 className="text-lg font-semibold text-gray-900 truncate">
               Dr. {vet?.name || 'Veterinarian'}
@@ -360,9 +360,19 @@ function AppointmentCard({
             </div>
             <div className="flex items-center gap-2">
               <span className={statusStyles(appt.status)}>
-                {appt.status === 'accepted' ? '✓ Accepted' :
-                 appt.status === 'rejected' ? '✗ Rejected' :
-                 '⏳ Pending'}
+                {appt.status === 'accepted' ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Accepted
+                  </>
+                ) : appt.status === 'rejected' ? (
+                  <>
+                    <XCircle className="h-3.5 w-3.5 mr-1" /> Rejected
+                  </>
+                ) : (
+                  <>
+                    <Clock className="h-3.5 w-3.5 mr-1" /> Pending
+                  </>
+                )}
               </span>
               {vet?.email && (
                 <a

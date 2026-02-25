@@ -1,0 +1,9 @@
+﻿
+C:\Users\Subhradeep Nath\OneDrive\Desktop\New folder (6)\PETZONEE\src\app\map\MapInner.tsx
+  114:75  error  Parsing error: Invalid character
+
+C:\Users\Subhradeep Nath\OneDrive\Desktop\New folder (6)\PETZONEE\src\app\map\page.tsx
+  284:17  error  Parsing error: Invalid character
+
+✖ 2 problems (2 errors, 0 warnings)
+

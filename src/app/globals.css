@@ -164,4 +164,34 @@
     scrollbar-width: thin;
     scrollbar-color: #333333 #000000;
   }
+
+  /* Dark Pet UI — input base class */
+  .input {
+    display: block;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.6rem 0.85rem;
+    font-size: 0.875rem;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  .input:focus {
+    border-color: rgba(255, 138, 101, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 138, 101, 0.12);
+  }
+
+  .input option {
+    background: #1a1a2e;
+    color: #fff;
+  }
 }

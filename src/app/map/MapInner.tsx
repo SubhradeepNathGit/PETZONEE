@@ -1,55 +1,37 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import Image from 'next/image';
 
-/* -------- Red pin icon -------- */
-const redIcon = new L.Icon({
-    iconUrl:
-        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    iconRetinaUrl:
-        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-});
-
 /* -------- Icons -------- */
 const pinIcon = (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
         <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" />
     </svg>
 );
-const phoneIcon = (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-        <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.72 11.72 0 0 0 3.68.59 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.26.21 2.47.59 3.68a1 1 0 0 1-.24 1.01l-2.2 2.2z" />
-    </svg>
-);
 
-/* -------- Types (subset needed for map) -------- */
-/* -------- Types (subset needed for map) -------- */
-export type UserRow = {
+/* -------- Types -------- */
+export type PetMapRow = {
     id: string;
-    first_name: string;
-    last_name: string;
-    email: string; // Added email
-    role: string;
+    name: string;
+    species: string | null;
+    breed: string | null;
     avatar_url: string | null;
+    owner_id: string;
+    owner_name: string;
+    owner_phone: string | null;
     city: string | null;
     state: string | null;
-    phone: string | null;
     latitude: number | null;
     longitude: number | null;
 };
 
 interface MapInnerProps {
-    withCoords: UserRow[];
-    selected: UserRow | null;
+    withCoords: PetMapRow[];
+    selected: PetMapRow | null;
     defaultCenter: [number, number];
     defaultZoom: number;
     setSelectedId: (id: string) => void;
@@ -62,6 +44,31 @@ export default function MapInner({
     defaultZoom,
     setSelectedId,
 }: MapInnerProps) {
+    // Generate custom markers
+    const createCustomIcon = (pet: PetMapRow, isSelected: boolean) => {
+        const imageUrl = pet.avatar_url || '/images/placeholder.png';
+        const sizeClass = isSelected ? 'w-14 h-14' : 'w-10 h-10';
+        const shadowClass = isSelected ? 'shadow-[0_0_15px_rgba(255,138,101,0.8)]' : 'shadow-md shadow-black/50';
+
+        const html = `
+            <div class="relative flex items-center justify-center ${sizeClass} transition-all duration-300 transform ${isSelected ? 'scale-110 z-50' : 'hover:scale-110 z-10'}">
+                <div class="absolute inset-0 ${isSelected ? 'bg-gradient-to-tr from-[#FF8A65] to-[#FF7043] animate-pulse' : 'bg-white/20'} rounded-full ${shadowClass}"></div>
+                <div class="absolute inset-[2px] bg-[#0a0a0f] rounded-full overflow-hidden flex items-center justify-center">
+                    <img src="${imageUrl}" class="w-full h-full object-cover" alt="Pet" onerror="this.src='/images/placeholder.png'" />
+                </div>
+                ${isSelected ? '<div class="absolute -bottom-1 p-[2px] bg-[#0a0a0f] rounded-full"><div class="w-2.5 h-2.5 bg-[#FF8A65] rounded-full"></div></div>' : ''}
+            </div>
+        `;
+
+        return L.divIcon({
+            className: 'custom-pet-marker bg-transparent border-none',
+            html: html,
+            iconSize: isSelected ? [56, 56] : [40, 40],
+            iconAnchor: isSelected ? [28, 28] : [20, 20],
+            popupAnchor: [0, isSelected ? -30 : -22],
+        });
+    };
+
     return (
         <MapContainer
             center={
@@ -69,13 +76,13 @@ export default function MapInner({
                     ? [selected.latitude, selected.longitude]
                     : defaultCenter
             }
-            zoom={selected ? 12 : defaultZoom}
-            style={{ height: '100%', width: '100%', zIndex: 1 }}
-            zoomControl={true}
+            zoom={selected ? 13 : defaultZoom}
+            style={{ height: '100%', width: '100%', zIndex: 1, backgroundColor: '#0a0a0f' }}
+            zoomControl={false}
             scrollWheelZoom={true}
         >
             <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 attribution="&copy; OpenStreetMap &copy; CARTO"
             />
 
@@ -85,50 +92,65 @@ export default function MapInner({
                 fallbackCenter={defaultCenter}
             />
 
-            {withCoords.map((u) => (
-                <Marker
-                    key={u.id}
-                    position={[u.latitude!, u.longitude!]}
-                    icon={redIcon}
-                    eventHandlers={{ click: () => setSelectedId(u.id) }}
-                >
-                    <Popup>
-                        <div className="min-w-[180px]">
-                            <div className="font-semibold text-slate-800">{`${u.first_name} ${u.last_name}`}</div>
-                            <div className="text-xs text-slate-500 capitalize">
-                                {u.role}
-                            </div>
-                            <div className="text-sm text-slate-700 mt-1">
-                                {[u.city, u.state].filter(Boolean).join(', ') || '—'}
-                            </div>
-                            {u.phone && (
-                                <div className="text-sm text-slate-700 mt-1">
-                                    {phoneIcon} {u.phone}
+            {withCoords.map((u) => {
+                const isSelected = selected?.id === u.id;
+                return (
+                    <Marker
+                        key={u.id}
+                        position={[u.latitude!, u.longitude!]}
+                        icon={createCustomIcon(u, isSelected)}
+                        eventHandlers={{ click: () => setSelectedId(u.id) }}
+                        zIndexOffset={isSelected ? 1000 : 0}
+                    >
+                        <Popup className="pet-popup">
+                            <div className="min-w-[220px] bg-[#0d0d14]/90 text-white p-4 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl -m-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#FF8A65] flex-shrink-0">
+                                        <img src={u.avatar_url || '/images/placeholder.png'} alt={u.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/images/placeholder.png' }} />
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-lg text-white leading-tight">{u.name}</div>
+                                        <div className="text-[10px] font-bold text-[#FF8A65] uppercase tracking-wider mt-0.5">
+                                            {u.species || 'PET'} {u.breed ? `• ${u.breed}` : ''}
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    </Popup>
-                </Marker>
-            ))}
+                                <div className="mt-3 pt-3 border-t border-white/10 space-y-2.5">
+                                    <div className="flex items-center gap-2.5 text-sm text-white/70">
+                                        <span className="text-[#FF8A65]">{pinIcon}</span>
+                                        <span className="truncate font-medium">{[u.city, u.state].filter(Boolean).join(', ') || 'Location unknown'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2.5 text-sm text-white/70">
+                                        <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-medium border border-white/5">👤</div>
+                                        <span className="truncate font-medium">Owner: <span className="text-white/90">{u.owner_name}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Popup>
+                    </Marker>
+                );
+            })}
 
-            {/* ✅ Floating Controls */}
-            <div className="absolute top-3 left-3 z-[1000] flex flex-col gap-2">
-                <MapControlButton
-                    label="All"
-                    title="Fit all users"
-                    onClickId="fit-users"
-                />
-                <MapControlButton
-                    label="India"
-                    title="Reset to India"
-                    onClickId="fit-india"
-                />
-                <MapControlButton
-                    label="Me"
-                    title="Locate me"
-                    onClickId="locate-me"
-                />
+            {/* Floating Controls */}
+            <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2.5 shadow-xl">
+                <MapControlButton label="All" title="Fit all pets" onClickId="fit-users" />
+                <MapControlButton label="India" title="Reset to India" onClickId="fit-india" />
+                <MapControlButton label="Me" title="Locate me" onClickId="locate-me" />
             </div>
+
+            <style jsx global>{`
+                .leaflet-popup-content-wrapper {
+                    background: transparent;
+                box-shadow: none;
+                padding: 0;
+                }
+                .leaflet-popup-tip-container {
+                    display: none;
+                }
+                .leaflet-popup-content {
+                    margin: 0;
+                }
+            `}</style>
         </MapContainer>
     );
 }
@@ -139,8 +161,8 @@ function ViewportController({
     selected,
     fallbackCenter,
 }: {
-    items: UserRow[];
-    selected: UserRow | null;
+    items: PetMapRow[];
+    selected: PetMapRow | null;
     fallbackCenter: [number, number];
 }) {
     const map = useMap();
@@ -163,7 +185,6 @@ function ViewportController({
         }
     }, [items, selected, fallbackCenter, map]);
 
-    // ✅ listen to floating buttons
     useEffect(() => {
         const handleClick = (e: Event) => {
             const target = e.target as HTMLElement;
@@ -214,7 +235,7 @@ function MapControlButton({
 }) {
     return (
         <button
-            className="px-3 py-1.5 rounded-lg bg-white shadow hover:bg-slate-100 text-sm font-medium border border-slate-200"
+            className="px-4 py-2.5 rounded-xl bg-black/40 backdrop-blur-xl shadow-lg hover:bg-black/60 text-sm font-bold text-white border border-white/10 transition-all focus:outline-none flex items-center justify-center hover:border-white/30"
             title={title}
             data-map-action={onClickId}
         >

@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, Metric, AvatarPicker } from './shared/ui';
 import { useDebounce } from './shared/hooks';
 import { IconUsers, IconShield, IconMedal, IconSearch, IconRefresh, IconMail, IconPhone, IconDocument, IconCheck, IconX } from './shared/icons';
+import { ClipboardList, Stethoscope } from 'lucide-react';
 import type { VetRow } from './shared/types';
 import React, { useMemo, useState } from 'react';
 
@@ -112,13 +113,15 @@ export default function AdminDashboard({
         </div>
 
         {filteredRows.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📋</div>
-            <h4 className="text-xl font-semibold text-white mb-2">
+          <div className="text-center py-20 bg-white/[0.02] rounded-3xl border border-white/5 border-dashed">
+            <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-white/5 text-gray-500 mb-6">
+              <ClipboardList size={40} />
+            </div>
+            <h4 className="text-2xl font-bold text-white mb-2">
               {searchQuery ? 'No matching applications' : 'No pending applications'}
             </h4>
-            <p className="text-gray-300">
-              {searchQuery ? 'Try adjusting your search terms.' : 'All veterinarian applications have been reviewed.'}
+            <p className="text-gray-400 max-w-sm mx-auto font-medium">
+              {searchQuery ? 'Try adjusting your search terms to find what you are looking for.' : 'All veterinarian applications have been reviewed. Good job!'}
             </p>
           </div>
         ) : (
@@ -143,8 +146,8 @@ export default function AdminDashboard({
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-yellow-400 text-gray-900 rounded-full flex items-center justify-center">
-                        <span className="text-xs">👨‍⚕️</span>
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-yellow-400 text-gray-900 rounded-full flex items-center justify-center shadow-lg ring-2 ring-black/10">
+                        <Stethoscope size={12} strokeWidth={3} />
                       </div>
                     </div>
                     <div className="flex-1">

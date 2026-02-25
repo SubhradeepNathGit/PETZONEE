@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { Card, AvatarPicker } from './shared/ui';
 import { IconMail, IconCalendar, IconCheck, IconX } from './shared/icons';
+import { Stethoscope, Calendar, Clock, XCircle, CheckCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -118,8 +119,9 @@ export default function VetDashboard({
               onUploaded={onAvatarChange}
             />
             <div>
-              <h2 className="text-2xl font-bold text-white mb-1">
-                Welcome, {name ? `Dr. ${name}` : 'Doctor'} 🩺
+              <h2 className="text-2xl font-extrabold text-white mb-1 flex items-center gap-3">
+                Welcome, {name ? `Dr. ${name}` : 'Doctor'}
+                <Stethoscope className="text-orange-500 w-6 h-6 animate-pulse" />
               </h2>
               <p className="text-gray-300">Manage your appointments and patients</p>
             </div>
@@ -190,12 +192,14 @@ export default function VetDashboard({
             ))}
           </div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📅</div>
-            <h4 className="text-xl font-semibold text-white mb-2">
+          <div className="text-center py-20 bg-white/[0.02] rounded-3xl border border-white/5 border-dashed">
+            <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-white/5 text-gray-500 mb-6">
+              <Calendar size={40} />
+            </div>
+            <h4 className="text-2xl font-bold text-white mb-2">
               {filter === 'all' ? 'No appointments yet' : `No ${filter} appointments`}
             </h4>
-            <p className="text-gray-300">
+            <p className="text-gray-400 max-w-sm mx-auto font-medium">
               {filter === 'all'
                 ? 'Your appointments will appear here once patients book with you.'
                 : `Switch to "All" to see appointments with other statuses.`}
@@ -287,7 +291,7 @@ export default function VetDashboard({
 export function KycPending({ status }: { status: 'pending' | 'rejected' | 'approved' }) {
   const statusConfig = {
     pending: {
-      icon: '⏳',
+      icon: <Clock className="w-16 h-16" />,
       title: 'Application Under Review',
       description: 'Your veterinarian application is being reviewed by our team.',
       color: 'text-yellow-300',
@@ -295,7 +299,7 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
       border: 'border-yellow-500/30',
     },
     rejected: {
-      icon: '❌',
+      icon: <XCircle className="w-16 h-16" />,
       title: 'Application Rejected',
       description: 'Your application has been rejected. Please contact support for more information.',
       color: 'text-red-300',
@@ -303,7 +307,7 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
       border: 'border-red-500/30',
     },
     approved: {
-      icon: '✅',
+      icon: <CheckCircle className="w-16 h-16" />,
       title: 'Application Approved',
       description: 'Congratulations! Your application has been approved.',
       color: 'text-emerald-300',
@@ -315,9 +319,9 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
   const cfg = statusConfig[status];
 
   return (
-    <Card className={`${cfg.bg} ${cfg.border} border`}>
+    <Card className={`${cfg.bg} ${cfg.border} border p-12`}>
       <div className="text-center py-8 text-white">
-        <div className="text-6xl mb-4">{cfg.icon}</div>
+        <div className={`mb-6 flex justify-center ${cfg.color}`}>{cfg.icon}</div>
         <h2 className={`text-2xl font-bold mb-3 ${cfg.color}`}>{cfg.title}</h2>
         <p className="text-gray-300 mb-6 max-w-md mx-auto">{cfg.description}</p>
 

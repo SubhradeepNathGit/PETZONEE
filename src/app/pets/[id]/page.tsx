@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Trash2 } from "lucide-react";
+import { Trash2, PawPrint, Calendar, Cake, Image as LucideImage, Plus } from "lucide-react";
 import { toast } from 'react-toastify';
 
 type PetRow = {
@@ -199,15 +199,15 @@ export default function PetProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-[100dvh] bg-white">
-        <div className="mx-auto max-w-[960px] px-4 py-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-56 rounded-3xl bg-slate-200" />
-            <div className="h-6 w-64 rounded bg-slate-200" />
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div className="h-24 rounded-xl bg-slate-100" />
-              <div className="h-24 rounded-xl bg-slate-100" />
-              <div className="h-24 rounded-xl bg-slate-100" />
+      <main className="min-h-[100dvh] bg-[#0a0a0f]">
+        <div className="mx-auto max-w-[960px] px-4 py-10">
+          <div className="animate-pulse space-y-5">
+            <div className="h-64 rounded-3xl bg-white/5" />
+            <div className="h-5 w-52 rounded-full bg-white/5" />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="h-24 rounded-2xl bg-white/5" />
+              <div className="h-24 rounded-2xl bg-white/5" />
+              <div className="h-24 rounded-2xl bg-white/5" />
             </div>
           </div>
         </div>
@@ -217,13 +217,13 @@ export default function PetProfilePage() {
 
   if (!pet) {
     return (
-      <main className="min-h-[100dvh] bg-white">
+      <main className="min-h-[100dvh] bg-[#0a0a0f]">
         <div className="mx-auto max-w-[960px] px-4 py-12">
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-rose-800">
+          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-6 text-rose-300">
             {err || 'Pet not found'}
           </div>
           <div className="mt-4">
-            <Link href="/" className="text-[#0e2a36] underline">Go back</Link>
+            <Link href="/" className="text-[#FF8A65] hover:underline text-sm">← Go back</Link>
           </div>
         </div>
       </main>
@@ -231,32 +231,18 @@ export default function PetProfilePage() {
   }
 
   return (
-    <main className="min-h-[100dvh] w-full bg-[#f5f5dc]">
-      {/*  Top Banner with Breadcrumb */}
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
-        <Image
-          src="/images/statbg13.jpg" // put your banner in /public
-          alt="Products Banner"
-          fill
-          priority
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white">
-            Pet Profile
-          </h1>
-          <p className="text-sm md:text-base text-gray-200 mt-2">
-            Home / Profile / Pet Profile
-          </p>
-        </div>
-      </div>
+    <main className="min-h-[100dvh] w-full bg-[#0a0a0f]">
+      <div className="mx-auto max-w-[1000px] px-4 pt-8 pb-16">
 
-
-      <div className="mx-auto max-w-[1000px] px-4 py-8">
-
-        {/* Cover / hero - Increased height */}
-        <div className="relative overflow-hidden rounded-[28px] border border-[#ffe2cf] bg-[#FF8A65] p-6  shadow-[0_10px_35px_rgba(0,0,0,0.15)] ">
-          <div className="relative h-72 w-full overflow-hidden rounded-[24px] bg-white  ">
+        {/* ── Hero Card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.04] shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+        >
+          {/* Cover photo */}
+          <div className="relative h-64 sm:h-72 w-full overflow-hidden rounded-t-3xl bg-[#0e1520]">
             {coverSrc ? (
               <Image
                 src={coverSrc}
@@ -266,212 +252,179 @@ export default function PetProfilePage() {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-white/80 bg-[#0e2a36]">
-                No cover photo
+              <div className="flex h-full w-full items-center justify-center">
+                <div className="flex flex-col items-center gap-2 text-white/15">
+                  <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs">No cover photo</span>
+                </div>
               </div>
             )}
+            {/* dark gradient overlay at bottom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           </div>
 
-          {/* Avatar */}
-          <div className="absolute bottom-4 left-6 z-10 h-28 w-28 overflow-hidden rounded-full ring-4 ring-white shadow-lg">
-            <Image
-              src={avatarSrc}
-              alt={`${pet.name} avatar`}
-              fill
-              className="object-cover"
-              sizes="112px"
-            />
-          </div>
-
-          {/* Header strip */}
-          <div className="mt-10 flex flex-col gap-3 p-4 text-white sm:mt-8 sm:flex-row sm:items-center sm:justify-between">
-            <div className="sm:ml-32">
-              <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-sm">{pet.name}</h1>
-              <p className="text-white/85 text-sm">
-                {(pet.species || 'Pet')}{pet.breed ? ` • ${pet.breed}` : ''} {pet.dob ? `• DOB: ${new Date(pet.dob).toLocaleDateString()}` : ''}
-              </p>
+          {/* Bottom info strip */}
+          <div className="relative flex flex-col gap-4 px-6 pt-0 pb-6 sm:flex-row sm:items-end sm:justify-between">
+            {/* Avatar — overlaps cover */}
+            <div className="-mt-10 flex items-end gap-4">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#FF8A65]/70 shadow-xl">
+                <Image
+                  src={avatarSrc}
+                  alt={`${pet.name} avatar`}
+                  width={96}
+                  height={96}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="pb-1">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{pet.name}</h1>
+                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                  {pet.species && (
+                    <span className="rounded-full bg-[#FF8A65]/15 border border-[#FF8A65]/20 px-2.5 py-0.5 text-xs font-semibold text-[#FF8A65]">
+                      {pet.species}
+                    </span>
+                  )}
+                  {pet.breed && (
+                    <span className="rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-xs font-medium text-white/50">
+                      {pet.breed}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
 
+            {/* Action buttons */}
+            <div className="flex flex-wrap items-center gap-2 sm:pb-1">
               <Link
                 href={`/pets/${pet.id}/edit`}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
-
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur hover:bg-white/[0.12] hover:text-white transition-all"
               >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
                 Edit
               </Link>
               <button
                 onClick={handleDeletePet}
                 disabled={!iOwnIt || deleting}
-                className="rounded-full border border-rose-500/30 bg-white/20 p-2 text-red-500 shadow-md backdrop-blur-md transition hover:bg-white/20 hover:border-white/30"
+                className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/20 transition-all disabled:opacity-40"
               >
                 {deleting ? (
                   <span className="text-xs">…</span>
                 ) : (
-                  <Trash2 className="w-5 h-5 text-rose-400" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 )}
+                {deleting ? 'Deleting' : 'Delete'}
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Stats */}
-        <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-            <h4 className="text-lg font-bold text-[#FF6B40]/70">Age</h4>
-            <p className="mt-2 text-xl font-bold text-black/70">{ageLabel}</p>
-          </div>
-
-          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-            <h4 className="text-sm font-medium text-[#FF6B40]/70">Weight</h4>
-            <p className="mt-2 text-xl font-bold text-black/70">
-              {pet.weight_kg ? `${pet.weight_kg} kg` : "—"}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/20 bg-transparent backdrop-blur-md p-6 text-center shadow-md hover:bg-white/50 transition">
-            <h4 className="text-sm font-medium text-[#FF6B40]/70">Joined</h4>
-            <p className="mt-2 text-xl font-bold text-black/70">
-              {new Date(pet.created_at).toLocaleDateString("en-US", {
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
-          </div>
+        {/* ── Stat pills ── */}
+        <section className="mt-4 grid grid-cols-3 gap-3">
+          {[
+            { label: 'Age', value: ageLabel },
+            { label: 'Weight', value: pet.weight_kg ? `${pet.weight_kg} kg` : '—' },
+            { label: 'Joined', value: new Date(pet.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4 text-center hover:bg-white/[0.07] transition-colors">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#FF8A65]/70 mb-1">{s.label}</p>
+              <p className="text-lg font-bold text-white">{s.value}</p>
+            </div>
+          ))}
         </section>
 
 
-        {/* About Section */}
+        {/* ── About Section ── */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="mt-10 overflow-hidden rounded-3xl bg-orange-100 "
+          className="mt-5 overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.04]"
         >
           {/* Header */}
-          <div className="px-8 py-6 bg-[#FF8A65]">
-            <h2 className="text-2xl font-bold text-white">
-              Meet {pet.name || "Pet"}
-            </h2>
-            <p className="text-sm text-white mt-1 flex items-center gap-2">
-              <span className='font-medium'>Joined PETZONEE on</span>
-              <span className="font-medium text-white">
-                {new Date(pet.created_at).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </p>
+          <div className="px-6 py-5 border-b border-white/[0.06] flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-[#FF8A65]/15 flex items-center justify-center">
+              <PawPrint className="text-[#FF8A65] w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white">Meet {pet.name || 'Pet'}</h2>
+              <p className="text-xs text-white/30">
+                Joined PETZONEE {new Date(pet.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+            </div>
           </div>
 
-
           {/* Content */}
-          <div className="p-8 space-y-8">
-            {/* Basic Info + Physical Stats */}
-            <div className="grid gap-8 md:grid-cols-2">
+          <div className="p-6 space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
               {/* Basic Info */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-orange-400">
-                  Basic Information
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Species :</span>
-                    <span className=" font-medium text-gray-600">{pet.species || "Not specified"}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Breed :</span>
-                    <span className="font-medium text-gray-600">{pet.breed || "Mixed/Unknown"}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Age :</span>
-                    <span className="font-medium text-gray-600">{ageLabel}</span>
-                  </div>
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#FF8A65]/70">Basic Information</h3>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Species', val: pet.species || 'Not specified' },
+                    { label: 'Breed', val: pet.breed || 'Mixed / Unknown' },
+                    { label: 'Age', val: ageLabel },
+                  ].map((r) => (
+                    <div key={r.label} className="flex items-center justify-between rounded-xl bg-white/[0.04] px-4 py-2.5">
+                      <span className="text-xs font-medium text-white/40">{r.label}</span>
+                      <span className="text-sm font-semibold text-white">{r.val}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Physical Stats */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-orange-400">
-                  Physical Stats
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Weight :</span>
-                    <span className="font-medium text-gray-600">
-                      {pet.weight_kg ? `${pet.weight_kg} kg` : "Not recorded"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Born: </span>
-                    <span className="font-medium text-gray-600">
-                      {pet.dob
-                        ? new Date(pet.dob).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
-                        : "Unknown"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span className="font-medium">Owner: </span>
-                    <span className=" font-medium text-gray-600">
-                      {meId === pet.owner_id ? "You" : "Shared access"}
-                    </span>
-                  </div>
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#FF8A65]/70">Physical Stats</h3>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Weight', val: pet.weight_kg ? `${pet.weight_kg} kg` : 'Not recorded' },
+                    { label: 'Born', val: pet.dob ? new Date(pet.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown' },
+                    { label: 'Owner', val: meId === pet.owner_id ? 'You' : 'Shared access' },
+                  ].map((r) => (
+                    <div key={r.label} className="flex items-center justify-between rounded-xl bg-white/[0.04] px-4 py-2.5">
+                      <span className="text-xs font-medium text-white/40">{r.label}</span>
+                      <span className="text-sm font-semibold text-white">{r.val}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Biography */}
+            {/* Bio */}
             {pet.notes && (
               <>
-                <hr className="border-t border-gray-700/40" />
+                <div className="h-px bg-white/[0.06]" />
                 <div>
-                  <h3 className="mb-4 text-lg font-semibold text-orange-400">
-                    Bio
-                  </h3>
-                  <p className="leading-relaxed text-md font-semibold text-gray-500">{pet.notes}</p>
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#FF8A65]/70">Bio</h3>
+                  <p className="text-sm leading-relaxed text-white/60">{pet.notes}</p>
                 </div>
               </>
             )}
 
-            {/* Timeline */}
-            <hr className="border-t border-gray-700/40" />
+            {/* Timeline chips */}
+            <div className="h-px bg-white/[0.06]" />
             <div>
-              <h3 className="mb-4 text-lg font-semibold text-orange-400">Timeline</h3>
-              <div className="flex flex-wrap gap-3 text-sm text-gray-100">
-                {/* Added */}
-                <div className="flex items-center gap-2 rounded-full bg-orange-300/20 px-4 py-2  border border-orange-300">
-                  <span className="font-medium text-orange-400">Added:</span>
-                  <span className=" font-medium text-gray-500">
-                    {new Date(pet.created_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-
-                {/* Birthday */}
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#FF8A65]/70">Timeline</h3>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/60">
+                  <Calendar className="text-[#FF8A65] w-3.5 h-3.5" />
+                  Added {new Date(pet.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
                 {pet.dob && (
-                  <div className="flex items-center gap-2 rounded-full bg-[#FF8A65] px-4 py-2  border border-orange-300">
-                    <span className="font-medium text-white">Birthday:</span>
-                    <span className='font-medium'>
-                      {new Date(pet.dob).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#FF8A65]/20 bg-[#FF8A65]/10 px-3 py-1.5 text-xs font-medium text-[#FF8A65]">
+                    <Cake className="w-3.5 h-3.5" />
+                    Birthday {new Date(pet.dob).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
                 )}
-
-                {/* Photos */}
-                <div className="flex items-center gap-2 rounded-full bg-black/40 px-4 py-2 shadow-sm border border-black/30">
-                  <span className="font-medium">Photos:</span>
-                  <span className='font-medium'>{gallery.length} uploaded</span>
-                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/60">
+                  <LucideImage className="w-3.5 h-3.5" />
+                  {gallery.length} photo{gallery.length !== 1 ? 's' : ''}
+                </span>
               </div>
             </div>
           </div>
@@ -481,10 +434,10 @@ export default function PetProfilePage() {
 
 
 
-        {/* ===== Gallery ===== */}
-        <section className="mt-8">
+        {/* ── Gallery ── */}
+        <section className="mt-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-[#0d1b22]">Photos</h2>
+            <h2 className="text-base font-bold text-white">Photos</h2>
             {meId === pet.owner_id && (
               <UploadPetPhoto
                 petId={pet.id}
@@ -504,12 +457,12 @@ export default function PetProfilePage() {
           {galleryLoading ? (
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="h-28 sm:h-32 rounded-lg bg-slate-100 animate-pulse" />
+                <div key={i} className="h-28 sm:h-32 rounded-xl bg-white/5 animate-pulse" />
               ))}
             </div>
           ) : gallery.length === 0 ? (
-            <div className="rounded-xl border border-[#eef2f4] bg-white p-6 text-sm text-[#5a6b73]">
-              No photos yet. Add some snapshots for {pet.name}!
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-8 text-center">
+              <p className="text-sm text-white/30">No photos yet. Add some snapshots for {pet.name}!</p>
             </div>
           ) : (
             <>
@@ -619,18 +572,16 @@ export default function PetProfilePage() {
           )}
         </section>
 
-        {/* Quick links */}
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/pets/new" className="rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold hover:bg-slate-50">
-            Add another pet
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/pets/new" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <Plus size={16} /> Add another pet
           </Link>
-
-          <Link href="/dashboard" className="rounded-full bg-[#FF8A65] px-5 py-2 text-sm font-semibold text-white hover:opacity-95">
-            Back to dashboard
+          <Link href="/dashboard" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all">
+            ← Dashboard
           </Link>
         </div>
       </div>
-    </main >
+    </main>
   );
 }
 
@@ -710,10 +661,12 @@ function UploadPetPhoto({
       <label
         htmlFor={inputId}
         title="Add photo to gallery"
-        className={`rounded-full px-4 py-2 text-sm font-semibold shadow cursor-pointer ${busy ? 'bg-slate-300 text-slate-600' : 'bg-[#FF8A65] text-white hover:opacity-90'
+        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold cursor-pointer transition-all ${busy
+          ? 'bg-white/10 text-white/30'
+          : 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white shadow-lg shadow-orange-500/20 hover:brightness-110'
           }`}
       >
-        {busy ? 'Uploading…' : 'Add photo'}
+        {busy ? 'Uploading…' : <><Plus size={16} /> Add photo</>}
       </label>
     </>
   );

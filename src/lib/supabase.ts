@@ -16,7 +16,7 @@ export const supabase = createClient(
 );
 
 if (typeof window !== "undefined" && (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL === "https://placeholder.supabase.co")) {
-  console.warn("⚠️ PETZONEE: NEXT_PUBLIC_SUPABASE_URL is missing. Using hardcoded fallback.");
+  console.warn("WARNING PETZONEE: NEXT_PUBLIC_SUPABASE_URL is missing. Using hardcoded fallback.");
 }
 
 /**
