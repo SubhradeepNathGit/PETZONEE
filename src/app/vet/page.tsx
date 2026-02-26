@@ -340,8 +340,16 @@ const VeterinaryServices: React.FC = () => {
 
       {/* -------- TOP BANNER (unchanged) -------- */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
-        <Image src="/images/statbg9.jpg" alt="Veterinary Support" fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center">
+        <Image
+          src="/images/statbg9.jpg"
+          alt="Veterinary Support"
+          fill
+          priority
+          sizes="100vw"
+          quality={90}
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="px-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
               Veterinary <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Support</span>

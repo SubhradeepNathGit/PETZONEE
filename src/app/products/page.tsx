@@ -149,9 +149,11 @@ export default function ProductsPage() {
           alt="Products Banner"
           fill
           priority
+          sizes="100vw"
+          quality={90}
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4">
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Shop</span>
           </h1>
@@ -287,8 +289,8 @@ export default function ProductsPage() {
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
                         className={`px-4 py-2 rounded-lg shadow-md transition-colors ${currentPage === i + 1
-                            ? "bg-[#FF7A7A] text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          ? "bg-[#FF7A7A] text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                       >
                         {i + 1}

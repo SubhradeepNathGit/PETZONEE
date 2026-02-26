@@ -150,6 +150,7 @@ export default function LocationsPage() {
           fill
           priority
           sizes="100vw"
+          quality={90}
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4 z-10">

@@ -151,9 +151,11 @@ export default function ContactPage() {
           alt="Contact Us Banner"
           fill
           priority
+          sizes="100vw"
+          quality={90}
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4">
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
             Contact <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Us</span>
           </h1>
