@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ChevronDown, Mail, Phone, MapPin } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 /* ================= FAQ Data ================= */
 interface FAQItem {
@@ -67,9 +68,8 @@ const FAQSection = () => {
     >
       <button
         onClick={() => toggleFAQ(faq.id)}
-        className={`w-full px-6 py-5 flex items-center justify-between text-left transition-all duration-300 ${
-          openId === faq.id ? 'bg-[#FF8A65] text-white' : 'hover:bg-[#FF8A65] hover:text-white'
-        }`}
+        className={`w-full px-6 py-5 flex items-center justify-between text-left transition-all duration-300 ${openId === faq.id ? 'bg-[#FF8A65] text-white' : 'hover:bg-[#FF8A65] hover:text-white'
+          }`}
         aria-expanded={openId === faq.id}
         aria-controls={`faq-answer-${faq.id}`}
       >
@@ -123,6 +123,7 @@ const FAQSection = () => {
 
 /* ================= Contact Page ================= */
 export default function ContactPage() {
+  const router = useRouter();
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '', agree: false });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -144,17 +145,28 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* === Top Banner (no animation) === */}
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-12">
+      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-12 overflow-hidden">
         <Image
-          src="/images/statbg2.jpg" // put your banner in /public
-          alt="Products Banner"
+          src="/images/statbg2.jpg"
+          alt="Contact Us Banner"
           fill
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white">Contant Us</h1>
-          <p className="text-sm md:text-base text-gray-200 mt-2">Home / Contact</p>
+        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Contact <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Us</span>
+          </h1>
+          <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
+            <button
+              onClick={() => router.push('/')}
+              className="text-white/50 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+            >
+              Home
+            </button>
+            <span className="text-white/20 text-xs">/</span>
+            <p className="text-xs sm:text-sm text-[#FF8A65]/80 font-semibold">Contact</p>
+          </div>
         </div>
       </div>
 
@@ -224,7 +236,7 @@ export default function ContactPage() {
       {/* === Map Section === */}
       <section ref={mapRef} className="py-10 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <motion.div  className=" shadow-2xl ">
+          <motion.div className=" shadow-2xl ">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689.017013408831!2d88.34796067493606!3d22.572646185258867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a027b03e5f0a0cd%3A0xf2f2b3d7a5e2f5a!2sKolkata%2C%20West%20Bengal%2C%20India!5e0!3m2!1sen!2sin!4v1693555200000!5m2!1sen!2sin"
               width="100%"

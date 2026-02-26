@@ -105,7 +105,8 @@ const ServiceMarquee = () => {
               src={service.image}
               alt={service.alt}
               fill
-              sizes="280px"
+              priority={index < 6}
+              sizes="(max-width: 768px) 280px, 300px"
               className="object-cover transition-transform duration-1000 group-hover:scale-110"
             />
 
@@ -224,7 +225,7 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect }: {
             : "bg-[#5F97C9] text-white hover:bg-[#4d84b8] shadow-[0_4px_15px_rgba(95,151,201,0.3)] focus:ring-[#5F97C9]/40"
             }`}
         >
-          Get Started — {plan.popular ? "Most Popular" : plan.title}
+          Get Started
         </button>
       </div>
     </motion.div>
@@ -340,10 +341,21 @@ const VeterinaryServices: React.FC = () => {
       {/* -------- TOP BANNER (unchanged) -------- */}
       <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
         <Image src="/images/statbg9.jpg" alt="Veterinary Support" fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Veterinary Support</h1>
-            <p className="text-sm sm:text-base text-gray-200 mt-2">Home / Health</p>
+        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+              Veterinary <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Support</span>
+            </h1>
+            <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
+              <button
+                onClick={() => router.push('/')}
+                className="text-gray-300 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+              >
+                Home
+              </button>
+              <span className="text-gray-500 text-xs">/</span>
+              <p className="text-xs sm:text-sm text-gray-400 font-medium">Health</p>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -398,7 +410,14 @@ const VeterinaryServices: React.FC = () => {
             {/* Right image */}
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="relative">
               <div className="relative w-full h-[420px] rounded-[2.5rem] overflow-hidden shadow-2xl group">
-                <Image src="/images/vet5.jpg" alt="Veterinarian with pet" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                <Image
+                  src="/images/vet5.jpg"
+                  alt="Veterinarian with pet"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#5F97C9]/30 to-transparent" />
               </div>
               {/* Glass badge */}
@@ -449,8 +468,8 @@ const VeterinaryServices: React.FC = () => {
 
       {/* -------- CTA BANNER SECTION -------- */}
       <section className="relative w-full h-[440px] md:h-[480px] flex items-center overflow-hidden">
-        <Image src="/images/Vetbanner.jpg" alt="Care they deserve" fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/85 via-[#5F97C9]/55 to-[#0F172A]/85" />
+        <Image src="/images/statbg1.jpg" alt="Care they deserve" fill priority sizes="100vw" className="object-cover" />
+        <div className="absolute inset-0 bg-black/30" />
 
         <div className="relative z-10 w-full flex items-center justify-center">
           <motion.div

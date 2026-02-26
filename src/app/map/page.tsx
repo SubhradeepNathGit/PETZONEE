@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import type { PetMapRow } from './MapInner';
 import { Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 /* -------- SSR-safe dynamic imports -------- */
 const MapInner = dynamic(
@@ -27,6 +28,7 @@ const UserIcon = () => (
 );
 
 export default function LocationsPage() {
+  const router = useRouter();
   const [rows, setRows] = useState<PetMapRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -141,14 +143,30 @@ export default function LocationsPage() {
       {/* Premium Gradient Overlay */}
       <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-[#1a1311] via-[#0a0a0f] to-transparent pointer-events-none opacity-50"></div>
 
-      {/* Header Area */}
-      <div className="relative pt-24 pb-12 px-4 md:px-8 text-center z-10">
-        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-          Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Pets</span>
-        </h1>
-        <p className="text-sm md:text-base text-white/50 mt-3 font-medium tracking-wide">
-          Find furry friends in your neighborhood
-        </p>
+      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8 overflow-hidden">
+        <Image
+          src="/images/statbg7.jpg"
+          alt="Discover Pets"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4 z-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+            Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Nearby Pets</span>
+          </h1>
+          <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
+            <button
+              onClick={() => router.push('/')}
+              className="text-white/50 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+            >
+              Home
+            </button>
+            <span className="text-white/20 text-xs">/</span>
+            <p className="text-xs sm:text-sm text-[#FF8A65]/80 font-semibold">Discover</p>
+          </div>
+        </div>
       </div>
 
       <div className="mx-auto max-w-[1400px] px-4 md:px-8 pb-12 relative z-10">
@@ -282,8 +300,8 @@ function PetCard({
     <button
       onClick={onClick}
       className={`flex items-center gap-4 w-full p-4 rounded-2xl text-left transition-all duration-300 group ${active
-          ? 'bg-gradient-to-r from-white/[0.08] to-transparent border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
-          : 'bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10'
+        ? 'bg-gradient-to-r from-white/[0.08] to-transparent border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
+        : 'bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10'
         }`}
     >
       <div className={`relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 transition-transform duration-500 ${active ? 'scale-105 shadow-[0_0_15px_rgba(255,138,101,0.3)]' : 'group-hover:scale-105'}`}>

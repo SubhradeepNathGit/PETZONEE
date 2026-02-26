@@ -8,8 +8,10 @@ import Sidebar from "@/components/products/Sidebar";
 import SortMenu from "@/components/products/SortMenu";
 import { Product } from "@/types/product";
 import { Filter, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
@@ -141,7 +143,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Banner */}
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8">
+      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8 overflow-hidden">
         <Image
           src="/images/statbg12.jpg"
           alt="Products Banner"
@@ -149,11 +151,20 @@ export default function ProductsPage() {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-            Shop
+        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Shop</span>
           </h1>
-          <p className="text-sm sm:text-base text-gray-200 mt-2">Home / Shop</p>
+          <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
+            <button
+              onClick={() => router.push('/')}
+              className="text-white/50 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+            >
+              Home
+            </button>
+            <span className="text-white/20 text-xs">/</span>
+            <p className="text-xs sm:text-sm text-[#FF8A65]/80 font-semibold">Shop</p>
+          </div>
         </div>
       </div>
 
@@ -189,9 +200,8 @@ export default function ProductsPage() {
 
               {/* Drawer */}
               <div
-                className={`absolute left-0 top-0 h-full w-4/5 max-w-xs bg-white p-4 shadow-lg overflow-y-auto z-50 transform transition-transform duration-300 ${
-                  showSidebar ? "translate-x-0" : "-translate-x-full"
-                }`}
+                className={`absolute left-0 top-0 h-full w-4/5 max-w-xs bg-white p-4 shadow-lg overflow-y-auto z-50 transform transition-transform duration-300 ${showSidebar ? "translate-x-0" : "-translate-x-full"
+                  }`}
               >
                 <button
                   className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200"
@@ -222,9 +232,9 @@ export default function ProductsPage() {
                 {loading
                   ? "Loading..."
                   : `Showing ${indexOfFirst + 1}–${Math.min(
-                      indexOfLast,
-                      filteredProducts.length
-                    )} of ${filteredProducts.length} results`}
+                    indexOfLast,
+                    filteredProducts.length
+                  )} of ${filteredProducts.length} results`}
               </p>
 
               <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
@@ -276,11 +286,10 @@ export default function ProductsPage() {
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
-                        className={`px-4 py-2 rounded-lg shadow-md transition-colors ${
-                          currentPage === i + 1
+                        className={`px-4 py-2 rounded-lg shadow-md transition-colors ${currentPage === i + 1
                             ? "bg-[#FF7A7A] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {i + 1}
                       </button>
