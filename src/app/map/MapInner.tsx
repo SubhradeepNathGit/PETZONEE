@@ -56,7 +56,6 @@ export default function MapInner({
                 <div class="absolute inset-[2px] bg-[#0a0a0f] rounded-full overflow-hidden flex items-center justify-center">
                     <img src="${imageUrl}" class="w-full h-full object-cover" alt="Pet" onerror="this.src='/images/placeholder.png'" />
                 </div>
-                ${isSelected ? '<div class="absolute -bottom-1 p-[2px] bg-[#0a0a0f] rounded-full"><div class="w-2.5 h-2.5 bg-[#FF8A65] rounded-full"></div></div>' : ''}
             </div>
         `;
 
