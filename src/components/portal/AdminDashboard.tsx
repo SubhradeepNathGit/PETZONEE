@@ -146,7 +146,7 @@ export default function AdminDashboard({
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-yellow-400 text-gray-900 rounded-full flex items-center justify-center shadow-lg ring-2 ring-black/10">
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-yellow-400 text-gray-900 rounded-full flex items-center justify-center ring-2 ring-black/10">
                         <Stethoscope size={12} strokeWidth={3} />
                       </div>
                     </div>
@@ -180,14 +180,14 @@ export default function AdminDashboard({
                     <button
                       disabled={busy === vet.id}
                       onClick={() => setKyc(vet.id, 'approved')}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow hover:brightness-110 transition text-sm disabled:opacity-60"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:brightness-110 transition text-sm disabled:opacity-60"
                     >
                       <IconCheck size={16} /> {busy === vet.id ? 'Processing...' : 'Approve'}
                     </button>
                     <button
                       disabled={busy === vet.id}
                       onClick={() => setKyc(vet.id, 'rejected')}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600/90 text-white shadow hover:brightness-110 transition text-sm disabled:opacity-60"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600/90 text-white hover:brightness-110 transition text-sm disabled:opacity-60"
                     >
                       <IconX size={16} /> {busy === vet.id ? 'Processing...' : 'Reject'}
                     </button>

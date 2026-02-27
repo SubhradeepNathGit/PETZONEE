@@ -24,7 +24,7 @@ export const sidebarMenus = {
     { label: "Shop", path: "/products" },
     { label: "News Feed", path: "/feed" },
     { label: "Book Appointment", path: "/appointments/new" },
-    { label: "My Appointments", path: "/userAppointment" },
+    { label: "My Appointments", path: "/dashboard?view=appointments" },
     { label: "Contact Us", path: "/contactUs" },
     { label: "Delete Account", path: "/delete" },
   ],

@@ -15,7 +15,7 @@ export default function UserDashboard({
 }) {
   return (
     <div className="space-y-8 pb-10">
-      <Card className="relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-10 shadow-2xl transition-all duration-500">
+      <Card className="relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-6 md:p-10 transition-all duration-500">
         {/* Static Mirror Reflection Effect */}
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-50" />
@@ -24,7 +24,7 @@ export default function UserDashboard({
         <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full -ml-20 -mb-20 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
           <div className="flex-shrink-0">
             <AvatarPicker
               name={firstName}
@@ -35,13 +35,17 @@ export default function UserDashboard({
               onUploaded={onAvatarChange}
             />
           </div>
-          <div className="flex-1">
-            <h2 className="text-5xl font-extrabold text-white mb-3 tracking-tight">
+          <div className="flex-1 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF8A65] mb-2">Member Portal</p>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-tight mb-4">
               Hello{firstName ? `, ${firstName}` : ''}
             </h2>
-            <p className="text-white/80 text-lg font-medium">
-              Your premium pet care journey starts here with <span className="text-white font-bold">PETZONEE</span>
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="h-px w-12 bg-white/20" />
+              <p className="text-white/70 text-base md:text-lg font-medium tracking-tight">
+                Welcome back to the <span className="text-white font-black italic">world of pets</span>
+              </p>
+            </div>
           </div>
         </div>
       </Card>

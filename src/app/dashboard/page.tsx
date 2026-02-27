@@ -5,9 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/sidebar';
+import UserAppointmentsView from '@/components/portal/UserAppointmentsView';
 
 import { Role, PetRow, PetUI, SidebarItem, VetRow } from '@/components/portal/shared/types';
 import { useAsyncError } from '@/components/portal/shared/hooks';
@@ -17,7 +19,7 @@ import {
   IconHome, IconCalendar, IconUsers, IconUser, IconBell, IconChart, IconShield, IconPackage,
   IconShoppingBag, IconCompass, IconPlus, IconHeart, IconSettings, IconTrash, IconLogOut, IconX, IconPawPrint, IconDog
 } from '@/components/portal/shared/icons';
-import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint, Menu, X as IconXLucide } from 'lucide-react';
 
 const AdminDashboard = dynamic(() => import('@/components/portal/AdminDashboard'), { ssr: false });
 const VetDashboard = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
@@ -37,8 +39,10 @@ type VetProfileRow = {
   avatar_url: string | null;
 };
 
-export default function Portal() {
+function PortalContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const view = searchParams.get('view');
   const throwAsyncError = useAsyncError();
   const [role, setRole] = useState<Role>('loading');
   const [firstName, setFirstName] = useState('');
@@ -61,6 +65,7 @@ export default function Portal() {
   const [showPets, setShowPets] = useState(false);
   const [pets, setPets] = useState<PetUI[]>([]);
   const [petsLoading, setPetsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -270,7 +275,10 @@ export default function Portal() {
       return <KycPending status={vetKyc ?? 'pending'} />;
     }
 
-    if (role === 'user')
+    if (role === 'user') {
+      if (view === 'appointments' && meId) {
+        return <UserAppointmentsView userId={meId} />;
+      }
       return (
         <UserDashboard
           firstName={firstName}
@@ -281,6 +289,7 @@ export default function Portal() {
           onExploreMyPets={loadMyPets}
         />
       );
+    }
 
     return (
       <Card>
@@ -299,7 +308,7 @@ export default function Portal() {
     );
   }, [
     role, firstName, meId, pendingVets, stats, busy, vetKyc, vetName, vetAvatar,
-    profileAvatar, showMessage, loadMyPets
+    profileAvatar, showMessage, loadMyPets, view
   ]);
 
   const getSidebarItems = useCallback(
@@ -347,6 +356,7 @@ export default function Portal() {
       role={role === 'loading' || role === 'none' ? 'user' : role}
       name={role === 'vet' ? (vetName ? `Dr. ${vetName}` : 'Doctor') : firstName || 'User'}
       avatarUrl={(role === 'vet' ? vetAvatar : profileAvatar) || undefined}
+      onItemClick={() => setIsSidebarOpen(false)}
     />
   );
 
@@ -360,61 +370,88 @@ export default function Portal() {
             {sidebar}
           </aside>
 
-          <div className="flex-1 min-w-0 lg:ml-64 xl:ml-72">
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
-              <div className="backdrop-blur-xl border-t border-white/10 px-4 py-2">
-                <div className="flex justify-around">
-                  {getSidebarItems(role, notiCount).slice(0, 5).map((item, i) => (
+          {/* Mobile/Tablet Sidebar with AnimatePresence */}
+          <AnimatePresence>
+            {isSidebarOpen && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+                />
+                <motion.aside
+                  initial={{ x: '-100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '-100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                  className="lg:hidden fixed left-0 top-0 h-screen w-72 bg-black z-[101] shadow-2xl"
+                >
+                  <div className="absolute top-4 right-4 z-[102]">
                     <button
-                      key={i}
-                      onClick={() => { item.onClick ? item.onClick() : item.href ? router.push(item.href) : null; }}
-                      className="flex flex-col items-center py-2 px-3 text-xs font-medium text-gray-300 hover:text-cyan-300 transition-colors relative"
+                      onClick={() => setIsSidebarOpen(false)}
+                      className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/50 hover:text-white"
                     >
-                      {item.icon}
-                      <span className="mt-1 truncate max-w-12">{item.label}</span>
-                      {item.badge && item.badge > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                          {item.badge > 99 ? '99+' : item.badge}
-                        </span>
-                      )}
+                      <IconXLucide size={20} />
                     </button>
-                  ))}
-                </div>
+                  </div>
+                  {sidebar}
+                </motion.aside>
+              </>
+            )}
+          </AnimatePresence>
+
+          <div className="flex-1 min-w-0 lg:ml-64 xl:ml-72 flex flex-col">
+            {/* Top Bar for Mobile Toggle */}
+            <div className="lg:hidden sticky top-0 left-0 right-0 z-40 px-4 py-4 flex items-center bg-black/20 backdrop-blur-md border-b border-white/5">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all shadow-lg shadow-white/5"
+              >
+                <Menu size={20} />
+              </button>
+              <div className="ml-4 flex flex-col">
+                <span className="text-[10px] font-bold text-[#5F97C9] uppercase tracking-[0.2em] leading-none mb-1">Portal</span>
+                <span className="text-sm font-bold text-white tracking-tight leading-none uppercase">PETZONEE</span>
               </div>
             </div>
 
-            <div className="container mx-auto px-3 sm:px-4 md:px-6 max-w-7xl py-2">
-              <div className="rounded-2xl p-4 sm:p-6 md:p-8">
-                <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <motion.h1
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-300 bg-clip-text text-transparent tracking-tighter"
-                    >
-                      Welcome to PETZONEE
-                    </motion.h1>
-                    <motion.p
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className="text-gray-400 text-lg font-medium mt-2"
-                    >
-                      Personalise your experience and manage your pet care needs effectively
-                    </motion.p>
-                  </div>
-                  <div className="flex items-center gap-3 text-md mr-1 font-semibold">
-                    <span className="px-3 py-1 rounded-full bg-gradient-to-r from-orange-700 to-yellow-400 text-white border border-white/10 shadow">
-                      {role === 'admin'
-                        ? `Admin${firstName ? ` ${firstName}` : ''}`
-                        : role === 'vet'
-                          ? `Vet ${vetKyc ?? 'pending'}`
-                          : role === 'user'
-                            ? `User${firstName ? ` ${firstName}` : ''}`
-                            : 'Guest'}
-                    </span>
-                  </div>
-                </header>
+
+            <div className="container mx-auto px-1.5 sm:px-4 md:px-6 max-w-7xl py-2">
+              <div className="rounded-2xl p-3 sm:p-6 md:p-8">
+                {view !== 'appointments' && (
+                  <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <motion.h1
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-300 bg-clip-text text-transparent tracking-tighter"
+                      >
+                        Welcome to PETZONEE
+                      </motion.h1>
+                      <motion.p
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-gray-400 text-lg font-medium mt-2"
+                      >
+                        Personalise your experience and manage your pet care needs effectively
+                      </motion.p>
+                    </div>
+                    <div className="flex items-center gap-3 text-md mr-1 font-semibold">
+                      <span className="px-3 py-1 rounded-full bg-gradient-to-r from-orange-700 to-yellow-400 text-white border border-white/10">
+                        {role === 'admin'
+                          ? `Admin${firstName ? ` ${firstName}` : ''}`
+                          : role === 'vet'
+                            ? `Vet ${vetKyc ?? 'pending'}`
+                            : role === 'user'
+                              ? `User${firstName ? ` ${firstName}` : ''}`
+                              : 'Guest'}
+                      </span>
+                    </div>
+                  </header>
+                )}
 
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -434,7 +471,7 @@ export default function Portal() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className={`mt-6 rounded-xl p-4 shadow-sm border ${msgType === 'error'
+                      className={`mt-6 rounded-xl p-4 border ${msgType === 'error'
                         ? 'bg-red-500/10 text-red-200 border-red-500/30'
                         : msgType === 'success'
                           ? 'bg-emerald-500/10 text-emerald-200 border-emerald-500/30'
@@ -443,7 +480,7 @@ export default function Portal() {
                     >
                       <div className="flex items-start gap-3">
                         <span className="text-lg">
-                          {msgType === 'error' ? <XCircle className="w-5 h-5" /> : msgType === 'success' ? <CheckCircle className="w-5 h-5" /> : <Info className="w-5 h-5" /> }
+                          {msgType === 'error' ? <XCircle className="w-5 h-5" /> : msgType === 'success' ? <CheckCircle className="w-5 h-5" /> : <Info className="w-5 h-5" />}
                         </span>
                         <p className="text-sm font-medium">{msg}</p>
                       </div>
@@ -467,7 +504,7 @@ export default function Portal() {
               }}
             >
               <motion.div
-                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0d0d14] p-6 shadow-2xl border border-white/[0.08]"
+                className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0d0d14] p-6 border border-white/[0.08]"
                 initial={{ scale: 0.94, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.94, opacity: 0 }}
@@ -520,7 +557,7 @@ export default function Portal() {
                       return (
                         <div
                           key={pet.id}
-                          className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04] hover:border-[#FF8A65]/30 hover:bg-white/[0.07] transition-all duration-300 shadow-md hover:shadow-[0_0_20px_rgba(255,138,101,0.12)]"
+                          className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04] hover:border-[#FF8A65]/30 hover:bg-white/[0.07] transition-all duration-300 hover:scale-[1.02]"
                         >
                           <div className="relative h-44 w-full bg-[#0e1520]">
                             {photoSrc ? (
@@ -555,7 +592,7 @@ export default function Portal() {
                             </div>
                             <Link
                               href={`/pets/${pet.id}`}
-                              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-orange-500/20 hover:brightness-110 transition-all"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-1.5 text-xs font-bold text-white hover:brightness-110 transition-all"
                             >
                               View Profile
                             </Link>
@@ -604,7 +641,7 @@ class ErrorBoundary extends React.Component<
                 <p className="text-gray-300 mb-4">We are sorry, but something unexpected happened.</p>
                 <button
                   onClick={() => window.location.reload()}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow hover:brightness-110 transition"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:brightness-110 transition"
                 >
                   Reload Page
                 </button>
@@ -637,3 +674,10 @@ async function loadNotiCount(
   }
 }
 
+export default function Portal() {
+  return (
+    <Suspense fallback={<SkeletonDashboard />}>
+      <PortalContent />
+    </Suspense>
+  );
+}

@@ -12,9 +12,10 @@ type SidebarProps = {
   role: "admin" | "vet" | "user";
   name: string;
   avatarUrl?: string;
+  onItemClick?: () => void;
 };
 
-export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
+export default function Sidebar({ role, name, avatarUrl, onItemClick }: SidebarProps) {
   const menus = sidebarMenus[role] || [];
   const router = useRouter();
 
@@ -24,6 +25,7 @@ export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
       if (error) throw error;
 
       // use same redirect as Navbar
+      onItemClick?.();
       router.push("/signup"); // change to your actual login route
     } catch (err) {
       console.error("Logout failed:", err);
@@ -31,7 +33,7 @@ export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
   };
 
   return (
-    <aside className="w-72 h-screen relative overflow-hidden flex flex-col border-r border-white/5 shadow-2xl">
+    <aside className="w-72 h-screen relative overflow-hidden flex flex-col border-r border-white/5">
       {/* Background Gradient - Restored to original orange palette */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FFB799] via-[#FF8A70] to-[#E65700]"></div>
 
@@ -54,10 +56,10 @@ export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
                   alt={name}
                   width={90}
                   height={90}
-                  className="w-24 h-24 rounded-full object-cover ring-4 ring-white/10 shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                  className="w-24 h-24 rounded-full object-cover ring-4 ring-white/10 transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-full ring-4 ring-white/10 shadow-2xl bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-zinc-400 transition-transform duration-500 group-hover:scale-105">
+                <div className="w-24 h-24 rounded-full ring-4 ring-white/10 bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-zinc-400 transition-transform duration-500 group-hover:scale-105">
                   <User className="w-12 h-12" />
                 </div>
               )}
@@ -78,6 +80,7 @@ export default function Sidebar({ role, name, avatarUrl }: SidebarProps) {
             <Link
               key={item.path}
               href={item.path}
+              onClick={onItemClick}
               className="group relative flex items-center px-5 py-3.5 rounded-2xl transition-all duration-300 hover:bg-white/[0.08] border border-transparent hover:border-white/10 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

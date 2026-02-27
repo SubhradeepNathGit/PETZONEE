@@ -212,9 +212,9 @@ export default function VetDashboard({
                 key={appointment.id}
                 className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4"
               >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full overflow-hidden bg-white/10">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1 min-w-0">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
                       <Image
                         src={appointment.users?.avatar_url || '/images/avatar-placeholder.png'}
                         width={48}
@@ -224,55 +224,54 @@ export default function VetDashboard({
                       />
                     </div>
 
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-white">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-white truncate">
                         {appointment.users?.first_name || 'Unknown Patient'}
                       </h4>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] sm:text-sm text-gray-400">
                         <span className="flex items-center gap-1">
-                          <IconMail size={14} />
-                          {appointment.users?.email ?? '—'}
+                          <IconMail size={12} />
+                          <span className="truncate max-w-[120px] sm:max-w-none">{appointment.users?.email ?? '—'}</span>
                         </span>
                         <span className="flex items-center gap-1">
-                          <IconCalendar size={14} />
-                          {new Date(appointment.created_at).toLocaleString()}
-                        </span>
-                      </div>
-
-                      <div className="mt-2">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full border ${appointment.status === 'pending'
-                            ? 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30'
-                            : appointment.status === 'accepted'
-                              ? 'bg-emerald-500/10 text-emerald-200 border-emerald-500/30'
-                              : appointment.status === 'rejected'
-                                ? 'bg-red-500/10 text-red-200 border-red-500/30'
-                                : 'bg-white/10 text-gray-200 border-white/20'
-                            }`}
-                        >
-                          {appointment.status.charAt(0).toUpperCase() +
-                            appointment.status.slice(1)}
+                          <IconCalendar size={12} />
+                          {new Date(appointment.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="flex flex-row sm:flex-col lg:flex-row items-center sm:items-end lg:items-center justify-between sm:justify-center gap-3">
+                    <span
+                      className={`px-2 py-0.5 sm:py-1 text-[10px] rounded-full border ${appointment.status === 'pending'
+                        ? 'bg-yellow-500/10 text-yellow-200 border-yellow-500/30'
+                        : appointment.status === 'accepted'
+                          ? 'bg-emerald-500/10 text-emerald-200 border-emerald-500/30'
+                          : appointment.status === 'rejected'
+                            ? 'bg-red-500/10 text-red-200 border-red-500/30'
+                            : 'bg-white/10 text-gray-200 border-white/20'
+                        }`}
+                    >
+                      {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                    </span>
 
                     {appointment.status === 'pending' && (
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           disabled={busyId === appointment.id}
                           onClick={() => updateStatus(appointment.id, 'accepted')}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow hover:brightness-110 transition text-sm disabled:opacity-60"
+                          className="inline-flex items-center justify-center p-2 sm:px-3 sm:py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:brightness-110 transition disabled:opacity-60 shadow-lg shadow-cyan-500/10"
+                          title="Accept"
                         >
-                          <IconCheck size={16} />{' '}
-                          {busyId === appointment.id ? 'Processing...' : 'Accept'}
+                          <IconCheck size={14} />
                         </button>
                         <button
                           disabled={busyId === appointment.id}
                           onClick={() => updateStatus(appointment.id, 'rejected')}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600/90 text-white shadow hover:brightness-110 transition text-sm disabled:opacity-60"
+                          className="inline-flex items-center justify-center p-2 sm:px-3 sm:py-1.5 rounded-xl bg-red-600/90 text-white hover:brightness-110 transition disabled:opacity-60 shadow-lg shadow-red-500/10"
+                          title="Reject"
                         >
-                          <IconX size={16} />{' '}
-                          {busyId === appointment.id ? 'Processing...' : 'Reject'}
+                          <IconX size={14} />
                         </button>
                       </div>
                     )}
@@ -336,7 +335,7 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
         )}
 
         {status === 'rejected' && (
-          <button className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow hover:brightness-110 transition">
+          <button className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:brightness-110 transition">
             Contact Support
           </button>
         )}

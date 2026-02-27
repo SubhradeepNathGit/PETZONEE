@@ -110,7 +110,7 @@ export default function MapInner({
                                     <div>
                                         <div className="font-bold text-lg text-white leading-tight">{u.name}</div>
                                         <div className="text-[10px] font-bold text-[#FF8A65] uppercase tracking-wider mt-0.5">
-                                            {u.species || 'PET'} {u.breed ? `• ${u.breed}` : ''}
+                                            {u.species || 'PET'} {u.breed ? `| ${u.breed}` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -120,7 +120,7 @@ export default function MapInner({
                                         <span className="truncate font-medium">{[u.city, u.state].filter(Boolean).join(', ') || 'Location unknown'}</span>
                                     </div>
                                     <div className="flex items-center gap-2.5 text-sm text-white/70">
-                                        <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-medium border border-white/5">👤</div>
+                                        <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-medium border border-white/5">U</div>
                                         <span className="truncate font-medium">Owner: <span className="text-white/90">{u.owner_name}</span></span>
                                     </div>
                                 </div>

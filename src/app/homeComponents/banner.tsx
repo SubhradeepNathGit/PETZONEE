@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Play, ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
 /* ================== Types ================== */
@@ -98,69 +99,33 @@ const Banner = () => {
   useEffect(() => {
     if (!mounted) return;
 
-    const preloadVideos = async () => {
-      const firstVideo = videoRefs.current[0];
-      if (!firstVideo) return;
+    const preloadAllVideos = () => {
+      videoRefs.current.forEach((video, index) => {
+        if (video) {
+          video.muted = true;
+          video.preload = 'auto';
+          video.playsInline = true;
 
-      try {
-        // Set up first video
-        firstVideo.muted = true;
-        firstVideo.preload = 'auto';
-        firstVideo.playsInline = true;
-
-        const handleFirstVideoLoad = () => {
-          // Use HAVE_ENOUGH_DATA (4) for 0-lag with large files (34MB+)
-          if (firstVideo.readyState >= 4) {
-            loadedVideosRef.current.add(0);
-            setVideosLoaded(true);
-
-            // Preload other videos progressively
-            videoRefs.current.slice(1).forEach((video, index) => {
-              if (video) {
-                const actualIndex = index + 1;
-                setTimeout(() => {
-                  video.muted = true;
-                  video.preload = 'metadata';
-                  video.playsInline = true;
-
-                  const handleLoad = () => {
-                    loadedVideosRef.current.add(actualIndex);
-                    video.removeEventListener('loadeddata', handleLoad);
-                  };
-                  video.addEventListener('loadeddata', handleLoad);
-                }, actualIndex * 800);
+          if (index === 0) {
+            const handleFirstLoad = () => {
+              if (video.readyState >= 3) {
+                setVideosLoaded(true);
+                video.removeEventListener('canplay', handleFirstLoad);
               }
-            });
+            };
+            video.addEventListener('canplay', handleFirstLoad);
+            if (video.readyState >= 3) setVideosLoaded(true);
           }
-        };
-
-        if (firstVideo.readyState >= 4) {
-          handleFirstVideoLoad();
-        } else {
-          // Listen to canplaythrough for absolute stability
-          firstVideo.addEventListener('canplaythrough', handleFirstVideoLoad, { once: true });
         }
-
-      } catch (error) {
-        console.warn('Video preloading failed:', error);
-        // Fallback - mark as loaded anyway
-        setTimeout(() => setVideosLoaded(true), 1000);
-      }
+      });
     };
 
-    preloadVideos();
+    preloadAllVideos();
 
     return () => {
-      if (preloadTimeoutRef.current) {
-        clearTimeout(preloadTimeoutRef.current);
-      }
-      // Proactive cleanup of resources
+      // Less aggressive cleanup to prevent flickering on quick re-renders
       videoRefs.current.forEach((video) => {
-        if (video) {
-          video.pause();
-          video.src = '';
-          video.load();
-        }
+        if (video) video.pause();
       });
     };
   }, [mounted]);
@@ -169,14 +134,13 @@ const Banner = () => {
   const handleUserInteraction = useCallback(() => {
     if (!hasUserInteracted && mounted) {
       setHasUserInteracted(true);
-      const currentVideo = videoRefs.current[currentSlide];
-      if (currentVideo && currentVideo.readyState >= 3) {
-        currentVideo.play().catch((error) => {
-          console.warn('Video play failed:', error);
-        });
-      }
+      videoRefs.current.forEach((video) => {
+        if (video && video.readyState >= 2) {
+          video.play().catch(() => { });
+        }
+      });
     }
-  }, [hasUserInteracted, currentSlide, mounted]);
+  }, [hasUserInteracted, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -202,19 +166,6 @@ const Banner = () => {
     };
   }, [handleUserInteraction, mounted]);
 
-  /* ================== Auto-play Attempt ================== */
-  useEffect(() => {
-    if (!mounted || !videosLoaded || hasUserInteracted) return;
-
-    const currentVideo = videoRefs.current[currentSlide];
-    if (currentVideo && currentVideo.readyState >= 3) {
-      currentVideo.muted = true;
-      currentVideo.play().catch(() => {
-        // Silent fail - will work after user interaction
-      });
-    }
-  }, [videosLoaded, hasUserInteracted, currentSlide, mounted]);
-
   /* ================== Slide Timer ================== */
   const startSlideTimer = useCallback(() => {
     if (slideTimerRef.current) clearInterval(slideTimerRef.current);
@@ -224,54 +175,51 @@ const Banner = () => {
   }, [slides.length]);
 
   useEffect(() => {
-    if (videosLoaded && mounted) {
+    if (mounted) {
       startSlideTimer();
     }
     return () => {
       if (slideTimerRef.current) clearInterval(slideTimerRef.current);
     };
-  }, [startSlideTimer, videosLoaded, mounted]);
+  }, [startSlideTimer, mounted]);
 
   /* ================== Video Playback Management ================== */
   useEffect(() => {
-    if (!videosLoaded || !mounted) return;
+    if (!mounted) return;
 
-    const playCurrentVideo = async () => {
+    const playVideos = async () => {
       const currentVideo = videoRefs.current[currentSlide];
-      if (!currentVideo) return;
+      const nextSlideIndex = (currentSlide + 1) % slides.length;
+      const nextVideo = videoRefs.current[nextSlideIndex];
 
-      try {
-        // Pause and reset other videos
-        videoRefs.current.forEach((video, idx) => {
-          if (video && idx !== currentSlide) {
-            video.pause();
-            video.currentTime = 0;
-          }
-        });
-
-        // Play current video if ready
-        if (currentVideo.readyState >= 3) {
+      if (currentVideo) {
+        try {
           currentVideo.muted = isMuted;
-          currentVideo.currentTime = 0;
-          await currentVideo.play();
-        } else {
-          // Wait for video to load
-          const handleCanPlay = () => {
-            currentVideo.removeEventListener('canplay', handleCanPlay);
-            currentVideo.muted = isMuted;
-            currentVideo.currentTime = 0;
-            currentVideo.play().catch(console.warn);
-          };
-          currentVideo.addEventListener('canplay', handleCanPlay);
-          currentVideo.load();
+          if (currentVideo.paused) {
+            await currentVideo.play();
+          }
+          currentVideo.currentTime = 0; // Reset only when it becomes active
+        } catch (e) {
+          console.warn('Playback error', e);
         }
-      } catch (error) {
-        console.warn('Video playback error:', error);
       }
+
+      // Ensure next video is also "warmed up"
+      if (nextVideo && nextVideo.paused) {
+        nextVideo.play().catch(() => { });
+        // Keep it playing but hidden via CSS opacity (background sync)
+      }
+
+      // Pause videos that are far from being shown
+      videoRefs.current.forEach((video, idx) => {
+        if (video && idx !== currentSlide && idx !== nextSlideIndex) {
+          video.pause();
+        }
+      });
     };
 
-    playCurrentVideo();
-  }, [currentSlide, isMuted, videosLoaded, mounted]);
+    playVideos();
+  }, [currentSlide, isMuted, mounted]);
 
   /* ================== Cleanup ================== */
   useEffect(() => {
@@ -319,70 +267,41 @@ const Banner = () => {
 
   /* ================== JSX ================== */
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {/* Premium Background Base - Replaces pure black */}
-      <div className="absolute inset-0 bg-black/10 z-0" />
-
+    <section className="relative h-screen w-full overflow-hidden bg-black">
       {/* Video Backgrounds */}
       {slides.map((slide, index) => {
         const isCurrent = index === currentSlide;
-        const isNext = index === (currentSlide + 1) % slides.length;
-        const shouldRender = isCurrent || isNext;
 
         return (
           <div
             key={slide.id}
             className="absolute inset-0 z-0"
             style={{
-              pointerEvents: isCurrent ? 'auto' : 'none'
+              pointerEvents: isCurrent ? 'auto' : 'none',
+              opacity: isCurrent ? 1 : 0,
+              transition: 'opacity 1.5s ease-in-out'
             }}
           >
-            {shouldRender && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: isCurrent ? 1 : 0,
-                  scale: isCurrent ? 1.05 : 1 // Subtle Ken Burns starting state
-                }}
-                transition={{
-                  opacity: { duration: 1.5, ease: "easeInOut" },
-                  scale: { duration: 8, ease: "linear", repeat: isCurrent ? Infinity : 0, repeatType: "reverse" }
-                }}
-                className="absolute inset-0"
-              >
-                <video
-                  ref={(el) => {
-                    videoRefs.current[index] = el;
-                  }}
-                  className="absolute inset-0 w-full h-full object-cover transform-gpu"
-                  muted={isMuted}
-                  loop
-                  playsInline
-                  crossOrigin="anonymous"
-                  style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
-                  preload={isCurrent || isNext ? 'auto' : 'metadata'}
-                  onLoadedData={() => {
-                    if (index === 0 && !videosLoaded) {
-                      setVideosLoaded(true);
-                    }
-                    loadedVideosRef.current.add(index);
-                  }}
-                  onCanPlayThrough={() => {
-                    if (index === 0) setVideosLoaded(true);
-                  }}
-                  onError={(e) => {
-                    console.warn(`Video ${index} failed to load:`, e);
-                    if (index === 0) setVideosLoaded(true);
-                  }}
-                >
-                  <source src={slide.videoSrc} type="video/mp4" />
-                </video>
-
-                {/* Premium Overlay Gradient */}
-
-
-              </motion.div>
-            )}
+            <video
+              ref={(el) => {
+                videoRefs.current[index] = el;
+              }}
+              className="absolute inset-0 w-full h-full object-cover transform-gpu"
+              muted={isMuted}
+              loop
+              playsInline
+              crossOrigin="anonymous"
+              style={{ backfaceVisibility: 'hidden', perspective: 1000 }}
+              preload="auto"
+              onLoadedData={() => {
+                if (index === 0 && !videosLoaded) {
+                  setVideosLoaded(true);
+                }
+                loadedVideosRef.current.add(index);
+              }}
+            >
+              <source src={slide.videoSrc} type="video/mp4" />
+            </video>
           </div>
         );
       })}

@@ -14,7 +14,7 @@ export function Card({ children, className = '' }: { children: React.ReactNode; 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-lg hover:shadow-xl transition ${className}`}
+      className={`rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md transition ${className}`}
     >
       {children}
     </motion.div>
@@ -90,9 +90,9 @@ export function Metric({
   trend?: string;
 }) {
   return (
-    <div className="relative overflow-hidden bg-white/5 border border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+    <div className="relative overflow-hidden bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/8 transition">
       <div className="flex items-center gap-3">
-        <div className={`rounded-lg bg-gradient-to-br ${gradient} p-2.5 text-white shadow-md`}>{icon}</div>
+        <div className={`rounded-lg bg-gradient-to-br ${gradient} p-2.5 text-white`}>{icon}</div>
         <div className="flex-1">
           <p className="text-xs text-gray-300 font-medium">{title}</p>
           <p className="text-2xl font-bold text-white leading-tight">{value}</p>
@@ -121,20 +121,20 @@ export function FeatureCard({
   href?: string;
   onClick?: () => void;
 }) {
-  const buttonClass = `inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${gradient} text-white rounded-xl font-semibold text-sm shadow-lg shadow-black/20 hover:brightness-110 active:scale-95 transition-all duration-300 group-hover:translate-x-1`;
+  const buttonClass = `inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${gradient} text-white rounded-xl font-semibold text-sm hover:brightness-110 active:scale-95 transition-all duration-300 group-hover:translate-x-1`;
   const arrow = <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>;
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="group relative overflow-hidden rounded-3xl p-8 bg-white/[0.03] border border-white/10 hover:border-white/20 shadow-2xl transition-all duration-500 backdrop-blur-xl"
+      className="group relative overflow-hidden rounded-3xl p-8 bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-500 backdrop-blur-xl"
     >
       <div
         className={`absolute -top-12 -right-12 h-48 w-48 bg-gradient-to-br ${gradient} opacity-10 rounded-full blur-3xl group-hover:opacity-20 group-hover:scale-150 transition-all duration-700`}
       />
 
       <div className="relative z-10">
-        <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} p-3 mb-6 shadow-xl shadow-black/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
+        <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} p-3 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
           <div className="text-white">
             {icon}
           </div>
@@ -230,7 +230,7 @@ export function AvatarPicker({
 
   return (
     <div className="relative group">
-      <div className="h-35 w-35 rounded-full overflow-hidden ring-4 ring-white/10 shadow-2xl bg-zinc-800 flex items-center justify-center transition-all duration-500 group-hover:ring-white/20">
+      <div className="h-35 w-35 rounded-full overflow-hidden ring-4 ring-white/10 bg-zinc-800 flex items-center justify-center transition-all duration-500 group-hover:ring-white/20">
         {currentUrl ? (
           <Image
             src={currentUrl}
@@ -248,7 +248,7 @@ export function AvatarPicker({
       <button
         onClick={handlePick}
         disabled={uploading}
-        className="absolute -bottom-0 -right-0 h-8 w-8 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:brightness-110 transition hover:scale-110 disabled:opacity-50"
+        className="absolute -bottom-0 -right-0 h-8 w-8 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full flex items-center justify-center hover:brightness-110 transition hover:scale-110 disabled:opacity-50"
         title="Upload profile picture"
       >
         {uploading ? (

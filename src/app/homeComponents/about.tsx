@@ -150,7 +150,7 @@ export default function AboutPage() {
                         /ABOUT US
                     </motion.p>
 
-                    <motion.h1 className="reveal-text text-3xl sm:text-4xl lg:text-5xl font-bold leading-[0.95] tracking-tight whitespace-nowrap">
+                    <motion.h1 className="reveal-text text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.1] sm:leading-[0.95] tracking-tight">
                         Start Your Pet&apos;s Journey with Us
                     </motion.h1>
 

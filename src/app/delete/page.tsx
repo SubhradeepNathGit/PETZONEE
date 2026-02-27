@@ -2,18 +2,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   Trash2,
   ArrowLeft,
   Loader2,
   User,
-  Heart,
   Shield,
   ExternalLink,
   Check,
+  ChevronRight,
+  Search,
+  ShieldAlert,
+  X
 } from "lucide-react";
 
 const supabase = createClient(
@@ -47,8 +51,6 @@ export default function DeleteUserPage() {
   const formatError = (error: unknown): string => {
     if (error instanceof Error) return error.message;
     if (typeof error === "string") return error;
-    if (error && typeof error === "object" && "message" in error)
-      return String((error as { message: string }).message);
     return "An unexpected error occurred";
   };
 
@@ -111,7 +113,7 @@ export default function DeleteUserPage() {
 
     try {
       if (relatedData.pets > 0 && deleteRelated) {
-        setStatus("Deleting related pets...");
+        setStatus("Wiping pet records...");
         const { error: petsDeleteErr } = await supabase
           .from("pets")
           .delete()
@@ -120,18 +122,14 @@ export default function DeleteUserPage() {
           throw new Error(`Failed to delete pets: ${petsDeleteErr.message}`);
       }
 
-      setStatus("Deleting user profile...");
+      setStatus("Purging account identity...");
       const { error: delErr } = await supabase
         .from("users")
         .delete()
         .eq("id", userProfile.id);
       if (delErr) throw new Error(`Profile deletion failed: ${delErr.message}`);
 
-      const userName =
-        [userProfile.first_name, userProfile.last_name].filter(Boolean).join(" ") ||
-        userProfile.email;
-
-      setStatus(`Successfully deleted profile for ${userName}.`);
+      setStatus("Account successfully terminated. Farewell.");
 
       setTimeout(async () => {
         try {
@@ -140,7 +138,7 @@ export default function DeleteUserPage() {
         } catch {
           router.replace("/");
         }
-      }, 2000);
+      }, 2500);
     } catch (error: unknown) {
       setErr(formatError(error));
     } finally {
@@ -151,158 +149,186 @@ export default function DeleteUserPage() {
   const canDelete = confirmed && (!relatedData?.pets || deleteRelated);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-10">
-        {/* Back */}
-        <button
-          onClick={() => router.back()}
-          className="group flex items-center gap-2 text-gray-400 hover:text-white mb-6 text-sm"
-        >
-          <ArrowLeft size={16} />
-          <span>Back to Safety</span>
-        </button>
+    <div className="h-[100dvh] bg-black text-white selection:bg-red-500/30 font-inter relative flex flex-col overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none fixed">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:32px_32px]" />
+      </div>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 mb-6">
-            <AlertTriangle className="text-red-400" size={36} />
-          </div>
-          <h1 className="text-4xl font-extrabold text-white mb-3">Delete Account</h1>
-          <p className="text-gray-400 max-w-xl mx-auto">
-            Once you confirm, <span className="text-red-400 font-semibold">everything will be permanently deleted.</span>
-          </p>
-        </div>
-
-        {/* Main Card */}
-        <div className="bg-white/5 rounded-2xl border border-white/10 p-8">
-          {/* Analyze Button */}
-          {!relatedData && !checkingRelated && (
-            <div className="mb-8 text-center">
+      <main className="relative z-10 max-w-xl mx-auto w-full px-4 lg:px-0 py-8 md:py-16 flex flex-col h-full overflow-hidden">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col justify-center min-h-0 py-2">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 shrink-0"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest">
+                <ShieldAlert size={12} /> Critical Action
+              </div>
               <button
-                onClick={checkRelatedData}
-                className="px-6 py-3 text-sm bg-blue-500/20 border border-blue-500/30 rounded-xl text-white font-semibold hover:scale-105 transition"
+                onClick={() => router.push("/dashboard")}
+                className="group flex items-center gap-2 text-white/40 hover:text-white transition-all text-[9px] font-black uppercase tracking-[0.2em]"
               >
-                <User size={18} className="inline-block mr-2" /> Analyze My Account Data
+                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                <span>Return to Safety</span>
               </button>
             </div>
-          )}
+            <h1 className="mt-2 text-[26px] md:text-4xl lg:text-5xl font-black tracking-tighter leading-tight mb-3">
+              Terminate Account
+            </h1>
+            <p className="text-white/40 text-xs md:text-sm font-medium leading-relaxed max-w-md">
+              Once confirmed, your entire digital footprint including pet records will be <span className="text-white font-bold">permanently erased</span> from the ecosystem.
+            </p>
+          </motion.div>
 
-          {/* Loading */}
-          {checkingRelated && (
-            <div className="flex flex-col items-center py-12">
-              <Loader2 className="animate-spin text-blue-400" size={36} />
-              <p className="text-gray-300 mt-3">Scanning your account...</p>
-            </div>
-          )}
-
-          {/* Account Data */}
-          {relatedData && userProfile && (
-            <div className="mb-8 space-y-6">
-              <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <h3 className="text-lg font-semibold text-blue-400 mb-2 flex items-center gap-2">
-                  <User size={18} /> Profile Summary
-                </h3>
-                <p className="text-white">
-                  {[userProfile.first_name, userProfile.last_name].filter(Boolean).join(" ") || userProfile.email}
-                </p>
-                <p className="text-gray-400 text-sm">{userProfile.email}</p>
-              </div>
-
-              <div
-                className={`p-4 rounded-xl border ${relatedData.pets > 0
-                  ? "bg-orange-500/10 border-orange-500/20"
-                  : "bg-green-500/10 border-green-500/20"
-                  }`}
-              >
-                <h4
-                  className={`font-semibold mb-1 ${relatedData.pets > 0 ? "text-orange-400" : "text-green-400"
-                    }`}
+          <div className="space-y-6">
+            {/* Status / Error Messages */}
+            <AnimatePresence mode="wait">
+              {err && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold"
                 >
-                  {relatedData.pets} Pet{relatedData.pets === 1 ? "" : "s"}
-                </h4>
-                {relatedData.pets > 0 && (
-                  <label className="flex items-center gap-2 text-sm text-gray-300 mt-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={deleteRelated}
-                      onChange={(e) => setDeleteRelated(e.target.checked)}
-                      className="accent-orange-500"
-                    />
-                    Also delete all my pets
-                  </label>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Final Confirmation */}
-          {relatedData && (
-            <div className="mb-6">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={confirmed}
-                  onChange={(e) => setConfirmed(e.target.checked)}
-                  className="hidden"
-                />
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${confirmed ? "bg-red-500 border-red-500" : "border-gray-400"
-                    }`}
-                >
-                  {confirmed && <Check size={14} className="text-white" />}
-                </div>
-                <span className="text-gray-300 text-sm">
-                  I understand and permanently delete my account
-                </span>
-              </label>
-            </div>
-          )}
-
-          {/* Errors / Status */}
-          {err && <p className="text-red-400 mb-4 text-sm">{err}</p>}
-          {status && <p className="text-green-400 mb-4 text-sm">{status}</p>}
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleDelete}
-              disabled={!canDelete || loading}
-              className={`flex-1 px-6 py-3 text-sm font-semibold rounded-xl transition ${!canDelete || loading
-                ? "bg-gray-600/50 text-gray-400"
-                : "bg-gradient-to-r from-red-500 to-orange-500 text-white hover:scale-105"
-                }`}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin inline-block mr-2" size={16} />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 size={16} className="inline-block mr-2" /> Delete Forever
-                </>
+                  {err}
+                </motion.div>
               )}
-            </button>
-            <button
-              onClick={() => router.back()}
-              disabled={loading}
-              className="px-6 py-3 text-sm rounded-xl bg-white/5 text-white border border-white/20 hover:bg-white/10"
-            >
-              Keep Account
-            </button>
+              {status && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="p-4 rounded-xl bg-[#5F97C9]/10 border border-[#5F97C9]/20 text-[#5F97C9] text-xs font-bold"
+                >
+                  {status}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Analysis Card */}
+            <div className="relative group overflow-hidden bg-white/[0.03] border border-white/10 rounded-xl p-8 backdrop-blur-3xl transition-all duration-500 hover:bg-white/[0.05] hover:border-white/20">
+              {!relatedData && !checkingRelated ? (
+                <div className="flex flex-col items-center py-4">
+                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 mb-6 border border-white/5">
+                    <Search size={32} />
+                  </div>
+                  <h3 className="text-xl font-black tracking-tight mb-2 uppercase">Account Audit</h3>
+                  <p className="text-white/40 text-xs font-medium mb-8 text-center max-w-[240px]">We need to scan your data before termination to ensure clean removal.</p>
+                  <button
+                    onClick={checkRelatedData}
+                    className="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-white/5"
+                  >
+                    Run System Audit
+                  </button>
+                </div>
+              ) : checkingRelated ? (
+                <div className="flex flex-col items-center py-12">
+                  <div className="relative">
+                    <Loader2 className="animate-spin text-[#5F97C9]" size={48} />
+                    <div className="absolute inset-0 bg-[#5F97C9]/20 blur-xl rounded-full" />
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mt-8">Verifying Encrypted Records...</p>
+                </div>
+              ) : relatedData && userProfile && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-8"
+                >
+                  {/* Profile Summary */}
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-white/10 to-transparent border border-white/10 flex items-center justify-center text-white/60">
+                      <User size={24} />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Authenticated Identity</p>
+                      <h4 className="text-xl font-black tracking-tight uppercase">
+                        {[userProfile.first_name, userProfile.last_name].filter(Boolean).join(" ") || "Valued Member"}
+                      </h4>
+                      <p className="text-white/40 text-[10px] font-bold mt-0.5">{userProfile.email}</p>
+                    </div>
+                  </div>
+
+                  {/* Pet Data Control */}
+                  <div className={`p-6 rounded-xl border transition-all duration-500 ${relatedData.pets > 0 ? "bg-red-500/5 border-red-500/10" : "bg-emerald-500/5 border-emerald-500/10"}`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h5 className={`text-[10px] font-black uppercase tracking-widest ${relatedData.pets > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                          {relatedData.pets} Linked Entity Record{relatedData.pets !== 1 ? 's' : ''}
+                        </h5>
+                        <p className="text-white/40 text-[10px] font-medium mt-1">Found in Petzonee Registry</p>
+                      </div>
+
+                      {relatedData.pets > 0 && (
+                        <button
+                          onClick={() => setDeleteRelated(!deleteRelated)}
+                          className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${deleteRelated ? "bg-red-500 text-white" : "bg-white/5 text-white border border-white/10"}`}
+                        >
+                          {deleteRelated ? "Wiping Pets" : "Leave Pets"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Confirmation Checkbox */}
+                  <label className="group flex items-center gap-4 cursor-pointer p-4 rounded-xl hover:bg-white/5 transition-all">
+                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${confirmed ? "bg-white border-white text-black" : "border-white/10"}`}>
+                      {confirmed && <Check size={14} strokeWidth={4} />}
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={confirmed}
+                        onChange={(e) => setConfirmed(e.target.checked)}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wide">Final Confirmation</p>
+                      <p className="text-[10px] text-white/40 font-bold">I acknowledge this action is irreversible.</p>
+                    </div>
+                  </label>
+
+                  {/* Terminate Button */}
+                  <button
+                    onClick={handleDelete}
+                    disabled={!canDelete || loading}
+                    className={`w-full py-5 rounded-xl font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-500 flex items-center justify-center gap-3 ${!canDelete || loading
+                      ? "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
+                      : "bg-[#FF3D00] text-white shadow-[0_0_40px_rgba(255,61,0,0.2)] hover:shadow-[0_0_60px_rgba(255,61,0,0.4)] hover:scale-[1.01] active:scale-[0.98]"
+                      }`}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="animate-spin" size={16} />
+                        De-Registering...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 size={16} /> Terminate System Access
+                      </>
+                    )}
+                  </button>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Footer Help */}
+            <div className="mt-auto pt-10 border-t border-white/5 flex items-center justify-between">
+              <p className="text-white/20 text-[9px] font-black uppercase tracking-widest">Secure Termination Protocol</p>
+              <button
+                onClick={() => router.push("/contactUs")}
+                className="flex items-center gap-2 text-white/40 hover:text-[#5F97C9] transition-all text-[9px] font-black uppercase tracking-widest"
+              >
+                Contact Support <ExternalLink size={12} />
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <button
-            onClick={() => router.push("/contactUs")}
-            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm"
-          >
-            Contact Support <ExternalLink size={14} />
-          </button>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

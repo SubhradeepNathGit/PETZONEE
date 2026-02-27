@@ -234,7 +234,7 @@ export default function LocationsPage() {
             ) : filtered.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-white/[0.02] rounded-2xl border border-white/5">
                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                  <span className="text-2xl opacity-50">🔍</span>
+                  <span className="text-2xl opacity-50">?</span>
                 </div>
                 <h3 className="text-white font-bold text-lg">No pets found</h3>
                 <p className="text-white/40 text-sm mt-1">Try adjusting your filters or search term</p>

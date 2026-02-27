@@ -674,16 +674,16 @@ const isPhotoVerb = (verb: string) =>
 const humanizeVerb = (a: Activity) => {
   if (a.summary) return a.summary;
   const map: Record<string, string> = {
-    'pet.created': '🐾 Added a new furry friend',
-    'pet.name_updated': '✏️ Gave their pet a new name',
-    'pet.photo_updated': "📸 Updated their pet's photo",
-    'pet.media_added': '📷 Shared a new photo',
-    'pet.cover_updated': "🖼️ Updated their pet's cover photo",
-    'pet.avatar_updated': "👤 Updated their pet's profile picture",
-    'user.name_updated': '✨ Updated their name',
-    'user.avatar_updated': '📸 Updated their profile picture',
+    'pet.created': 'Added a new furry friend',
+    'pet.name_updated': 'Gave their pet a new name',
+    'pet.photo_updated': "Updated their pet's photo",
+    'pet.media_added': 'Shared a new photo',
+    'pet.cover_updated': "Updated their pet's cover photo",
+    'pet.avatar_updated': "Updated their pet's profile picture",
+    'user.name_updated': 'Updated their name',
+    'user.avatar_updated': 'Updated their profile picture',
   };
-  return map[a.verb] ?? '📝 Made an update';
+  return map[a.verb] ?? 'Made an update';
 };
 
 const shorten = (v: unknown, max = 40) => {

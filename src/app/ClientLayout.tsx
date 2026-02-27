@@ -78,7 +78,10 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-  const hideLayout = pathname.startsWith("/checkout") || pathname === "/feed" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin") || pathname.startsWith("/signup") || pathname === "/cart" || (pathname.startsWith("/products/") && pathname !== "/products") || pathname.startsWith("/pets") || pathname.startsWith("/map");
+  const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname.startsWith('/map') || pathname === '/delete';
+  const hideFooter = hideNavbar || pathname.startsWith('/appointments');
+  // Legacy alias for places that may still use hideLayout
+  const hideLayout = hideNavbar;
 
   useEffect(() => {
     if (skipLoader) {
@@ -185,9 +188,9 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         className={`transition-opacity duration-600 ${showContent || skipLoader ? "opacity-100" : "opacity-0"
           }`}
       >
-        {!hideLayout && <Navbar />}
+        {!hideNavbar && <Navbar />}
         <main>{children}</main>
-        {!hideLayout && <Footer />}
+        {!hideFooter && <Footer />}
       </div>
     </div>
   );

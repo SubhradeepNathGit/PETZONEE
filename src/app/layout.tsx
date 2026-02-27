@@ -25,7 +25,7 @@ const inter = Inter({
 // Metadata
 export const metadata: Metadata = {
   title: "PETZONEE",
-  description: "Connecting Pets, Owners & Services in One Happy Place 🐾",
+  description: "Connecting Pets, Owners & Services in One Happy Place",
 };
 
 import { ToastContainer } from 'react-toastify';
@@ -64,7 +64,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
-        {/* ✅ Global Providers */}
+        {/* Global Providers */}
         <TanstackProvider>
           <ClientLayout>{children}</ClientLayout>
           <ToastContainer position="top-right" theme="colored" />

@@ -196,7 +196,7 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect }: {
           {isYearly && (
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${plan.popular ? "bg-white/15 text-white" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
               }`}>
-              ✦ Save ₹{((plan.price.monthly * 12) - plan.price.yearly).toLocaleString()} yearly
+              Save ₹{((plan.price.monthly * 12) - plan.price.yearly).toLocaleString()} yearly
             </span>
           )}
         </div>
@@ -312,11 +312,11 @@ const PricingSection = () => {
         {/* Footer note */}
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} viewport={{ once: true }} className="text-center mt-10 space-y-2">
           <p className="text-gray-400 text-xs">
-            All plans include free consultations · Cancel anytime · No setup fees
+            All plans include free consultations | Cancel anytime | No setup fees
           </p>
           <p className="text-xs">
             <span className="text-gray-400">Have questions?</span>{" "}
-            <button onClick={() => router.push("/contactUs")} className="text-[#5F97C9] font-semibold hover:underline">Talk to our care team →</button>
+            <button onClick={() => router.push("/contactUs")} className="text-[#5F97C9] font-semibold hover:underline">Talk to our care team</button>
           </p>
         </motion.div>
       </div>

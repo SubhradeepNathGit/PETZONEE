@@ -85,21 +85,21 @@ export default function VetKycPendingPage() {
       case 'approved':
         return {
           color: 'text-green-300 border-green-400/30',
-          icon: '✓',
+          icon: 'OK',
           title: 'Verification Complete',
           message: 'Your account has been approved and is ready to use.',
         };
       case 'rejected':
         return {
           color: 'text-red-300 border-red-400/30',
-          icon: '✗',
+          icon: 'FAIL',
           title: 'Verification Declined',
           message: 'Your submission requires attention. Please contact support for assistance.',
         };
       default:
         return {
           color: 'text-yellow-300 border-yellow-400/30',
-          icon: '⏳',
+          icon: 'WAIT',
           title: 'Under Review',
           message: 'We are currently reviewing your documents. This typically takes 1-3 business days.',
         };

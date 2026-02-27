@@ -102,7 +102,7 @@ export default function PetProfilePage() {
     })();
   }, [params.id, router]);
 
-  const ageLabel = useMemo(() => (pet?.dob ? humanAge(pet.dob) : '—'), [pet?.dob]);
+  const ageLabel = useMemo(() => (pet?.dob ? humanAge(pet.dob) : '-'), [pet?.dob]);
 
   async function handleDeletePet() {
     if (!pet) return;
@@ -234,7 +234,7 @@ export default function PetProfilePage() {
     <main className="min-h-[100dvh] w-full bg-[#0a0a0f]">
       <div className="mx-auto max-w-[1000px] px-4 pt-8 pb-16">
 
-        {/* ── Hero Card ── */}
+        {/* Section: Hero Card */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -267,7 +267,7 @@ export default function PetProfilePage() {
 
           {/* Bottom info strip */}
           <div className="relative flex flex-col gap-4 px-6 pt-0 pb-6 sm:flex-row sm:items-end sm:justify-between">
-            {/* Avatar — overlaps cover */}
+            {/* Avatar - overlaps cover */}
             <div className="-mt-10 flex items-end gap-4">
               <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#FF8A65]/70 shadow-xl">
                 <Image
@@ -312,7 +312,7 @@ export default function PetProfilePage() {
                 className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/20 transition-all disabled:opacity-40"
               >
                 {deleting ? (
-                  <span className="text-xs">…</span>
+                  <span className="text-xs">.</span>
                 ) : (
                   <Trash2 className="w-3.5 h-3.5" />
                 )}
@@ -322,11 +322,11 @@ export default function PetProfilePage() {
           </div>
         </motion.div>
 
-        {/* ── Stat pills ── */}
+        {/* Section: Stat pills */}
         <section className="mt-4 grid grid-cols-3 gap-3">
           {[
             { label: 'Age', value: ageLabel },
-            { label: 'Weight', value: pet.weight_kg ? `${pet.weight_kg} kg` : '—' },
+            { label: 'Weight', value: pet.weight_kg ? `${pet.weight_kg} kg` : '-' },
             { label: 'Joined', value: new Date(pet.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4 text-center hover:bg-white/[0.07] transition-colors">
@@ -337,7 +337,7 @@ export default function PetProfilePage() {
         </section>
 
 
-        {/* ── About Section ── */}
+        {/* Section: About Section */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -434,7 +434,7 @@ export default function PetProfilePage() {
 
 
 
-        {/* ── Gallery ── */}
+        {/* Section: Gallery */}
         <section className="mt-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-bold text-white">Photos</h2>
@@ -493,7 +493,7 @@ export default function PetProfilePage() {
                         className="absolute right-1 top-1 rounded-full bg-black/55 px-2 py-1 text-[11px] font-semibold text-white opacity-0 transition group-hover:opacity-100"
                         title="Delete photo"
                       >
-                        {deletingPhotoId === g.id ? '…' : 'Delete'}
+                        {deletingPhotoId === g.id ? '.' : 'Delete'}
                       </button>
                     )}
                   </div>
@@ -530,7 +530,7 @@ export default function PetProfilePage() {
                             onClick={() => deletePhoto(gallery[lightboxIdx])}
                             className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white hover:bg-white/25"
                           >
-                            {deletingPhotoId === gallery[lightboxIdx].id ? 'Deleting…' : 'Delete'}
+                            {deletingPhotoId === gallery[lightboxIdx].id ? 'Deleting.' : 'Delete'}
                           </button>
                         ) : <div />}
 
@@ -552,7 +552,7 @@ export default function PetProfilePage() {
                           className="m-2 rounded-full bg-white/15 px-3 py-2 text-white hover:bg-white/25"
                           aria-label="Previous"
                         >
-                          ‹
+                          &lt;
                         </button>
                       </div>
                       <div className="absolute inset-y-0 right-0 flex items-center">
@@ -561,7 +561,7 @@ export default function PetProfilePage() {
                           className="m-2 rounded-full bg-white/15 px-3 py-2 text-white hover:bg-white/25"
                           aria-label="Next"
                         >
-                          ›
+                          &gt;
                         </button>
                       </div>
                     </motion.div>
@@ -666,7 +666,7 @@ function UploadPetPhoto({
           : 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white shadow-lg shadow-orange-500/20 hover:brightness-110'
           }`}
       >
-        {busy ? 'Uploading…' : <><Plus size={16} /> Add photo</>}
+        {busy ? 'Uploading.' : <><Plus size={16} /> Add photo</>}
       </label>
     </>
   );
