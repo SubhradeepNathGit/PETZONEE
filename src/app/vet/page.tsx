@@ -1,9 +1,9 @@
 // pages/vetpage.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Globe, UserCheck, ShieldCheck, CheckCircle2, Star, HeartPulse, ArrowRight } from 'lucide-react';
+import { Globe, UserCheck, ShieldCheck, CheckCircle2, Star, HeartPulse, ArrowRight, Crown } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -30,24 +30,27 @@ const plans = [
   {
     title: "Essential Care",
     subtitle: "Perfect for puppies & new pet parents",
-    price: { monthly: 166, yearly: 1660 },
-    features: ["Essential Pet Wellness Exam", "Free Initial Vet Consultation", "Basic Grooming Package", "Monthly Pet Care Tips & Guides", "15% Membership Discounts", "24/7 Pet Care Hotline Access"],
+    price: { monthly: 1199, yearly: 11990 },
+    img: "/images/pricing1.jpg",
+    features: ["1 + 1 Free Monthly Consultation", "5% Product Discount", "Basic Health Tracking", "Monthly Pet Care Tips & Guides", "Community Access"],
     popular: false,
     badge: "Starter",
   },
   {
     title: "Complete Care",
     subtitle: "Comprehensive care for active pets",
-    price: { monthly: 333, yearly: 3330 },
-    features: ["Full Grooming & Spa Package", "Pet Accessory Discounts (20%)", "Monthly Health Tracking Reports", "Priority Appointment Booking", "Seasonal Flea & Tick Treatment", "Loyalty Reward Points Program"],
+    price: { monthly: 2999, yearly: 29990 },
+    img: "/images/pricing2.jpg",
+    features: ["4 Free Monthly Consultations", "15% Product Discount", "Priority Booking", "24/7 Dedicated Vet Chat", "Seasonal Flea & Tick Treatment"],
     popular: true,
     badge: "Most Popular",
   },
   {
     title: "Premium Care",
     subtitle: "Ultimate care for cherished companions",
-    price: { monthly: 500, yearly: 5000 },
-    features: ["Professional Teeth Cleaning", "Premium Organic Spa Treatments", "Advanced Pet Therapy Sessions", "Seasonal Care Package Upgrades", "Comprehensive Skin Health Analysis", "Personalized Nutrition Planning"],
+    price: { monthly: 4999, yearly: 49990 },
+    img: "/images/pricing3.jpg",
+    features: ["Unlimited Free Consultations", "25% Product Discount", "VIP Spa Treatments", "Priority Emergency Hotline", "Skin Health Analysis"],
     popular: false,
     badge: "Best Value",
   },
@@ -143,14 +146,45 @@ const ServiceMarquee = () => {
 };
 
 /* ---------- Flip Pricing Card ---------- */
-const FlipPricingCard = ({ plan, index, isYearly, onSelect }: {
+const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub }: {
   plan: typeof plans[0];
   index: number;
   isYearly: boolean;
   onSelect: () => void;
+  currentSub: any;
 }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const isCurrentPlan = currentSub?.plan_name === plan.title;
+  const isHigherTier = useMemo(() => {
+    if (!currentSub) return true;
+    const tiers = ["Essential Care", "Complete Care", "Premium Care"];
+    return tiers.indexOf(plan.title) > tiers.indexOf(currentSub.plan_name);
+  }, [currentSub, plan.title]);
+
+  const proratedPrice = useMemo(() => {
+    if (!currentSub || isCurrentPlan || !isHigherTier) return null;
+
+    const fullPrice = isYearly ? plan.price.yearly : plan.price.monthly;
+    const currentPrice = currentSub.period === 'year' ? currentSub.price : currentSub.price; // Simplified for display
+
+    // Proration logic: (Remaining Days / Total Days) * Original PricePaid
+    const now = new Date();
+    const start = new Date(currentSub.start_date);
+    const end = new Date(currentSub.end_date);
+    const totalDays = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
+    const remainingDays = (end.getTime() - now.getTime()) / (1000 * 3600 * 24);
+
+    if (remainingDays <= 0) return null;
+
+    const credit = Math.max(0, (remainingDays / totalDays) * currentSub.price);
+    const finalPrice = Math.max(0, fullPrice - credit);
+
+    return Math.round(finalPrice);
+  }, [currentSub, plan, isYearly, isCurrentPlan, isHigherTier]);
+
+  const displayPrice = proratedPrice !== null ? proratedPrice : (isYearly ? plan.price.yearly : plan.price.monthly);
 
   return (
     <motion.div
@@ -187,13 +221,18 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect }: {
         <div className="mb-8">
           <div className="flex items-baseline gap-1.5  mb-1">
             <span className={`text-5xl font-bold tracking-tighter ${plan.popular ? "text-white" : "text-[#0F172A]"}`}>
-              ₹{isYearly ? plan.price.yearly.toLocaleString() : plan.price.monthly}
+              ₹{displayPrice.toLocaleString()}
             </span>
             <span className={`text-xs font-bold uppercase tracking-widest ${plan.popular ? "text-blue-200" : "text-gray-400"}`}>
               /{isYearly ? "yr" : "mo"}
             </span>
           </div>
-          {isYearly && (
+          {proratedPrice !== null && (
+            <div className={`mt-2 flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold ${plan.popular ? "bg-white/20 text-white" : "bg-orange-50 text-orange-600 border border-orange-100"}`}>
+              <Crown className="w-3 h-3" /> Upgrade Price (Prorated)
+            </div>
+          )}
+          {isYearly && !proratedPrice && (
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${plan.popular ? "bg-white/15 text-white" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
               }`}>
               Save ₹{((plan.price.monthly * 12) - plan.price.yearly).toLocaleString()} yearly
@@ -220,12 +259,17 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect }: {
         {/* CTA Button */}
         <button
           onClick={onSelect}
-          className={`w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 active:scale-96 focus:outline-none focus:ring-2 focus:ring-offset-2 ${plan.popular
-            ? "bg-white text-[#5F97C9] hover:bg-blue-50 shadow-lg focus:ring-white/40"
-            : "bg-[#5F97C9] text-white hover:bg-[#4d84b8] shadow-[0_4px_15px_rgba(95,151,201,0.3)] focus:ring-[#5F97C9]/40"
+          disabled={isCurrentPlan || !isHigherTier}
+          className={`w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 active:scale-96 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isCurrentPlan
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : !isHigherTier && currentSub
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : plan.popular
+                ? "bg-white text-[#5F97C9] hover:bg-blue-50 shadow-lg focus:ring-white/40"
+                : "bg-[#5F97C9] text-white hover:bg-[#4d84b8] shadow-[0_4px_15px_rgba(95,151,201,0.3)] focus:ring-[#5F97C9]/40"
             }`}
         >
-          Get Started
+          {isCurrentPlan ? "Current Plan" : proratedPrice !== null ? "Upgrade Now" : "Get Started"}
         </button>
       </div>
     </motion.div>
@@ -237,23 +281,58 @@ const PricingSection = () => {
   const router = useRouter();
   const [isYearly, setIsYearly] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [currentSub, setCurrentSub] = useState<any>(null);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setIsSignedIn(!!data?.user);
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
+      if (user) {
+        const { data: sub } = await supabase
+          .from("user_subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .single();
+        setCurrentSub(sub);
+      }
     };
     checkUser();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsSignedIn(!!session?.user);
+      if (!session?.user) setCurrentSub(null);
     });
     return () => subscription.unsubscribe();
   }, []);
 
   const handleSelectPlan = (plan: typeof plans[0]) => {
     if (!isSignedIn) { router.push("/signup?mode=signin"); return; }
-    const planPrice = isYearly ? plan.price.yearly : plan.price.monthly;
-    const params = new URLSearchParams({ plan: plan.title, price: planPrice.toString(), period: isYearly ? "year" : "month" });
+
+    // Calculate final price (full or prorated)
+    let finalPrice = isYearly ? plan.price.yearly : plan.price.monthly;
+    let isUpgrade = false;
+
+    if (currentSub && currentSub.plan_name !== plan.title) {
+      // Simple logic mirroring FlipPricingCard's display logic
+      const now = new Date();
+      const start = new Date(currentSub.start_date);
+      const end = new Date(currentSub.end_date);
+      const totalDays = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
+      const remainingDays = (end.getTime() - now.getTime()) / (1000 * 3600 * 24);
+
+      if (remainingDays > 0) {
+        const credit = (remainingDays / totalDays) * currentSub.price;
+        finalPrice = Math.max(0, Math.round(finalPrice - credit));
+        isUpgrade = true;
+      }
+    }
+
+    const params = new URLSearchParams({
+      plan: plan.title,
+      price: finalPrice.toString(),
+      period: isYearly ? "year" : "month",
+      isUpgrade: isUpgrade.toString()
+    });
     router.push(`/checkout?${params.toString()}`);
   };
 
@@ -305,6 +384,7 @@ const PricingSection = () => {
               index={i}
               isYearly={isYearly}
               onSelect={() => handleSelectPlan(plan)}
+              currentSub={currentSub}
             />
           ))}
         </div>
@@ -408,7 +488,7 @@ const VeterinaryServices: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => router.push("/contactUs")}
+                onClick={() => router.push("/appointments/new")}
                 className="mt-10 inline-flex items-center gap-2 bg-[#5F97C9] text-white font-bold px-7 py-3.5 rounded-2xl text-sm shadow-lg shadow-[#5F97C9]/25 hover:shadow-[#5F97C9]/40 transition-all duration-300"
               >
                 Book a Consultation <ArrowRight className="w-4 h-4" />
@@ -501,12 +581,12 @@ const VeterinaryServices: React.FC = () => {
               Give Your Pet the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-white">Care They Deserve</span>
             </h2>
             <p className="text-blue-100/80 text-base mb-10 max-w-xl mx-auto font-medium leading-relaxed">
-              Schedule a consultation today and experience why thousands of pet parents trust us.
+              Schedule your first consultation today — <span className="text-white font-black">100% Free</span>, covered by Petverse. Experience why thousands of pet parents trust us.
             </p>
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.25)" }}
               whileTap={{ scale: 0.96 }}
-              onClick={() => router.push("/contactUs")}
+              onClick={() => router.push("/appointments/new")}
               className="inline-flex items-center gap-2 bg-white text-[#5F97C9] font-bold py-4 px-10 rounded-2xl text-base shadow-2xl transition-all duration-300"
             >
               Schedule Consultation <ArrowRight className="w-4 h-4" />

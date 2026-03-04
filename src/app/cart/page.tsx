@@ -16,6 +16,7 @@ import {
   Truck,
   Heart,
   Star,
+  Crown,
 } from "lucide-react";
 import SpinnerLoader from "@/components/SpinnerLoader";
 
@@ -62,6 +63,7 @@ export default function CartPage() {
   const [promoCode, setPromoCode] = useState<string>("");
   const [appliedPromo, setAppliedPromo] = useState<string>("");
   const [promoMessage, setPromoMessage] = useState<string>("");
+  const [activeSub, setActiveSub] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -117,6 +119,17 @@ export default function CartPage() {
       const savedPromo = localStorage.getItem("applied_promo_code");
       if (savedPromo) {
         setAppliedPromo(savedPromo);
+      }
+
+      // Fetch active subscription for discounts
+      if (auth?.user) {
+        const { data: sub } = await supabase
+          .from("user_subscriptions")
+          .select("*")
+          .eq("user_id", auth.user.id)
+          .eq("status", "active")
+          .single();
+        setActiveSub(sub);
       }
     })();
 
@@ -177,7 +190,13 @@ export default function CartPage() {
     return 0;
   }, [subtotal, cgst, sgst, appliedPromo]);
 
-  const total = useMemo(() => subtotal + cgst + sgst - promoDiscount, [subtotal, cgst, sgst, promoDiscount]);
+  const subDiscount = useMemo(() => {
+    if (!activeSub) return 0;
+    const rate = activeSub.plan_name === "Premium Care" ? 0.25 : activeSub.plan_name === "Complete Care" ? 0.15 : 0.05;
+    return Math.round(subtotal * rate);
+  }, [activeSub, subtotal]);
+
+  const total = useMemo(() => subtotal + cgst + sgst - promoDiscount - subDiscount, [subtotal, cgst, sgst, promoDiscount, subDiscount]);
 
   const updateQty = async (row: CartRow, delta: number) => {
     if (busy) return;
@@ -455,6 +474,18 @@ export default function CartPage() {
 
                   {actualSavings > 0 && (
                     <SummaryRow label="You Save" value={-actualSavings} savings />
+                  )}
+
+                  {subDiscount > 0 && activeSub && (
+                    <div className="flex items-center justify-between py-2 px-3 bg-amber-50 rounded-lg border border-amber-100">
+                      <div className="flex items-center gap-2 text-amber-700">
+                        <Crown className="h-4 w-4" />
+                        <span className="font-medium">{activeSub.plan_name} Discount</span>
+                      </div>
+                      <span className="font-bold text-amber-700">
+                        - ₹{subDiscount.toLocaleString()}
+                      </span>
+                    </div>
                   )}
 
                   {appliedPromo && (

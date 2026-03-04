@@ -132,7 +132,7 @@ export default function NewMultiplePetsPage() {
           <span className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-xs font-semibold text-[#FF8A65] mb-4 tracking-wide uppercase">
             <PawPrint size={14} /> New Profile
           </span>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Add Your Pets</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Add Your Pets</h1>
           <p className="mt-2 text-white/40 text-sm">Quickly create profiles for all your furry friends.</p>
         </motion.div>
       </div>

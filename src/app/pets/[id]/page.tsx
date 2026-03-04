@@ -279,7 +279,7 @@ export default function PetProfilePage() {
                 />
               </div>
               <div className="pb-1">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{pet.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{pet.name}</h1>
                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
                   {pet.species && (
                     <span className="rounded-full bg-[#FF8A65]/15 border border-[#FF8A65]/20 px-2.5 py-0.5 text-xs font-semibold text-[#FF8A65]">

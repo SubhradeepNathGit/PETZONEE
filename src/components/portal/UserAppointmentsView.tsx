@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     CalendarDays, Mail, Clock, User as UserIcon,
     XCircle, CheckCircle2, Stethoscope, ChevronRight,
-    AlertCircle, Loader2, Trash2
+    AlertCircle, Loader2, Trash2, Zap
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-toastify';
@@ -19,6 +19,8 @@ type Vet = {
     email: string | null;
     phone: string | null;
     avatar_url: string | null;
+    consultation_fee?: number | null;
+    fee_description?: string | null;
 };
 
 type Appointment = {
@@ -30,6 +32,9 @@ type Appointment = {
     notes: string | null;
     created_at: string;
     updated_at: string;
+    is_free_visit: boolean;
+    is_subscription_benefit: boolean;
+    fee_at_booking: number;
     vet?: Vet | null;
 };
 
@@ -51,25 +56,25 @@ function fmtDate(iso: string): string {
 /* Status Config */
 const STATUS_CONFIG = {
     accepted: {
-        pill: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+        pill: 'text-emerald-400',
         dot: 'bg-emerald-500',
         label: 'Confirmed',
         icon: CheckCircle2,
     },
     rejected: {
-        pill: 'bg-red-500/20 text-red-400 border border-red-500/30',
+        pill: 'text-red-400',
         dot: 'bg-red-500',
         label: 'Cancelled',
         icon: XCircle,
     },
     pending: {
-        pill: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+        pill: 'text-amber-400',
         dot: 'bg-amber-500',
         label: 'Pending',
         icon: Clock,
     },
     completed: {
-        pill: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+        pill: 'text-blue-400',
         dot: 'bg-blue-500',
         label: 'Visited',
         icon: CheckCircle2,
@@ -214,12 +219,32 @@ function AppointmentCard({
                     </div>
 
                     <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold uppercase tracking-normal ${cfg.pill} shadow-sm ${dim ? 'text-[7px] py-1 px-2 border-transparent bg-transparent opacity-30 grayscale' : 'text-[9px]'}`}>
-                            {!dim && <div className={`rounded-full ${cfg.dot} ${appt.status === 'pending' || appt.status === 'accepted' ? 'animate-pulse' : ''} w-1.5 h-1.5`} />}
+                        <span className={`inline-flex items-center gap-1.5 py-1 font-bold uppercase tracking-normal ${cfg.pill} ${dim ? 'text-[7px] opacity-30 grayscale' : 'text-[9px]'}`}>
+                            {!dim && <div className={`rounded-full ${cfg.dot} ${appt.status === 'pending' || appt.status === 'accepted' ? 'animate-pulse' : ''} w-1 h-1`} />}
                             {cfg.label}
                         </span>
                         {!isPast && appt.status === 'accepted' && !dim && (
                             <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-[0.2em] opacity-80">Slot Active</span>
+                        )}
+                        {(appt.is_free_visit || appt.is_subscription_benefit) && !dim && (
+                            <div className="flex flex-col items-end gap-0.5">
+                                <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+                                    <Zap size={10} fill="currentColor" /> {appt.is_free_visit ? 'FREE FIRST VISIT' : 'MEMBERSHIP CREDIT'}
+                                </span>
+                                <span className="text-[7px] font-bold text-white/20 uppercase tracking-tighter">
+                                    Fee: ₹{Number(appt.fee_at_booking || 0).toFixed(0)} Paid by Petverse
+                                </span>
+                            </div>
+                        )}
+                        {!appt.is_free_visit && !appt.is_subscription_benefit && !dim && (
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">
+                                    ₹{Number(appt.fee_at_booking || 0).toFixed(0)}
+                                </span>
+                                <span className="text-[7px] font-bold text-white/20 uppercase tracking-tighter">
+                                    Consultation Fee
+                                </span>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -280,8 +305,8 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
         const { data, error } = await supabase
             .from('appointments')
             .select(`
-        id, user_id, vet_id, appointment_time, status, notes, created_at, updated_at,
-        vet:veterinarian (id, name, email, phone, avatar_url)
+        id, user_id, vet_id, appointment_time, status, notes, created_at, updated_at, is_free_visit, fee_at_booking,
+        vet:veterinarian (id, name, email, phone, avatar_url, consultation_fee, fee_description)
       `)
             .eq('user_id', uid)
             .order('appointment_time', { ascending: false });
@@ -317,7 +342,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
     const { upcoming, past } = useMemo(() => {
         const up: Appointment[] = [], pa: Appointment[] = [];
         for (const a of items) {
-            if (a.status === 'completed' || a.status === 'rejected') {
+            if (a.status === 'completed') {
                 pa.push(a);
             } else {
                 up.push(a);
@@ -415,13 +440,13 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setCancelModalId(null)}
-                                    className="flex-1 py-3 rounded-xl border border-white/10 text-white/70 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all"
+                                    className="flex-1 py-3 rounded-xl border border-white/10 text-white/70 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all"
                                 >
                                     Abort
                                 </button>
                                 <button
                                     onClick={confirmCancel}
-                                    className="flex-1 py-3 rounded-xl bg-red-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all"
+                                    className="flex-1 py-3 rounded-xl bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-red-600 transition-all"
                                 >
                                     Confirm Cancel
                                 </button>

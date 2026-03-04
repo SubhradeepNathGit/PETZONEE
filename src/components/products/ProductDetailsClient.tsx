@@ -235,7 +235,7 @@ export default function ProductDetailsClient({
                     <div className="flex flex-col">
                         {/* Minimal Labels */}
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="px-2 py-0.5 rounded-md bg-red-50 text-[10px] font-black tracking-widest text-red-500 uppercase">
+                            <span className="px-2 py-0.5 rounded-md bg-red-50 text-[10px] font-bold tracking-widest text-red-500 uppercase">
                                 {product.category}
                             </span>
                             <div className="flex items-center gap-1 text-yellow-500 text-[11px] font-bold">
@@ -245,7 +245,7 @@ export default function ProductDetailsClient({
                         </div>
 
                         {/* Compact Title */}
-                        <h1 className="text-3xl lg:text-4xl font-black text-gray-900 mb-3 tracking-tight">
+                        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3 tracking-tight">
                             {product.name}
                         </h1>
 

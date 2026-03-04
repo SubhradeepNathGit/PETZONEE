@@ -320,11 +320,11 @@ function PetCard({
 
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-start mb-0.5">
-          <h3 className={`text-lg font-black truncate ${active ? 'text-white' : 'text-white/90'}`}>
+          <h3 className={`text-lg font-bold truncate ${active ? 'text-white' : 'text-white/90'}`}>
             {pet.name}
           </h3>
           {pet.species && (
-            <span className="text-[9px] font-black uppercase tracking-wider text-[#FF8A65] bg-[#FF8A65]/10 px-2 py-0.5 rounded-full">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-[#FF8A65] bg-[#FF8A65]/10 px-2 py-0.5 rounded-full">
               {pet.species}
             </span>
           )}

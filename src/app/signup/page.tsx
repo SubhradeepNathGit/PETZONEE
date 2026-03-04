@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-type Mode = 'signup' | 'signin';
+type Mode = 'signup' | 'signin' | 'forgot';
 type Role = 'user' | 'vet';
 
 type UserSignup = {
@@ -48,6 +48,9 @@ function AuthContent() {
   const [role, setRole] = useState<Role>('user');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.name = 'petzonee_auth';
+    }
     if (searchParams.get('mode') === 'signin') {
       setMode('signin');
     }
@@ -71,17 +74,7 @@ function AuthContent() {
 
     const user = data.user;
     const userRole = (user?.user_metadata as { role?: string })?.role;
-    if (userRole === 'vet') {
-      const { data: vet } = await supabase
-        .from('veterinarian')
-        .select('kyc_status')
-        .eq('id', user!.id)
-        .single();
-      if (vet?.kyc_status === 'approved') router.replace('/dashboard');
-      else router.replace('/kyc-pending');
-    } else {
-      router.replace('/dashboard');
-    }
+    router.replace('/dashboard');
   }
 
   async function onSignupUser(e: React.FormEvent<HTMLFormElement>) {
@@ -198,12 +191,32 @@ function AuthContent() {
     if (dbErr) { setBusy(false); toast.error(`Vet insert failed: ${dbErr.message}`); return; }
 
     setBusy(false);
-    setBusy(false);
-    toast.success('Vet account created! Please confirm your email. KYC is pending.');
+    toast.success('Vet account created! Please confirm your email.');
     setMode('signin');
   }
 
+  async function onForgotPasswordRequest(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+
+    const fd = new FormData(e.currentTarget);
+    const email = String(fd.get('email') || '');
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Password reset link sent! Check your email.');
+      setMode('signin');
+    }
+  }
+
   const isSignup = mode === 'signup';
+  const isForgot = mode === 'forgot';
 
   return (
     <main className="min-h-screen lg:h-screen w-full bg-[#FF8A65] flex flex-col lg:overflow-hidden">
@@ -269,6 +282,17 @@ function AuthContent() {
                       onSwap={() => setMode('signin')}
                     />
                   </motion.div>
+                ) : isForgot ? (
+                  <motion.div
+                    key="forgot-video"
+                    className="h-full hidden lg:block"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <VideoCard mode="signin" />
+                  </motion.div>
                 ) : (
                   <motion.div
                     key="signin-video"
@@ -300,6 +324,21 @@ function AuthContent() {
                   >
                     <VideoCard mode="signup" />
                   </motion.div>
+                ) : isForgot ? (
+                  <motion.div
+                    key="forgot-form"
+                    className="h-full"
+                    initial={{ x: 40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 20, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  >
+                    <ForgotCard
+                      busy={busy}
+                      onSubmit={onForgotPasswordRequest}
+                      onBack={() => setMode('signin')}
+                    />
+                  </motion.div>
                 ) : (
                   <motion.div
                     key="signin-form"
@@ -309,7 +348,12 @@ function AuthContent() {
                     exit={{ x: 20, opacity: 0 }}
                     transition={{ duration: 0.35, ease: 'easeOut' }}
                   >
-                    <LoginCard busy={busy} onSubmit={onLogin} onSwap={() => setMode('signup')} />
+                    <LoginCard
+                      busy={busy}
+                      onSubmit={onLogin}
+                      onSwap={() => setMode('signup')}
+                      onForgot={() => setMode('forgot')}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -347,10 +391,12 @@ function LoginCard({
   busy,
   onSubmit,
   onSwap,
+  onForgot,
 }: {
   busy: boolean;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   onSwap: () => void;
+  onForgot: () => void;
 }) {
   return (
     <div className="mx-auto w-full h-full flex flex-col justify-start -mt-35 lg:-mt-10 lg:justify-center lg:pt-0 text-white px-4 py-6 lg:py-0">
@@ -362,6 +408,17 @@ function LoginCard({
         <form onSubmit={onSubmit} className="space-y-3 lg:space-y-4">
           <Input name="email" type="email" placeholder="Email Id *" />
           <Input name="password" type="password" placeholder="Password *" />
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onForgot}
+              className="text-[10px] lg:text-xs text-white/70 hover:text-white hover:underline transition-all"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <button
             disabled={busy}
             className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
@@ -377,6 +434,49 @@ function LoginCard({
             className="underline decoration-white/60 underline-offset-2 hover:opacity-90 font-medium transition-opacity"
           >
             Create account
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ForgotCard({
+  busy,
+  onSubmit,
+  onBack,
+}: {
+  busy: boolean;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onBack: () => void;
+}) {
+  return (
+    <div className="mx-auto w-full h-full flex flex-col justify-start -mt-35 lg:-mt-10 lg:justify-center lg:pt-0 text-white px-4 py-6 lg:py-0">
+      <div className="max-w-[500px] lg:max-w-[450px] mx-auto w-full">
+        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+          Reset Password
+        </h2>
+        <p className="mb-5 lg:mb-6 text-center text-xs lg:text-sm opacity-90">
+          Enter your email to receive a password reset link
+        </p>
+        <form onSubmit={onSubmit} className="space-y-3 lg:space-y-4">
+          <Input name="email" type="email" placeholder="Email Id *" />
+
+          <button
+            disabled={busy}
+            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {busy ? 'Sending Link…' : 'Send Reset Link'}
+          </button>
+        </form>
+        <p className="mt-4 text-center text-xs lg:text-sm">
+          Remembered your password?{' '}
+          <button
+            type="button"
+            onClick={onBack}
+            className="underline decoration-white/60 underline-offset-2 hover:opacity-90 font-medium transition-opacity"
+          >
+            Back to Sign in
           </button>
         </p>
       </div>

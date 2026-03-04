@@ -5,6 +5,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Loader from "@/components/loader";
 import { usePathname, useSearchParams } from "next/navigation";
+import GlobalChatWidget from "@/components/chat/GlobalChatWidget";
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -78,7 +79,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-  const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname.startsWith('/map') || pathname === '/delete';
+  const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname.startsWith('/reset-password') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname.startsWith('/map') || pathname === '/delete';
   const hideFooter = hideNavbar || pathname.startsWith('/appointments');
   // Legacy alias for places that may still use hideLayout
   const hideLayout = hideNavbar;
@@ -191,6 +192,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
         {!hideNavbar && <Navbar />}
         <main>{children}</main>
         {!hideFooter && <Footer />}
+        <GlobalChatWidget />
       </div>
     </div>
   );

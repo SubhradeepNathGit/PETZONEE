@@ -1,6 +1,7 @@
 import { getProductById } from "@/lib/utils";
 import ProductDetailsClient from "@/components/products/ProductDetailsClient";
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,11 @@ export default async function ProductPage({ params }: Props) {
         <div className="bg-white p-12 rounded-[40px] shadow-2xl shadow-red-100 text-center max-w-lg w-full border border-red-50">
           <div className="flex justify-center mb-6">
             <Search className="w-20 h-20 text-gray-300" />
-          </div>          <h1 className="text-4xl font-black text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-500 mb-8 font-medium">Sorry, we couldn't find the product you're looking for. It might have been removed or the link is incorrect.</p>
-          <a href="/products" className="inline-block px-10 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200">
+          </div>          <h1 className="text-4xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+          <p className="text-gray-500 mb-8 font-medium">Sorry, we couldn&apos;t find the product you&apos;re looking for. It might have been removed or the link is incorrect.</p>
+          <Link href="/products" className="inline-block px-10 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200">
             Browse All Products
-          </a>
+          </Link>
         </div>
       </div>
     );

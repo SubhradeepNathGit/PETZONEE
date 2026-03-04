@@ -4,42 +4,43 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Crown } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const plans = [
   {
-    title: "Puppy Plan",
-    price: { monthly: 166, yearly: 166 * 12 },
+    title: "Essential Care",
+    price: { monthly: 1199, yearly: 11990 },
     img: "/images/pricing1.jpg",
     features: [
-      "Essential Pet Wellness",
-      "Free Vet Consultation",
-      "Essential Grooming",
+      "1 Free Monthly Consultation",
+      "5% Product Discount",
+      "Basic Health Tracking",
       "Monthly Pet Care Tips",
-      "Membership Discounts",
+      "Community Access",
     ],
   },
   {
-    title: "Paw Plan",
-    price: { monthly: 333, yearly: 333 * 12 },
+    title: "Complete Care",
+    price: { monthly: 2999, yearly: 29990 },
     img: "/images/pricing2.jpg",
     features: [
-      "Full Grooming Package",
-      "Accessory Discounts (10%)",
-      "Monthly Health Tracker",
-      "Loyalty Reward Points",
+      "4 Free Monthly Consultations",
+      "15% Product Discount",
+      "Priority Booking",
+      "24/7 Dedicated Vet Chat",
       "Seasonal Flea Treatment",
     ],
   },
   {
-    title: "Tail-Wag Plan",
-    price: { monthly: 500, yearly: 500 * 12 },
+    title: "Premium Care",
+    price: { monthly: 4999, yearly: 49990 },
     img: "/images/pricing3.jpg",
     features: [
-      "Teeth Cleaning Session",
-      "Premium Organic Shampoo",
-      "Pet Spa Therapy",
-      "Seasonal Care Upgrade",
+      "Unlimited Free Consultations",
+      "25% Product Discount",
+      "VIP Spa Treatments",
+      "Priority Emergency Hotline",
       "Skin Health Analysis",
     ],
   },
@@ -49,18 +50,29 @@ export default function PricingSection() {
   const router = useRouter();
   const [isYearly, setIsYearly] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [currentSub, setCurrentSub] = useState<any>(null);
 
   useEffect(() => {
     // Initial auth check
     const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setIsSignedIn(!!data?.user);
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
+      if (user) {
+        const { data: sub } = await supabase
+          .from("user_subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("status", "active")
+          .single();
+        setCurrentSub(sub);
+      }
     };
     checkUser();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsSignedIn(!!session?.user);
+      if (!session?.user) setCurrentSub(null);
     });
 
     return () => subscription.unsubscribe();
@@ -72,7 +84,23 @@ export default function PricingSection() {
       return;
     }
 
-    const planPrice = isYearly ? plan.price.yearly : plan.price.monthly;
+    let planPrice = isYearly ? plan.price.yearly : plan.price.monthly;
+    let isUpgrade = false;
+
+    if (currentSub && currentSub.plan_name !== plan.title) {
+      const now = new Date();
+      const start = new Date(currentSub.start_date);
+      const end = new Date(currentSub.end_date);
+      const totalDays = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
+      const remainingDays = (end.getTime() - now.getTime()) / (1000 * 3600 * 24);
+
+      if (remainingDays > 0) {
+        const credit = (remainingDays / totalDays) * currentSub.price;
+        planPrice = Math.max(0, Math.round(planPrice - credit));
+        isUpgrade = true;
+      }
+    }
+
     const planPeriod = isYearly ? "year" : "month";
 
     // Encode plan details to pass through URL params
@@ -80,7 +108,8 @@ export default function PricingSection() {
       plan: plan.title,
       price: planPrice.toString(),
       period: planPeriod,
-      img: plan.img
+      img: plan.img,
+      isUpgrade: isUpgrade.toString()
     });
 
     router.push(`/checkout?${params.toString()}`);
@@ -167,11 +196,15 @@ export default function PricingSection() {
               {/* Purchase Button */}
               <button
                 onClick={() => handleSelectPlan(plan)}
-                className="mt-6 w-full py-3 rounded-xl bg-[#FF8A65] text-white font-semibold 
+                disabled={currentSub?.plan_name === plan.title || (currentSub && ["Essential Care", "Complete Care", "Premium Care"].indexOf(plan.title) <= ["Essential Care", "Complete Care", "Premium Care"].indexOf(currentSub.plan_name))}
+                className={`mt-6 w-full py-3 rounded-xl font-semibold 
              transition-transform duration-300 hover:scale-105 active:scale-95 
-             group-hover:bg-white group-hover:text-[#FF8A65]"
+             ${currentSub?.plan_name === plan.title || (currentSub && ["Essential Care", "Complete Care", "Premium Care"].indexOf(plan.title) <= ["Essential Care", "Complete Care", "Premium Care"].indexOf(currentSub.plan_name))
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-[#FF8A65] text-white group-hover:bg-white group-hover:text-[#FF8A65]"
+                  }`}
               >
-                Select Plan
+                {currentSub?.plan_name === plan.title ? "Current Plan" : "Select Plan"}
               </button>
 
             </div>

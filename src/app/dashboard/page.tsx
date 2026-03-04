@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Image from 'next/image';
@@ -10,8 +10,10 @@ import { Suspense } from 'react';
 import { supabase } from '@/lib/supabase';
 import Sidebar from '@/components/sidebar';
 import UserAppointmentsView from '@/components/portal/UserAppointmentsView';
+import UserOrdersView from '@/components/portal/UserOrdersView';
+const UserMessages = dynamic(() => import('@/components/portal/UserMessages'), { ssr: false });
 
-import { Role, PetRow, PetUI, SidebarItem, VetRow } from '@/components/portal/shared/types';
+import { Role, PetRow, PetUI, VetRow } from '@/components/portal/shared/types';
 import { useAsyncError } from '@/components/portal/shared/hooks';
 import { resolvePetPhotoUrl } from '@/components/portal/shared/utils';
 import { Card, LoadingCard, SkeletonDashboard } from '@/components/portal/shared/ui';
@@ -19,7 +21,7 @@ import {
   IconHome, IconCalendar, IconUsers, IconUser, IconBell, IconChart, IconShield, IconPackage,
   IconShoppingBag, IconCompass, IconPlus, IconHeart, IconSettings, IconTrash, IconLogOut, IconX, IconPawPrint, IconDog
 } from '@/components/portal/shared/icons';
-import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint, Menu, X as IconXLucide } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint, Menu, X as IconXLucide, Activity } from 'lucide-react';
 
 const AdminDashboard = dynamic(() => import('@/components/portal/AdminDashboard'), { ssr: false });
 const VetDashboard = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
@@ -169,7 +171,30 @@ function PortalContent() {
 
   useEffect(() => {
     initializeUser();
-  }, []);
+  }, [initializeUser]);
+
+  useEffect(() => {
+    if (meId && role === 'vet' && vetKyc !== 'approved') {
+      const channel = supabase
+        .channel(`vet-kyc-${meId}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'veterinarian', filter: `id=eq.${meId}` },
+          (payload) => {
+            if (payload.new && payload.new.kyc_status) {
+              setVetKyc(payload.new.kyc_status as 'pending' | 'approved' | 'rejected');
+              if (payload.new.kyc_status === 'approved') {
+                showMessage('Your account has been approved!', 'success');
+              }
+            }
+          }
+        )
+        .subscribe();
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [meId, role, vetKyc, showMessage]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -240,7 +265,13 @@ function PortalContent() {
   }, [meId, handleError]);
 
   const content = useMemo(() => {
-    if (role === 'loading') return <SkeletonDashboard />;
+    if (role === 'loading') {
+      return (
+        <div className="flex h-[80vh] items-center justify-center">
+          <Activity className="w-12 h-12 text-blue-500 animate-pulse" />
+        </div>
+      );
+    }
 
     if (role === 'admin')
       return (
@@ -279,6 +310,15 @@ function PortalContent() {
       if (view === 'appointments' && meId) {
         return <UserAppointmentsView userId={meId} />;
       }
+      if (view === 'orders' && meId) {
+        return <UserOrdersView userId={meId} />;
+      }
+      if (view === 'messages' && meId) {
+        return <UserMessages userId={meId} role="user" messageType="support" />;
+      }
+      if (view === 'vet-messages' && meId) {
+        return <UserMessages userId={meId} role="user" messageType="vet" />;
+      }
       return (
         <UserDashboard
           firstName={firstName}
@@ -311,45 +351,20 @@ function PortalContent() {
     profileAvatar, showMessage, loadMyPets, view
   ]);
 
-  const getSidebarItems = useCallback(
-    (r: Role, count: number): SidebarItem[] => {
-      const baseItems = {
-        vet: [
-          { label: 'Dashboard', href: '/dashboard', icon: <IconHome /> },
-          { label: 'Appointments', href: '/appointments', icon: <IconCalendar /> },
-          { label: 'Patients', href: '/patients', icon: <IconUsers /> },
-          { label: 'Profile', href: '/settings/profile', icon: <IconUser /> },
-          { label: 'Notifications', href: '/notifications', badge: count, icon: <IconBell /> },
-        ],
-        admin: [
-          { label: 'Home', href: '/admin', icon: <IconHome /> },
-          { label: 'Analytics', href: '/admin/analytics', icon: <IconChart /> },
-          { label: 'KYC Review', href: '/admin/kyc', icon: <IconShield /> },
-          { label: 'Products', href: '/admin/products', icon: <IconPackage /> },
-          { label: 'Orders', href: '/admin/orders', icon: <IconShoppingBag /> },
-          { label: 'Profile', href: '/dashboard', icon: <IconUser /> },
-        ],
-        user: [
-          { label: 'Home', href: '/', icon: <IconHome /> },
-          { label: 'Discover', href: '/feed', icon: <IconCompass /> },
-          { label: 'Create', href: '/pets/new', icon: <IconPlus /> },
-          { label: 'My Pets', onClick: loadMyPets, icon: <IconHeart /> },
-          { label: 'Profile', href: '/dashboard', icon: <IconUser /> },
-          { label: 'Cart', href: '/cart', icon: <IconShoppingBag /> },
-          { label: 'Orders', href: '/orders', icon: <IconPackage /> },
-        ],
-      } as const;
 
-      const items = r === 'vet' || r === 'admin' || r === 'user' ? baseItems[r] : [];
-      return [
-        ...items,
-        { label: 'Settings', href: '/settings', icon: <IconSettings /> },
-        { label: 'Delete Account', onClick: handleDeleteAccount, icon: <IconTrash /> },
-        { label: 'Log Out', onClick: handleLogout, icon: <IconLogOut /> },
-      ];
-    },
-    [loadMyPets, handleDeleteAccount, handleLogout]
-  );
+  // ── Vet full-page takeover ──
+  // VetDashboard owns its own sidebar + layout, so bypass the shared layout below.
+  if (role === 'vet' && vetKyc === 'approved') {
+    return (
+      <VetDashboard
+        name={vetName}
+        meId={meId}
+        avatarUrl={vetAvatar}
+        onAvatarChange={setVetAvatar}
+        showMessage={showMessage}
+      />
+    );
+  }
 
   const sidebar = (
     <Sidebar
@@ -418,15 +433,15 @@ function PortalContent() {
             </div>
 
 
-            <div className="container mx-auto px-1.5 sm:px-4 md:px-6 max-w-7xl py-2">
-              <div className="rounded-2xl p-3 sm:p-6 md:p-8">
-                {view !== 'appointments' && (
+            <div className={`container mx-auto max-w-7xl ${(view === 'messages' || view === 'vet-messages') ? 'h-[calc(100vh-80px)] p-0' : 'px-1.5 sm:px-4 md:px-6 py-2'}`}>
+              <div className={`rounded-2xl ${(view === 'messages' || view === 'vet-messages') ? 'h-full p-0' : 'p-3 sm:p-6 md:p-8'}`}>
+                {view !== 'appointments' && view !== 'messages' && view !== 'vet-messages' && view !== 'orders' && (
                   <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                       <motion.h1
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-300 bg-clip-text text-transparent tracking-tighter"
+                        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-300 bg-clip-text text-transparent tracking-tighter"
                       >
                         Welcome to PETZONEE
                       </motion.h1>
@@ -512,7 +527,7 @@ function PortalContent() {
               >
                 <div className="mb-6 flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-black text-white tracking-tight">My Pets</h3>
+                    <h3 className="text-xl font-bold text-white tracking-tight">My Pets</h3>
                     <p className="text-xs text-white/30 mt-0.5">{pets.length > 0 ? `${pets.length} companion${pets.length !== 1 ? 's' : ''}` : 'No pets yet'}</p>
                   </div>
                   <button

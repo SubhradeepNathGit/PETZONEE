@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CheckCircle2, Home, Printer, Gift, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Home, Printer, Gift, ArrowLeft, Package, Crown } from "lucide-react";
 
 // Types
 type OrderItem = {
@@ -12,7 +12,7 @@ type OrderItem = {
 };
 type LastOrder = {
   orderId: string; when: string; items: OrderItem[];
-  summary: { subtotal: number; sgst: number; cgst: number; totalTax: number; deliveryFee: number; total: number, promoCode?: string; promoDiscount?: number; }
+  summary: { subtotal: number; sgst: number; cgst: number; totalTax: number; deliveryFee: number; total: number, promoCode?: string; promoDiscount?: number; subDiscount?: number; }
   contact: { email: string; phone: string };
   address: { name: string; line1: string; line2?: string; city: string; state: string; pincode: string };
   delivery: "standard" | "express"; payMode: "card" | "upi" | "netbanking" | "wallet";
@@ -114,6 +114,13 @@ const OrderCard = ({ order, itemCount }: { order: LastOrder | null; itemCount: n
             <span className="text-gray-500">Tax</span>
             <span className="font-semibold text-gray-900">₹{order.summary.totalTax.toLocaleString()}</span>
           </div>
+
+          {order.summary.subDiscount && order.summary.subDiscount > 0 ? (
+            <div className="flex justify-between text-sm text-amber-600 bg-amber-50 p-2 rounded-lg print:bg-transparent print:p-0">
+              <span className="font-medium flex items-center gap-1.5"><Crown className="h-3.5 w-3.5 print:hidden" />Membership Discount</span>
+              <span className="font-bold">- ₹{order.summary.subDiscount.toLocaleString()}</span>
+            </div>
+          ) : null}
 
           {order.summary.promoDiscount && order.summary.promoDiscount > 0 ? (
             <div className="flex justify-between text-sm text-orange-600 bg-orange-50 p-2 rounded-lg print:bg-transparent print:p-0">
@@ -282,6 +289,12 @@ const PrintInvoice = ({ order }: { order: LastOrder | null }) => {
             <span className="text-gray-600">Delivery</span>
             <span className="font-medium text-gray-900">{order.summary.deliveryFee === 0 ? 'Free' : `₹${order.summary.deliveryFee}`}</span>
           </div>
+          {order.summary.subDiscount && order.summary.subDiscount > 0 && (
+            <div className="flex justify-between text-sm py-1 border-b border-gray-100 text-amber-600">
+              <span>Membership Discount</span>
+              <span>- ₹{order.summary.subDiscount.toLocaleString()}</span>
+            </div>
+          )}
           {order.summary.promoDiscount && order.summary.promoDiscount > 0 && (
             <div className="flex justify-between text-sm py-1 border-b border-gray-100 text-orange-600">
               <span>Discount ({order.summary.promoCode})</span>
@@ -356,10 +369,10 @@ export default function SuccessPage() {
                   <Printer className="h-5 w-5" /> Print Invoice
                 </button>
                 <button
-                  onClick={() => router.push("/")}
+                  onClick={() => router.push("/dashboard?view=orders")}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 border-orange-500 text-orange-600 font-bold hover:bg-orange-50 transition-colors"
                 >
-                  <ArrowLeft className="h-5 w-5" /> Continue Shopping
+                  <Package className="h-5 w-5" /> Track My Order
                 </button>
               </motion.div>
               <div className="text-center">

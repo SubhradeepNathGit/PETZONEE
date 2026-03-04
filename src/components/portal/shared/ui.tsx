@@ -1,4 +1,4 @@
-﻿
+
 'use client';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useCallback, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { IconCamera, IconUser } from './icons';
+import { Stethoscope, Activity, Zap, ChevronRight } from 'lucide-react';
 
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -14,7 +15,7 @@ export function Card({ children, className = '' }: { children: React.ReactNode; 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md transition ${className}`}
+      className={`rounded-[2.5rem] p-8 md:p-10 border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl transition-all ${className}`}
     >
       {children}
     </motion.div>
@@ -122,15 +123,15 @@ export function FeatureCard({
   onClick?: () => void;
 }) {
   const buttonClass = `inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${gradient} text-white rounded-xl font-semibold text-sm hover:brightness-110 active:scale-95 transition-all duration-300 group-hover:translate-x-1`;
-  const arrow = <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>;
+  const arrow = <span className="group-hover:translate-x-1 transition-transform duration-300">?</span>;
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="group relative overflow-hidden rounded-3xl p-8 bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all duration-500 backdrop-blur-xl"
+      className="group relative overflow-hidden rounded-[2.5rem] p-10 bg-[#0a0a0a]/80 border border-white/5 hover:border-white/10 transition-all duration-500 shadow-2xl backdrop-blur-xl"
     >
       <div
-        className={`absolute -top-12 -right-12 h-48 w-48 bg-gradient-to-br ${gradient} opacity-10 rounded-full blur-3xl group-hover:opacity-20 group-hover:scale-150 transition-all duration-700`}
+        className={`absolute -top-12 -right-12 h-64 w-64 bg-gradient-to-br ${gradient} opacity-5 rounded-full blur-[80px] group-hover:opacity-10 group-hover:scale-150 transition-all duration-700`}
       />
 
       <div className="relative z-10">
@@ -140,8 +141,8 @@ export function FeatureCard({
           </div>
         </div>
 
-        <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">{title}</h3>
-        <p className="text-gray-400 text-sm mb-8 leading-relaxed font-medium">{description}</p>
+        <h3 className="text-2xl font-black text-white mb-3 tracking-tighter uppercase">{title}</h3>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-8 leading-relaxed">{description}</p>
 
         {href ? (
           <Link href={href} className={buttonClass}>
@@ -258,6 +259,83 @@ export function AvatarPicker({
         )}
       </button>
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFile} />
+    </div>
+  );
+}
+
+export function DashboardLoadingScreen({ message = "Initializing Systems" }: { message?: string }) {
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/5 rounded-full blur-[100px]" />
+
+      <div className="relative z-10 flex flex-col items-center gap-10">
+        <div className="relative">
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="w-24 h-24 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-3xl relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-50" />
+            <Activity className="text-cyan-500" size={40} />
+          </motion.div>
+
+          {/* Orbital Orbs */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-4 border border-white/5 rounded-[3rem]"
+          >
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+          </motion.div>
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-10 border border-white/5 rounded-[3.5rem]"
+          >
+            <div className="absolute bottom-0 right-1/2 translate-x-1/2 w-2 h-2 bg-orange-400 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
+          </motion.div>
+        </div>
+
+        {/* Text info */}
+        <div className="space-y-4 text-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[10px] font-black text-white uppercase tracking-[0.6em]"
+          >
+            {message}
+          </motion.p>
+          <div className="flex items-center justify-center gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 1, 0.3]
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  delay: i * 0.2
+                }}
+                className="w-1.5 h-1.5 rounded-full bg-cyan-500"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Subtle scanline effect */}
+      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%] opacity-20" />
     </div>
   );
 }

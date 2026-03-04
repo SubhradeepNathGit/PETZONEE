@@ -166,18 +166,18 @@ export default function DeleteUserPage() {
             className="mb-6 shrink-0"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-bold uppercase tracking-widest">
                 <ShieldAlert size={12} /> Critical Action
               </div>
               <button
                 onClick={() => router.push("/dashboard")}
-                className="group flex items-center gap-2 text-white/40 hover:text-white transition-all text-[9px] font-black uppercase tracking-[0.2em]"
+                className="group flex items-center gap-2 text-white/40 hover:text-white transition-all text-[9px] font-bold uppercase tracking-[0.2em]"
               >
                 <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                 <span>Return to Safety</span>
               </button>
             </div>
-            <h1 className="mt-2 text-[26px] md:text-4xl lg:text-5xl font-black tracking-tighter leading-tight mb-3">
+            <h1 className="mt-2 text-[26px] md:text-4xl lg:text-5xl font-bold tracking-tighter leading-tight mb-3">
               Terminate Account
             </h1>
             <p className="text-white/40 text-xs md:text-sm font-medium leading-relaxed max-w-md">
@@ -217,11 +217,11 @@ export default function DeleteUserPage() {
                   <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 mb-6 border border-white/5">
                     <Search size={32} />
                   </div>
-                  <h3 className="text-xl font-black tracking-tight mb-2 uppercase">Account Audit</h3>
+                  <h3 className="text-xl font-bold tracking-tight mb-2 uppercase">Account Audit</h3>
                   <p className="text-white/40 text-xs font-medium mb-8 text-center max-w-[240px]">We need to scan your data before termination to ensure clean removal.</p>
                   <button
                     onClick={checkRelatedData}
-                    className="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-white/5"
+                    className="w-full py-4 bg-white text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-white/5"
                   >
                     Run System Audit
                   </button>
@@ -232,7 +232,7 @@ export default function DeleteUserPage() {
                     <Loader2 className="animate-spin text-[#5F97C9]" size={48} />
                     <div className="absolute inset-0 bg-[#5F97C9]/20 blur-xl rounded-full" />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mt-8">Verifying Encrypted Records...</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mt-8">Verifying Encrypted Records...</p>
                 </div>
               ) : relatedData && userProfile && (
                 <motion.div
@@ -246,8 +246,8 @@ export default function DeleteUserPage() {
                       <User size={24} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Authenticated Identity</p>
-                      <h4 className="text-xl font-black tracking-tight uppercase">
+                      <p className="text-[9px] font-bold text-white/40 uppercase tracking-[0.3em] mb-1">Authenticated Identity</p>
+                      <h4 className="text-xl font-bold tracking-tight uppercase">
                         {[userProfile.first_name, userProfile.last_name].filter(Boolean).join(" ") || "Valued Member"}
                       </h4>
                       <p className="text-white/40 text-[10px] font-bold mt-0.5">{userProfile.email}</p>
@@ -258,7 +258,7 @@ export default function DeleteUserPage() {
                   <div className={`p-6 rounded-xl border transition-all duration-500 ${relatedData.pets > 0 ? "bg-red-500/5 border-red-500/10" : "bg-emerald-500/5 border-emerald-500/10"}`}>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h5 className={`text-[10px] font-black uppercase tracking-widest ${relatedData.pets > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                        <h5 className={`text-[10px] font-bold uppercase tracking-widest ${relatedData.pets > 0 ? "text-red-500" : "text-emerald-500"}`}>
                           {relatedData.pets} Linked Entity Record{relatedData.pets !== 1 ? 's' : ''}
                         </h5>
                         <p className="text-white/40 text-[10px] font-medium mt-1">Found in Petzonee Registry</p>
@@ -267,7 +267,7 @@ export default function DeleteUserPage() {
                       {relatedData.pets > 0 && (
                         <button
                           onClick={() => setDeleteRelated(!deleteRelated)}
-                          className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${deleteRelated ? "bg-red-500 text-white" : "bg-white/5 text-white border border-white/10"}`}
+                          className={`px-4 py-2 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all ${deleteRelated ? "bg-red-500 text-white" : "bg-white/5 text-white border border-white/10"}`}
                         >
                           {deleteRelated ? "Wiping Pets" : "Leave Pets"}
                         </button>
@@ -287,7 +287,7 @@ export default function DeleteUserPage() {
                       />
                     </div>
                     <div>
-                      <p className="text-xs font-black uppercase tracking-wide">Final Confirmation</p>
+                      <p className="text-xs font-bold uppercase tracking-wide">Final Confirmation</p>
                       <p className="text-[10px] text-white/40 font-bold">I acknowledge this action is irreversible.</p>
                     </div>
                   </label>
@@ -296,7 +296,7 @@ export default function DeleteUserPage() {
                   <button
                     onClick={handleDelete}
                     disabled={!canDelete || loading}
-                    className={`w-full py-5 rounded-xl font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-500 flex items-center justify-center gap-3 ${!canDelete || loading
+                    className={`w-full py-5 rounded-xl font-bold text-[11px] uppercase tracking-[0.3em] transition-all duration-500 flex items-center justify-center gap-3 ${!canDelete || loading
                       ? "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
                       : "bg-[#FF3D00] text-white shadow-[0_0_40px_rgba(255,61,0,0.2)] hover:shadow-[0_0_60px_rgba(255,61,0,0.4)] hover:scale-[1.01] active:scale-[0.98]"
                       }`}
@@ -318,10 +318,10 @@ export default function DeleteUserPage() {
 
             {/* Footer Help */}
             <div className="mt-auto pt-10 border-t border-white/5 flex items-center justify-between">
-              <p className="text-white/20 text-[9px] font-black uppercase tracking-widest">Secure Termination Protocol</p>
+              <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest">Secure Termination Protocol</p>
               <button
                 onClick={() => router.push("/contactUs")}
-                className="flex items-center gap-2 text-white/40 hover:text-[#5F97C9] transition-all text-[9px] font-black uppercase tracking-widest"
+                className="flex items-center gap-2 text-white/40 hover:text-[#5F97C9] transition-all text-[9px] font-bold uppercase tracking-widest"
               >
                 Contact Support <ExternalLink size={12} />
               </button>

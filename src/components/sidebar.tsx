@@ -78,7 +78,7 @@ export default function Sidebar({ role, name, avatarUrl, onItemClick }: SidebarP
         <nav className="flex flex-col gap-2 px-6 flex-1 overflow-y-auto custom-scrollbar">
           {menus.map((item) => (
             <Link
-              key={item.path}
+              key={`${item.path}-${item.label}`}
               href={item.path}
               onClick={onItemClick}
               className="group relative flex items-center px-5 py-3.5 rounded-2xl transition-all duration-300 hover:bg-white/[0.08] border border-transparent hover:border-white/10 overflow-hidden"

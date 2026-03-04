@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Clock, CalendarDays,
   Stethoscope, CheckCircle2, Loader2, ShieldCheck, Info,
-  CalendarCheck, Star, Phone
+  CalendarCheck, Star, Phone, Zap
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from 'react-toastify';
@@ -26,7 +26,7 @@ const blue = {
 };
 
 /* ── Types ── */
-type VetRow = { id: string; name: string; email: string; avatar_url?: string | null; };
+type VetRow = { id: string; name: string; email: string; avatar_url?: string | null; consultation_fee?: number | null; fee_description?: string | null; designation?: string | null; bio?: string | null; specialization?: string | null; experience_years?: number | null; };
 
 /* ── Helpers ── */
 const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -36,7 +36,8 @@ const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00
 function initials(name?: string | null): string {
   if (!name) return 'V';
   const p = name.trim().split(/\s+/);
-  return ((p[0]?.[0] ?? 'V') + (p[1]?.[0] ?? '')).toUpperCase();
+  if (p.length === 1) return p[0].substring(0, 2).toUpperCase();
+  return ((p[0]?.[0] ?? 'V') + (p[p.length - 1]?.[0] ?? '')).toUpperCase();
 }
 
 /* ── Calendar ── */
@@ -112,11 +113,17 @@ function TimeSlotPicker({ selectedTime, selectedDate, onSelect }: { selectedTime
 }
 
 /* ── Doctor Card ── */
-function DoctorCard({ vet, isSelected, onSelect, loading, disabled }: {
-  vet: VetRow; isSelected: boolean; onSelect: () => void; loading: boolean; disabled?: boolean;
+function DoctorCard({ vet, isSelected, onSelect, loading, disabled, isFirstVisit }: {
+  vet: VetRow; isSelected: boolean; onSelect: () => void; loading: boolean; disabled?: boolean; isFirstVisit?: boolean;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <div className={`relative pt-[60px] mt-2 w-full pb-2 px-1 transition-all duration-500 ${disabled ? 'opacity-20 grayscale' : ''}`}>
+    <div
+      className={`relative pt-[60px] mt-2 w-full pb-2 px-1 transition-all duration-500 ${disabled ? 'opacity-20 grayscale' : ''}`}
+      onMouseEnter={() => !disabled && setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <motion.div
         onClick={disabled ? undefined : onSelect}
         initial={{ opacity: 0, scale: 0.95 }}
@@ -143,7 +150,7 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled }: {
                 {vet.avatar_url && vet.avatar_url.startsWith('http') ? (
                   <Image src={vet.avatar_url} alt={vet.name} fill className="object-cover transition-transform duration-1000" sizes="110px" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/10 to-transparent text-white text-3xl font-black italic">{initials(vet.name)}</div>
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/10 to-transparent text-white text-3xl font-bold italic">{initials(vet.name)}</div>
                 )}
               </div>
             </div>
@@ -168,23 +175,82 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled }: {
 
         {/* Basic Info (Smaller) */}
         <div className="relative z-10 space-y-0.5 mt-2">
-          <h3 className={`font-black text-[13px] tracking-tight transition-colors duration-500 ${isSelected ? 'text-white' : 'text-white/80'}`}>
+          <h3 className={`font-bold text-[13px] tracking-tight transition-colors duration-500 ${isSelected ? 'text-white' : 'text-white/80'}`}>
             Dr. {vet.name}
           </h3>
-          <p className={`text-[8px] font-black uppercase tracking-[0.3em] transition-colors duration-500 ${isSelected ? 'text-[#93C5FD]' : 'text-white/30'}`}>
-            Veterinarian
+          <p className={`text-[8px] font-bold uppercase tracking-[0.3em] transition-colors duration-500 ${isSelected ? 'text-[#93C5FD]' : 'text-white/30'}`}>
+            {vet.designation || 'Veterinarian'}
           </p>
         </div>
 
-        {/* Verified Badge (Smaller) */}
-        <div className="mt-3 relative z-10">
-          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full border backdrop-blur-md transition-all duration-500
-            ${isSelected ? 'bg-[#5F97C9]/10 border-[#5F97C9]/30 opacity-100' : 'bg-white/[0.04] border-white/10 opacity-60'}`}>
-            <ShieldCheck size={10} className={isSelected ? 'text-[#5F97C9]' : 'text-white/40'} />
-            <span className={`text-[7px] font-black uppercase tracking-widest ${isSelected ? 'text-[#5F97C9]/90' : 'text-white/40'}`}>Verified</span>
+        {/* Fee badge - Primary Focus */}
+        <div className="mt-3 relative z-10 w-full group-hover:scale-105 transition-transform duration-300">
+          <div className={`flex flex-col items-center justify-center gap-1.5 px-4 py-3 rounded-2xl border backdrop-blur-md transition-all duration-500
+            ${isSelected ? 'bg-cyan-500/10 border-cyan-500/30 ring-1 ring-cyan-500/20' : 'bg-white/[0.04] border-white/10'}`}>
+
+            {isFirstVisit && (
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest animate-pulse flex items-center gap-1.5">
+                  <Zap size={10} fill="currentColor" /> FREE FIRST VISIT
+                </span>
+                <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest">
+                  Consultation Fee: ₹{Number(vet.consultation_fee || 0).toFixed(0)}
+                </p>
+                <p className="text-[7px] font-medium text-emerald-500/50 uppercase tracking-tighter">Paid by Petverse</p>
+              </div>
+            )}
+
+            {!isFirstVisit && (
+              <div className="text-center">
+                <span className={`text-base font-black tracking-tighter ${isSelected ? 'text-white' : 'text-white/80'}`}>
+                  ₹{Number(vet.consultation_fee || 0).toFixed(0)}
+                </span>
+                <p className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 ${isSelected ? 'text-cyan-400' : 'text-white/20'}`}>
+                  Consultation Fee
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
+
+      {/* Hover Bio Popover (Full Page Feel Tooltip) */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            className="absolute left-1/2 -translate-x-1/2 bottom-[110%] w-[280px] z-[100] pointer-events-none"
+          >
+            <div className="relative p-7 rounded-[2.2rem] bg-black/90 backdrop-blur-3xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-[#5F97C9] uppercase tracking-[0.3em]">Professional Bio</p>
+                  <h4 className="text-white font-bold text-lg leading-tight uppercase tracking-tighter">Dr. {vet.name}</h4>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-white/60 text-xs font-medium leading-relaxed italic">
+                    &ldquo;{vet.bio || 'Dedicated to providing the highest quality healthcare for your pets.'}&rdquo;
+                  </p>
+
+                  <div className="pt-3 border-t border-white/5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Specialization</span>
+                      <span className="text-[10px] font-black text-emerald-400 uppercase tracking-tight">{vet.specialization || 'General Practice'}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Experience</span>
+                      <span className="text-[10px] font-black text-orange-400 uppercase tracking-tight">{vet.experience_years || '1'}+ Years</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -201,6 +267,9 @@ export default function BookAppointmentPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedVetId, setSelectedVetId] = useState<string | null>(null);
   const [rescheduleId, setRescheduleId] = useState<string | null>(null);
+  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(false);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [monthlyApptCount, setMonthlyApptCount] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -217,13 +286,46 @@ export default function BookAppointmentPage() {
           if (appt) setSelectedVetId(appt.vet_id);
         }
 
-        let { data, error } = await supabase.from('veterinarian').select('id, name, email, avatar_url').eq('kyc_status', 'approved');
+        let { data, error } = await supabase.from('veterinarian').select('id, name, email, avatar_url, consultation_fee, fee_description, designation, bio, specialization, experience_years').eq('kyc_status', 'approved');
         if (!error && (!data || data.length === 0)) {
-          const fallback = await supabase.from('veterinarian').select('id, name, email, avatar_url');
+          const fallback = await supabase.from('veterinarian').select('id, name, email, avatar_url, consultation_fee, fee_description, designation, bio, specialization, experience_years');
           if (!fallback.error && fallback.data) { data = fallback.data; error = null; }
         }
         if (!error && data) setVets(data);
         else if (error) toast.error('Could not load vets: ' + error.message);
+
+        // Check for first visit
+        if (user) {
+          const { count, error: apptError } = await supabase
+            .from('appointments')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id);
+          if (!apptError) {
+            setIsFirstVisit((count ?? 0) === 0);
+          }
+
+          // Fetch active subscription
+          const { data: sub } = await supabase
+            .from('user_subscriptions')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .single();
+          setSubscription(sub);
+
+          // Fetch free appointments this month
+          const startOfMonth = new Date();
+          startOfMonth.setDate(1);
+          startOfMonth.setHours(0, 0, 0, 0);
+
+          const { count: monthlyCount } = await supabase
+            .from('appointments')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('is_subscription_benefit', true)
+            .gte('created_at', startOfMonth.toISOString());
+          setMonthlyApptCount(monthlyCount ?? 0);
+        }
       } catch { toast.error('Failed to load veterinarians. Please refresh.'); }
       finally { setInitialLoading(false); }
     })();
@@ -242,6 +344,16 @@ export default function BookAppointmentPage() {
     if (!selectedVetId) { toast.warning('Select a doctor.'); return; }
     const dt = buildAppointmentTime();
     if (!dt || dt <= new Date()) { toast.warning('Select a future time.'); return; }
+
+    // Calculate if it's a free visit by plan
+    let isPlanBenefit = false;
+    if (subscription) {
+      if (subscription.plan_name === 'Premium Care') isPlanBenefit = true;
+      else if (subscription.plan_name === 'Complete Care' && monthlyApptCount < 4) isPlanBenefit = true;
+      else if (subscription.plan_name === 'Essential Care' && monthlyApptCount < 2) isPlanBenefit = true;
+    }
+
+    const effectiveFree = isFirstVisit || isPlanBenefit;
 
     setLoading(true);
     try {
@@ -262,10 +374,28 @@ export default function BookAppointmentPage() {
         }
       } else {
         // New booking
-        const { error } = await supabase.from('appointments').insert({ user_id: meId, vet_id: selectedVetId, appointment_time: dt.toISOString() });
+        const { error } = await supabase.from('appointments').insert({
+          user_id: meId,
+          vet_id: selectedVetId,
+          appointment_time: dt.toISOString(),
+          is_free_visit: isFirstVisit,
+          is_subscription_benefit: isPlanBenefit,
+          fee_at_booking: Number(selectedVet?.consultation_fee ?? 0)
+        });
         if (error) { toast.error('Booking failed: ' + error.message); }
         else {
-          toast.success('Booked successfully! Redirecting...');
+          // Auto-create chat channel
+          const { data: userProfile } = await supabase.from('users').select('first_name, last_name').eq('id', meId).single();
+          const patientName = userProfile ? `${userProfile.first_name} ${userProfile.last_name || ''}`.trim() : 'Patient';
+
+          await supabase.from('vet_conversations').insert({
+            subject: `Consultation: Dr. ${selectedVet?.name || 'Vet'} / ${patientName}`,
+            user_id: meId,
+            vet_id: selectedVetId,
+            status: 'active'
+          });
+
+          toast.success('Booked successfully! Opening channel...');
           setTimeout(() => router.push('/dashboard?view=appointments'), 2000);
         }
       }
@@ -294,7 +424,7 @@ export default function BookAppointmentPage() {
                 <Stethoscope size={32} className="text-[#5F97C9] animate-pulse" />
               </div>
             </div>
-            <h2 className="text-white font-black text-xs uppercase tracking-[0.5em] mb-3">Initializing</h2>
+            <h2 className="text-white font-bold text-xs uppercase tracking-[0.5em] mb-3">Initializing</h2>
             <p className="text-white/30 text-[10px] font-bold uppercase tracking-[0.2em]">Synchronizing Veterinary Records...</p>
           </div>
         </div>
@@ -323,9 +453,9 @@ export default function BookAppointmentPage() {
             <div className="w-8 h-8 rounded-xl bg-[#5F97C9]/20 flex items-center justify-center border border-[#5F97C9]/20">
               <Stethoscope size={16} className="text-[#5F97C9]" />
             </div>
-            <span className="text-xs font-black text-[#5F97C9] uppercase tracking-[0.2em]">Veterinary Care</span>
+            <span className="text-xs font-bold text-[#5F97C9] uppercase tracking-[0.2em]">Veterinary Care</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
             Book an <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5F97C9] to-[#93C5FD]">Appointment</span>
           </h1>
           <div className="flex items-center justify-center gap-2 mt-4 overflow-hidden">
@@ -336,10 +466,11 @@ export default function BookAppointmentPage() {
               Home
             </Link>
             <span className="text-white/10 text-[10px]">/</span>
-            <p className="text-[10px] sm:text-xs text-[#5F97C9] font-black uppercase tracking-widest">Appointments</p>
+            <p className="text-[10px] sm:text-xs text-[#5F97C9] font-bold uppercase tracking-widest">Appointments</p>
           </div>
         </div>
       </div>
+
 
       {/* ── Main Grid ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
@@ -449,6 +580,7 @@ export default function BookAppointmentPage() {
                         onSelect={rescheduleId ? () => { } : () => setSelectedVetId(prev => prev === vet.id ? null : vet.id)}
                         loading={loading}
                         disabled={!!rescheduleId}
+                        isFirstVisit={isFirstVisit}
                       />
                     </motion.div>
                   ))}

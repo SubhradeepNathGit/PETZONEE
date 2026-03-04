@@ -20,6 +20,7 @@ import {
   Home,
   Globe,
   Lock,
+  Crown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -94,6 +95,7 @@ function CheckoutContent() {
   // promo
   const [promoCode, setPromoCode] = useState<string | null>(null);
   const [isPlanCheckout, setIsPlanCheckout] = useState(false);
+  const [activeSub, setActiveSub] = useState<any>(null);
 
   /* ---------- Init: auth + cart + promo ---------- */
   useEffect(() => {
@@ -133,6 +135,15 @@ function CheckoutContent() {
             }]);
           }
         } else {
+          // Fetch active subscription for discounts
+          const { data: sub } = await supabase
+            .from("user_subscriptions")
+            .select("*")
+            .eq("user_id", auth.user.id)
+            .eq("status", "active")
+            .single();
+          if (mounted) setActiveSub(sub);
+
           const { data, error } = await supabase
             .from("cart")
             .select("*")
@@ -187,7 +198,13 @@ function CheckoutContent() {
     return 0;
   }, [promoCode, subtotal, totalTax]);
 
-  const total = subtotal + totalTax + deliveryFee - promoDiscount;
+  const subDiscount = useMemo(() => {
+    if (isPlanCheckout || !activeSub) return 0;
+    const rate = activeSub.plan_name === "Premium Care" ? 0.25 : activeSub.plan_name === "Complete Care" ? 0.15 : 0.05;
+    return Math.round(subtotal * rate);
+  }, [activeSub, subtotal, isPlanCheckout]);
+
+  const total = subtotal + totalTax + deliveryFee - promoDiscount - subDiscount;
 
   const contactValid = contact.email.trim().includes("@") && contact.phone.trim().length >= 8;
   const addressValid = addr.name.trim().length >= 2 &&
@@ -218,8 +235,46 @@ function CheckoutContent() {
     setBusy(true);
     setMsg("");
     try {
+      const orderNumber = `BM-${Date.now().toString(36).toUpperCase()}`;
+
+      // 1. Insert into orders table
+      const { data: orderData, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          user_id: userId,
+          order_number: orderNumber,
+          total_amount: total,
+          status: "processing",
+          payment_status: "paid",
+          shipping_address: addr,
+          contact_details: contact,
+          delivery_type: delivery,
+          payment_method: payMode
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // 2. Insert into order_items table
+      const orderItems = items.map((it) => ({
+        order_id: orderData.id,
+        product_id: it.product_id === "PLAN" ? null : it.product_id,
+        product_name: it.name,
+        quantity: it.quantity,
+        unit_price: Number(it.price),
+        image_url: it.image_url
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // 3. Save snapshot to localStorage for success page immediate display
       const snapshot = {
-        orderId: `BM-${Date.now().toString(36).toUpperCase()}`,
+        orderId: orderNumber,
         when: new Date().toISOString(),
         items: items.map((r) => ({
           id: r.id,
@@ -237,6 +292,7 @@ function CheckoutContent() {
           deliveryFee,
           promoCode,
           promoDiscount,
+          subDiscount,
           total,
         },
         contact,
@@ -254,20 +310,43 @@ function CheckoutContent() {
         localStorage.setItem("last_order", JSON.stringify(snapshot));
       }
 
+      // 4. Clear cart if not a plan
       if (!isPlanCheckout) {
-        const { error } = await supabase.from("cart").delete().eq("user_id", userId);
-        if (error) throw new Error("Could not clear cart. Please try again.");
+        const { error: cartClearError } = await supabase.from("cart").delete().eq("user_id", userId);
+        if (cartClearError) console.error("Could not clear cart:", cartClearError);
       }
 
-      // 🔑 Clear promo after successful order
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(PROMO_LOCAL_KEY);
+      // 5. Activation if it's a plan
+      if (isPlanCheckout) {
+        const planName = searchParams.get("plan");
+        const planPrice = searchParams.get("price");
+        const planPeriod = searchParams.get("period") as 'month' | 'year';
+        const isUpgrade = searchParams.get("isUpgrade") === "true";
+
+        const endDate = new Date();
+        if (planPeriod === 'year') endDate.setFullYear(endDate.getFullYear() + 1);
+        else endDate.setMonth(endDate.getMonth() + 1);
+
+        // For upgrades, we reset the billing cycle to today
+        await supabase
+          .from("user_subscriptions")
+          .upsert({
+            user_id: userId,
+            plan_name: planName,
+            price: parseFloat(planPrice!),
+            period: planPeriod,
+            status: "active",
+            start_date: new Date().toISOString(),
+            end_date: endDate.toISOString()
+          }, { onConflict: 'user_id' });
       }
 
-      router.push("/checkout/processing");
-    } catch (err) {
+      // 6. Navigation
+      router.push("/checkout/success");
+    } catch (err: any) {
       console.error("placeOrder error:", err);
-      setMsg(err instanceof Error ? err.message : "Could not place order. Try again.");
+      const errorMessage = err?.message || err?.details || (typeof err === 'string' ? err : "Could not place order. Try again.");
+      setMsg(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -691,6 +770,17 @@ function CheckoutContent() {
                   label={`Delivery (${delivery === "standard" ? "Standard" : "Express"})`}
                   value={deliveryFee}
                 />
+                {subDiscount > 0 && activeSub && (
+                  <div className="flex items-center justify-between py-2 px-3 bg-amber-50 rounded-lg border border-amber-100">
+                    <div className="flex items-center gap-2">
+                      <Crown className="h-3.5 w-3.5 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-700">{activeSub.plan_name} Discount</span>
+                    </div>
+                    <span className="text-sm font-bold text-amber-700">
+                      - ₹{subDiscount.toLocaleString()}
+                    </span>
+                  </div>
+                )}
                 {promoDiscount > 0 && promoCode && (
                   <div className="flex items-center justify-between py-2 px-3 bg-green-50 rounded-lg">
                     <span className="text-sm font-medium text-green-700">Promo ({promoCode})</span>

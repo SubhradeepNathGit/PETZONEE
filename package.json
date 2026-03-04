@@ -39,6 +39,7 @@
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.7.0",
     "stripe": "^18.5.0",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",

@@ -194,7 +194,7 @@ export default function EditPetPage() {
           >
             ← Back to {pet.name}’s profile
           </Link>
-          <h1 className="text-3xl font-black text-white tracking-tight">Edit {pet.name}</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Edit {pet.name}</h1>
           <p className="mt-1 text-sm text-white/30">Update photos and name for this pet profile.</p>
         </div>
 
