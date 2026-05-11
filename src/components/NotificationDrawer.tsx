@@ -129,7 +129,7 @@ export default function NotificationDrawer({
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 h-screen w-full sm:w-[400px] bg-black/60 backdrop-blur-3xl border-l border-white/10 z-[70] flex flex-col shadow-2xl"
+                        className="fixed top-0 right-0 h-screen w-full sm:w-[340px] bg-black/40 backdrop-blur-3xl border-l border-white/10 z-[70] flex flex-col"
                     >
                         {/* Header */}
                         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
@@ -184,12 +184,12 @@ export default function NotificationDrawer({
                                         className={`group relative p-4 rounded-2xl border transition-all cursor-pointer overflow-hidden
                                             ${n.is_read
                                                 ? 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
-                                                : 'bg-white/[0.05] border-white/20 hover:bg-white/[0.07] ring-1 ring-orange-500/20 shadow-lg shadow-orange-500/5'
+                                                : 'bg-white/[0.05] border-white/20 hover:bg-white/[0.07] ring-1 ring-orange-500/20'
                                             }
                                         `}
                                     >
                                         {!n.is_read && (
-                                            <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                                            <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-orange-500" />
                                         )}
 
                                         <div className="flex gap-4">

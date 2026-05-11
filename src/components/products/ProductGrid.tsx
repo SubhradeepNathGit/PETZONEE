@@ -18,7 +18,7 @@ const itemVariants = {
 export default function ProductGrid({ products }: { products: Product[] }) {
   if (!products || products.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-12">
+      <div className="text-center text-white/40 py-12">
         <p className="text-lg">No products to display.</p>
       </div>
     );

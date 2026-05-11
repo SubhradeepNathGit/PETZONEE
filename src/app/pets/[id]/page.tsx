@@ -239,7 +239,7 @@ export default function PetProfilePage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
-          className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.04] shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+          className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.04]"
         >
           {/* Cover photo */}
           <div className="relative h-64 sm:h-72 w-full overflow-hidden rounded-t-3xl bg-[#0e1520]">
@@ -269,7 +269,7 @@ export default function PetProfilePage() {
           <div className="relative flex flex-col gap-4 px-6 pt-0 pb-6 sm:flex-row sm:items-end sm:justify-between">
             {/* Avatar - overlaps cover */}
             <div className="-mt-10 flex items-end gap-4">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#FF8A65]/70 shadow-xl">
+              <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#FF8A65]/70">
                 <Image
                   src={avatarSrc}
                   alt={`${pet.name} avatar`}
@@ -576,7 +576,7 @@ export default function PetProfilePage() {
           <Link href="/pets/new" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 hover:text-white transition-all">
             <Plus size={16} /> Add another pet
           </Link>
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all">
+          <Link href="/dashboard" className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-5 py-2 text-sm font-semibold text-white hover:brightness-110 transition-all">
             ← Dashboard
           </Link>
         </div>
@@ -663,7 +663,7 @@ function UploadPetPhoto({
         title="Add photo to gallery"
         className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold cursor-pointer transition-all ${busy
           ? 'bg-white/10 text-white/30'
-          : 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white shadow-lg shadow-orange-500/20 hover:brightness-110'
+          : 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white hover:brightness-110'
           }`}
       >
         {busy ? 'Uploading.' : <><Plus size={16} /> Add photo</>}
@@ -685,7 +685,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 function Stat({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[#eef2f4] bg-white p-4 text-[#0d1b22] shadow-sm">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-white">
       <p className="text-xs text-[#5a6b73]">{title}</p>
       <p className="mt-1 text-2xl font-extrabold">{value}</p>
     </div>

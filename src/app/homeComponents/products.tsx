@@ -184,7 +184,7 @@ export default function ProductSection() {
                 group relative 
                 w-[350] h-auto
                 rounded-[18px] sm:rounded-[20px] md:rounded-[22px] lg:rounded-[24px]
-                bg-white text-gray-900 shadow-md overflow-hidden
+                bg-white text-gray-900 border border-slate-100 overflow-hidden
                 transition-all duration-300 
                 hover:bg-[#FF7A7A] hover:text-white
               "

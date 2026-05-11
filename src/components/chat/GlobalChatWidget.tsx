@@ -181,7 +181,7 @@ export default function GlobalChatWidget() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 24, scale: 0.92 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                        className={`flex flex-col overflow-hidden shadow-2xl border border-white/10
+                        className={`flex flex-col overflow-hidden border border-white/10
                             bg-[#1a1a1a]/95 backdrop-blur-2xl rounded-[2rem]
                             transition-all duration-300 ${isMinimized ? 'h-[72px] w-[340px]' : 'h-[580px] w-[380px]'}`}
                     >
@@ -189,7 +189,7 @@ export default function GlobalChatWidget() {
                         <div className="flex items-center justify-between px-5 py-4 bg-black/60 backdrop-blur-[40px] border-b border-white/5 rounded-t-[2rem] shrink-0 relative overflow-hidden z-20">
                             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-orange-500/10 rounded-full blur-[60px] -z-10 animate-pulse" />
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-orange-500/20 flex items-center justify-center text-orange-500 ring-2 ring-orange-500/5 shadow-inner">
+                                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-orange-500/20 flex items-center justify-center text-orange-500 ring-2 ring-orange-500/5">
                                     <PawPrint size={18} />
                                 </div>
                                 <div>
@@ -256,7 +256,7 @@ export default function GlobalChatWidget() {
                                             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                                 <div className={`relative max-w-[80%] flex flex-col gap-1`}>
                                                     {/* Bubble */}
-                                                    <div className={`relative px-4 py-2.5 text-[13px] leading-[1.6] font-medium shadow-md
+                                                    <div className={`relative px-4 py-2.5 text-[13px] leading-[1.6] font-medium
                                                         ${isMe
                                                             ? 'bg-orange-500 text-white rounded-2xl rounded-tr-none'
                                                             : 'bg-[#2a2a2a] text-white/90 border border-white/8 rounded-2xl rounded-tl-none'
@@ -364,7 +364,7 @@ export default function GlobalChatWidget() {
                                                 className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-[13px] text-white placeholder:text-white/25 focus:outline-none focus:border-orange-500/40 transition-colors"
                                             />
                                             <button type="submit"
-                                                className="w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-400 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 transition-all shrink-0 active:scale-95">
+                                                className="w-10 h-10 rounded-full bg-orange-500 hover:bg-orange-400 text-white flex items-center justify-center transition-all shrink-0 active:scale-95">
                                                 <Send size={16} />
                                             </button>
                                         </form>
@@ -385,18 +385,17 @@ export default function GlobalChatWidget() {
                         onClick={() => setIsOpen(true)}
                         className="relative w-[62px] h-[62px] rounded-[20px] flex items-center justify-center
                             bg-orange-500/20 backdrop-blur-xl border border-orange-500/30
-                            shadow-[0_8px_32px_rgba(249,115,22,0.35),inset_0_1px_0_rgba(255,255,255,0.2)]
                             hover:bg-orange-500/30 hover:border-orange-500/50 transition-all duration-300"
                     >
                         {/* Inner glow */}
                         <div className="absolute inset-0 rounded-[20px] bg-gradient-to-br from-orange-400/20 via-transparent to-transparent pointer-events-none" />
-                        <MessageSquare size={26} className="text-orange-400 relative z-10 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                        <MessageSquare size={26} className="text-orange-400 relative z-10" />
                         {/* Unread badge */}
                         {messages.filter(m => m.sender_role === 'admin' && !m.is_read).length > 0 && (
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-[#0a0a0a] text-white text-[9px] font-black shadow-lg">
+                                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-[#0a0a0a] text-white text-[9px] font-black">
                                 {messages.filter(m => m.sender_role === 'admin' && !m.is_read).length}
                             </motion.div>
                         )}

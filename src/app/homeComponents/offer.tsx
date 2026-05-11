@@ -182,7 +182,7 @@ function FlipTimer({
         "ob-card backdrop-blur-md bg-white/20 border border-white/30 text-white rounded-xl text-center",
         "px-2.5 py-2.5 sm:px-3.5 sm:py-3 md:px-4 md:py-3.5",
         wide ? "min-w-[72px] sm:min-w-[80px] md:min-w-[88px]" : "min-w-[56px] sm:min-w-[64px] md:min-w-[72px]",
-        "shadow-lg flex flex-col items-center justify-center relative overflow-hidden",
+        "flex flex-col items-center justify-center relative overflow-hidden",
       ].join(" ")}
     >
       <div className="relative h-[1.1em] sm:h-[1.3em] md:h-[1.6em] flex items-center justify-center">

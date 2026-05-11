@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import type { PetMapRow } from './MapInner';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 /* -------- SSR-safe dynamic imports -------- */
 const MapInner = dynamic(
@@ -139,40 +140,53 @@ export default function LocationsPage() {
   }, [rows]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative font-sans">
+    <div className="min-h-screen bg-black relative font-sans">
       {/* Premium Gradient Overlay */}
       <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-[#1a1311] via-[#0a0a0f] to-transparent pointer-events-none opacity-50"></div>
 
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8 overflow-hidden">
+      {/* === Hero Section (Standardized) === */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        {/* Hero Image */}
+
         <Image
           src="/images/statbg7.jpg"
           alt="Discover Pets"
           fill
           priority
-          sizes="100vw"
-          quality={90}
-          className="object-cover"
+          className="object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 scale-105"
         />
-        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4 z-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-            Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Nearby Pets</span>
-          </h1>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 text-center px-4 max-w-4xl"
+        >
+          <div className="space-y-2 mb-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+              Discover <span className="text-[#FF8A65]">Nearby Pets</span>
+            </h1>
+            <p className="text-white/40 text-xs md:text-sm font-medium uppercase tracking-[0.3em]">
+              Connecting pets with loving families near you
+            </p>
+          </div>
           <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
             <button
               onClick={() => router.push('/')}
-              className="text-white/50 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+              className="text-white/40 hover:text-white transition-colors duration-200 font-bold text-xs sm:text-sm uppercase tracking-widest"
             >
               Home
             </button>
             <span className="text-white/20 text-xs">/</span>
-            <p className="text-xs sm:text-sm text-[#FF8A65]/80 font-semibold">Discover</p>
+            <p className="text-xs sm:text-sm text-[#FF8A65] font-bold uppercase tracking-widest">Discover</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
-      <div className="mx-auto max-w-[1400px] px-4 md:px-8 pb-12 relative z-10">
+      <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 relative z-10">
         {/* Filters + Search Panel */}
-        <div className="mb-8 p-4 md:p-5 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-xl shadow-2xl flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mb-8 p-4 md:p-5 rounded-3xl bg-white/[0.03] border border-white/5 backdrop-blur-xl flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
           {/* Left Filters */}
           <div className="flex flex-wrap gap-2.5">
@@ -183,8 +197,8 @@ export default function LocationsPage() {
                 <button
                   key={species}
                   onClick={() => setSpeciesFilter(species)}
-                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${isActive
-                    ? 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white shadow-[0_0_15px_rgba(255,138,101,0.3)]'
+                  className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all duration-300 ${isActive
+                    ? 'bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white'
                     : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/5'
                     } capitalize tracking-wide`}
                 >
@@ -195,8 +209,8 @@ export default function LocationsPage() {
             <div className="w-[1px] h-8 bg-white/10 mx-2 self-center hidden sm:block"></div>
             <button
               onClick={() => setOnlyCoords((v) => !v)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${onlyCoords
-                ? 'bg-white/10 text-white border-white/20 shadow-inner'
+              className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${onlyCoords
+                ? 'bg-white/10 text-white border-white/20'
                 : 'bg-transparent text-white/50 hover:bg-white/5 hover:text-white/80 border border-transparent'
                 }`}
             >
@@ -212,11 +226,11 @@ export default function LocationsPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search pets, breeds, cities..."
-                className="h-11 w-full sm:w-72 rounded-xl bg-black/40 border border-white/10 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FF8A65]/50 focus:ring-1 focus:ring-[#FF8A65]/50 transition-all font-medium"
+                className="h-11 w-full sm:w-72 rounded-2xl bg-black/40 border border-white/10 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FF8A65]/50 focus:ring-1 focus:ring-[#FF8A65]/50 transition-all font-medium"
               />
             </div>
             {!loading && (
-              <div className="px-4 py-2.5 rounded-xl bg-black/40 border border-white/5 text-xs font-bold text-white/50 tracking-wider flex items-center gap-2 shrink-0">
+              <div className="px-4 py-2.5 rounded-2xl bg-black/40 border border-white/5 text-xs font-bold text-white/50 tracking-wider flex items-center gap-2 shrink-0">
                 <span className="text-[#FF8A65]">{filtered.length}</span> PETS
                 <span className="w-1 h-1 bg-white/20 rounded-full"></span>
                 <span className="text-white">{withCoords.length}</span> MAPPED
@@ -252,7 +266,7 @@ export default function LocationsPage() {
           </aside>
 
           {/* RIGHT: Map Container */}
-          <section className="lg:col-span-8 h-full rounded-2xl overflow-hidden shadow-2xl relative border border-white/10 bg-[#0d0d14]">
+          <section className="lg:col-span-8 h-full rounded-2xl overflow-hidden relative border border-white/10 bg-[#0d0d14]">
             <MapInner
               withCoords={withCoords}
               selected={selected}
@@ -301,11 +315,11 @@ function PetCard({
     <button
       onClick={onClick}
       className={`flex items-center gap-4 w-full p-4 rounded-2xl text-left transition-all duration-300 group ${active
-        ? 'bg-gradient-to-r from-white/[0.08] to-transparent border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
+        ? 'bg-gradient-to-r from-white/[0.08] to-transparent border border-white/20'
         : 'bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10'
         }`}
     >
-      <div className={`relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 transition-transform duration-500 ${active ? 'scale-105 shadow-[0_0_15px_rgba(255,138,101,0.3)]' : 'group-hover:scale-105'}`}>
+      <div className={`relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 transition-transform duration-500 ${active ? 'scale-105' : 'group-hover:scale-105'}`}>
         {active && (
           <div className="absolute inset-0 border-2 border-[#FF8A65] rounded-full z-10 pointer-events-none"></div>
         )}

@@ -203,7 +203,7 @@ export default function EditPetPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="rounded-3xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl p-6 sm:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.4)] space-y-8"
+          className="rounded-3xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl p-6 sm:p-8 space-y-8"
         >
           {/* Cover picker */}
           <div>
@@ -225,7 +225,7 @@ export default function EditPetPage() {
                 <button
                   type="button"
                   onClick={() => coverRef.current?.click()}
-                  className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all"
+                  className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white hover:brightness-110 transition-all"
                 >
                   {coverPreview ? 'Change cover' : 'Upload cover'}
                 </button>
@@ -264,7 +264,7 @@ export default function EditPetPage() {
                 <button
                   type="button"
                   onClick={() => avatarRef.current?.click()}
-                  className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 transition-all"
+                   className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-4 py-2 text-sm font-semibold text-white hover:brightness-110 transition-all"
                 >
                   {avatarPreview ? 'Change photo' : 'Upload photo'}
                 </button>
@@ -302,7 +302,7 @@ export default function EditPetPage() {
           <div className="flex items-center gap-3 pt-2">
             <button
               disabled={saving || !name.trim()}
-              className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-7 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:brightness-110 disabled:opacity-40 transition-all"
+              className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-7 py-2.5 text-sm font-bold text-white hover:brightness-110 disabled:opacity-40 transition-all"
               type="submit"
             >
               {saving ? 'Saving…' : 'Save changes'}

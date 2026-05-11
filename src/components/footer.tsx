@@ -26,14 +26,14 @@ export default function Footer() {
     <footer className="relative bg-[#fdf6f0] overflow-hidden">
       {/* Newsletter */}
       <div className="mx-auto w-full max-w-[1200px] px-4 pt-14">
-        <div className="relative rounded-3xl bg-[#FF8A65] px-6 py-10 sm:px-10 md:py-14 text-center text-white shadow-2xl shadow-[#FF6B40]/40">
-          <h2 className="mx-auto max-w-[820px] font-bold leading-tight text-2xl sm:text-3xl md:text-4xl drop-shadow-lg">
+        <div className="relative rounded-3xl bg-[#FF8A65] px-6 py-10 sm:px-10 md:py-14 text-center text-white">
+          <h2 className="mx-auto max-w-[820px] font-bold leading-tight text-2xl sm:text-3xl md:text-4xl">
             Subscribe to our Newsletter for the Latest Updates & Offers
           </h2>
 
           {/* form */}
           <form
-            className="mx-auto mt-8 flex w-full max-w-[720px] items-center rounded-full border border-white/30 bg-white/10 pl-4 pr-2 shadow-lg backdrop-blur-md"
+            className="mx-auto mt-8 flex w-full max-w-[720px] items-center rounded-full border border-white/30 bg-white/10 pl-4 pr-2 backdrop-blur-md"
             onSubmit={(e) => e.preventDefault()}
             aria-label="Newsletter signup"
           >
@@ -45,7 +45,7 @@ export default function Footer() {
             />
             <button
               type="submit"
-              className="rounded-full bg-[#f5f5dc] text-orange-500 px-6 py-1 font-semibold shadow-md shadow-black/40 transition-all hover:scale-105 active:scale-95"
+              className="rounded-full bg-[#f5f5dc] text-orange-500 px-6 py-1 font-semibold transition-all hover:scale-105 active:scale-95"
             >
               Submit
             </button>
@@ -80,7 +80,7 @@ export default function Footer() {
           >
             {gallery.map((src, i) => (
               <SwiperSlide key={i} aria-label={`gallery item ${i + 1}`}>
-                <div className="w-full h-36 sm:h-40 md:h-44 lg:h-48 xl:h-52 rounded-2xl overflow-hidden shadow-md shadow-black/20">
+                <div className="w-full h-36 sm:h-40 md:h-44 lg:h-48 xl:h-52 rounded-2xl overflow-hidden">
                   <Image
                     src={src}
                     alt={`petzonee-${i}`}
@@ -154,14 +154,14 @@ export default function Footer() {
                   alt="Google Play"
                   width={140}
                   height={44}
-                  className="drop-shadow-md hover:scale-105 transition-transform"
+                  className="hover:scale-105 transition-transform"
                 />
                 <Image
                   src="/icons/applestore.png"
                   alt="App Store"
                   width={140}
                   height={44}
-                  className="drop-shadow-md hover:scale-105 transition-transform"
+                  className="hover:scale-105 transition-transform"
                 />
               </div>
             </div>

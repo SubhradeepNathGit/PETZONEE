@@ -88,7 +88,7 @@ export default function AdminDashboard({
               </h2>
               <div className="flex items-center gap-3 mt-2">
                 <p className="text-white/30 text-[10px] sm:text-xs font-bold uppercase tracking-[0.4em]">
-                  Here is what happening on <span className="text-white font-black italic shadow-orange-500/50">PETZONEE</span> today.
+                  Here is what happening on <span className="text-white font-black italic">PETZONEE</span> today.
                 </p>
               </div>
             </div>
@@ -106,10 +106,10 @@ export default function AdminDashboard({
             <p className="text-white/20 text-[9px] font-bold uppercase tracking-widest hidden md:block">Administrative shortcuts</p>
           </div>
           <div className="flex flex-wrap gap-4">
-            <Link href="/admin" className="px-6 py-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all shadow-lg hover:shadow-blue-500/20">
+            <Link href="/admin" className="px-6 py-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all">
               Analytics Terminal
             </Link>
-            <Link href="/admin/kyc" className="px-6 py-3 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all shadow-lg hover:shadow-orange-500/20">
+            <Link href="/admin/kyc" className="px-6 py-3 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all">
               Review Applications
             </Link>
             <Link href="/admin/users" className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white hover:border-white/20 transition-all">
@@ -122,48 +122,3 @@ export default function AdminDashboard({
   );
 }
 
-
-
-type VetSelect = Pick<
-  VetRow,
-  'id' | 'name' | 'email' | 'phone' | 'medical_doc_url' | 'kyc_status' | 'avatar_url'
->;
-
-export async function loadPendingVets(setRows: (r: VetRow[]) => void) {
-  try {
-    const { data, error } = await supabase
-      .from('veterinarian')
-      .select('id,name,email,phone,medical_doc_url,kyc_status,avatar_url')
-      .eq('kyc_status', 'pending')
-      .order('created_at', { ascending: true });
-
-    if (error) throw error;
-
-
-    setRows((data as VetSelect[] | null) ?? []);
-  } catch (error: unknown) {
-    console.error('Load pending vets error:', error);
-    setRows([]);
-  }
-}
-
-export async function loadAdminStats(
-  setStats: (s: { users: number; vetsPending: number; vetsApproved: number }) => void
-) {
-  try {
-    const [usersResult, pendingResult, approvedResult] = await Promise.allSettled([
-      supabase.from('users').select('id', { count: 'exact', head: true }),
-      supabase.from('veterinarian').select('id', { count: 'exact', head: true }).eq('kyc_status', 'pending'),
-      supabase.from('veterinarian').select('id', { count: 'exact', head: true }).eq('kyc_status', 'approved'),
-    ]);
-
-    const users = usersResult.status === 'fulfilled' ? (usersResult.value.count ?? 0) : 0;
-    const vetsPending = pendingResult.status === 'fulfilled' ? (pendingResult.value.count ?? 0) : 0;
-    const vetsApproved = approvedResult.status === 'fulfilled' ? (approvedResult.value.count ?? 0) : 0;
-
-    setStats({ users, vetsPending, vetsApproved });
-  } catch (error: unknown) {
-    console.error('Load admin stats error:', error);
-    setStats({ users: 0, vetsPending: 0, vetsApproved: 0 });
-  }
-}

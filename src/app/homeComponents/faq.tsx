@@ -45,7 +45,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300"
+      className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-all duration-300"
     >
       <button
         onClick={() => toggleFAQ(faq.id)}

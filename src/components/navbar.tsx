@@ -168,7 +168,7 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className={`absolute ${isMobile ? 'left-0 bg-black/40' : 'right-0 bg-black/60'} mt-2 w-40 rounded-lg shadow-lg text-white py-2 backdrop-blur-md`}
+              className={`absolute ${isMobile ? 'left-0 bg-black/40' : 'right-0 bg-black/60'} mt-2 w-40 rounded-lg text-white py-2 backdrop-blur-md`}
             >
               <button onClick={handleDashboardClick} className="w-full text-left px-4 py-2 hover:bg-white/10 transition-colors duration-200">
                 My Profile
@@ -187,7 +187,7 @@ const Navbar = () => {
     <Link href="/cart" onClick={onClick} className="relative inline-flex items-center justify-center rounded-full p-2 hover:bg-white/10 transition" aria-label="Cart">
       <ShoppingCart className="h-6 w-6 text-[#f5f5dc]" />
       {cartCount > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] rounded-full bg-[#FF8A70] px-1.5 text-[11px] font-bold text-white grid place-items-center shadow">
+        <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] rounded-full bg-[#FF8A70] px-1.5 text-[11px] font-bold text-white grid place-items-center">
           {cartCount}
         </span>
       )}
@@ -205,7 +205,7 @@ const Navbar = () => {
     >
       <Bell className="h-6 w-6 text-[#f5f5dc]" />
       {unreadCount > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] rounded-full bg-[#FF8A70] px-1.5 text-[11px] font-bold text-white grid place-items-center shadow">
+        <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] rounded-full bg-[#FF8A70] px-1.5 text-[11px] font-bold text-white grid place-items-center">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}
@@ -234,7 +234,7 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center">
-              <div className="flex items-center space-x-6 bg-white/20 rounded-full px-8 py-3 shadow-lg">
+              <div className="flex items-center space-x-6 bg-white/20 rounded-full px-8 py-3">
                 {navItems.map((item, index) => (
                   <motion.div key={item.name} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.05 }}>
                     <Link href={item.href} className="text-[#f5f5dc] hover:text-[#FF8A70] font-[var(--font-inter)] font-medium transition-colors duration-200 relative group tracking-wide">
@@ -257,7 +257,7 @@ const Navbar = () => {
               ) : !isLoading && (
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <Link href="/signup">
-                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-500 text-white font-[var(--font-inter)] font-semibold px-6 py-2 rounded-full shadow-lg transition-all duration-200 tracking-wide">
+                    <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-500 text-white font-[var(--font-inter)] font-semibold px-6 py-2 rounded-full transition-all duration-200 tracking-wide">
                       Join Now
                     </Button>
                   </Link>
@@ -316,7 +316,7 @@ const Navbar = () => {
 
                   {!isLoading && !userId && (
                     <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-500 text-white font-[var(--font-inter)] font-semibold py-2 rounded-full mt-4 tracking-wide shadow-lg">
+                      <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-500 text-white font-[var(--font-inter)] font-semibold py-2 rounded-full mt-4 tracking-wide">
                         Join Now
                       </Button>
                     </Link>

@@ -48,7 +48,7 @@ export default function MapInner({
     const createCustomIcon = (pet: PetMapRow, isSelected: boolean) => {
         const imageUrl = pet.avatar_url || '/images/placeholder.png';
         const sizeClass = isSelected ? 'w-14 h-14' : 'w-10 h-10';
-        const shadowClass = isSelected ? 'shadow-[0_0_15px_rgba(255,138,101,0.8)]' : 'shadow-md shadow-black/50';
+        const shadowClass = '';
 
         const html = `
             <div class="relative flex items-center justify-center ${sizeClass} transition-all duration-300 transform ${isSelected ? 'scale-110 z-50' : 'hover:scale-110 z-10'}">
@@ -102,7 +102,7 @@ export default function MapInner({
                         zIndexOffset={isSelected ? 1000 : 0}
                     >
                         <Popup className="pet-popup">
-                            <div className="min-w-[220px] bg-[#0d0d14]/90 text-white p-4 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl -m-3">
+                            <div className="min-w-[220px] bg-[#0d0d14]/90 text-white p-4 rounded-2xl border border-white/10 backdrop-blur-xl -m-3">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#FF8A65] flex-shrink-0">
                                         <img src={u.avatar_url || '/images/placeholder.png'} alt={u.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/images/placeholder.png' }} />
@@ -131,7 +131,7 @@ export default function MapInner({
             })}
 
             {/* Floating Controls */}
-            <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2.5 shadow-xl">
+            <div className="absolute top-4 left-4 z-[1000] flex flex-col gap-2.5">
                 <MapControlButton label="All" title="Fit all pets" onClickId="fit-users" />
                 <MapControlButton label="India" title="Reset to India" onClickId="fit-india" />
                 <MapControlButton label="Me" title="Locate me" onClickId="locate-me" />
@@ -234,7 +234,7 @@ function MapControlButton({
 }) {
     return (
         <button
-            className="px-4 py-2.5 rounded-xl bg-black/40 backdrop-blur-xl shadow-lg hover:bg-black/60 text-sm font-bold text-white border border-white/10 transition-all focus:outline-none flex items-center justify-center hover:border-white/30"
+            className="px-4 py-2.5 rounded-xl bg-black/40 backdrop-blur-xl hover:bg-black/60 text-sm font-bold text-white border border-white/10 transition-all focus:outline-none flex items-center justify-center hover:border-white/30"
             title={title}
             data-map-action={onClickId}
         >

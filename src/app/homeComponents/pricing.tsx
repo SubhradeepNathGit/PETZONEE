@@ -152,7 +152,7 @@ export default function PricingSection() {
         {plans.map((plan, i) => (
           <motion.div
             key={i}
-            className="relative w-full bg-white rounded-2xl shadow-lg overflow-hidden h-[520px] flex flex-col justify-between cursor-pointer transform-gpu group"
+            className="relative w-full bg-white rounded-2xl border border-gray-100 overflow-hidden h-[520px] flex flex-col justify-between cursor-pointer transform-gpu group"
             whileHover={{ scale: 1.05 }}
             initial={{ rotateY: 180, opacity: 0 }}
             whileInView={{ rotateY: 0, opacity: 1 }}

@@ -53,12 +53,12 @@ const StatItem = ({ number, label, delay = 0 }: StatItemProps) => {
       className="flex flex-col items-center text-center"
     >
       {/* Number */}
-      <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#f5f5dc] leading-tight drop-shadow-[0_0_1px_rgba(255,255,255,0.9)]">
+      <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#f5f5dc] leading-tight">
         {animatedNumber}+
       </h2>
 
       {/* Label */}
-      <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#f5f5dc] font-medium mt-1 drop-shadow-[0_0_1px_rgba(255,255,255,0.7)]">
+      <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#f5f5dc] font-medium mt-1">
         {label}
       </p>
     </motion.div>

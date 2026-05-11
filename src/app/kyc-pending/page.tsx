@@ -144,7 +144,7 @@ export default function VetKycPendingPage() {
             </div>
 
             {/* Account Details */}
-            <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-sm border border-white/20 p-6">
+            <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6">
               <h3 className="text-lg font-medium mb-4">Account Information</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -214,7 +214,7 @@ export default function VetKycPendingPage() {
               </p>
               <button
                 onClick={() => router.push('/dashboard')}
-                className=" py-y  text-white rounded-md shadow transition"
+                className=" py-y  text-white rounded-md transition"
               >
                 ← Back to Portal
               </button>

@@ -79,8 +79,8 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
   const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
-  const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname.startsWith('/reset-password') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname.startsWith('/map') || pathname === '/delete';
-  const hideFooter = hideNavbar || pathname.startsWith('/appointments');
+  const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname.startsWith('/reset-password') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname === '/delete';
+  const hideFooter = hideNavbar || pathname.startsWith('/appointments') || pathname.startsWith('/map');
   // Legacy alias for places that may still use hideLayout
   const hideLayout = hideNavbar;
 

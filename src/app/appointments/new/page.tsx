@@ -102,7 +102,7 @@ function TimeSlotPicker({ selectedTime, selectedDate, onSelect }: { selectedTime
             <button key={slot} onClick={() => valid && onSelect(slot)} disabled={!valid}
               className={`py-2 text-xs font-semibold rounded-lg transition-all duration-150
                 ${!valid ? 'text-white/15 cursor-not-allowed bg-white/[0.03]' : 'cursor-pointer'}
-                ${sel ? 'bg-[#5F97C9] text-white shadow-md shadow-[#5F97C9]/30 scale-105' : ''}
+                ${sel ? 'bg-[#5F97C9] text-white scale-105' : ''}
                 ${valid && !sel ? 'bg-white/8 text-white/70 hover:bg-white/15 border border-white/10' : ''}
               `}>{slot}</button>
           );
@@ -133,8 +133,8 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled, isFirstVisit
         className={`relative rounded-[1.8rem] transition-all duration-500 border flex flex-col items-center p-3 pt-[52px] pb-4 text-center overflow-visible
           ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
           ${isSelected
-            ? 'border-gray-300 bg-white/5 backdrop-blur-3xl shadow-[0_0_30px_rgba(255,255,255,0.1)] ring-1 ring-white/30'
-            : 'border-slate-800 bg-white/10 backdrop-blur-2xl hover:bg-white/15 hover:border-white/30 shadow-none'}
+            ? 'border-gray-300 bg-white/5 backdrop-blur-3xl ring-1 ring-white/30'
+            : 'border-slate-800 bg-white/10 backdrop-blur-2xl hover:bg-white/15 hover:border-white/30'}
         `}
       >
         {/* Subtle top edge glow for depth without shadows */}
@@ -145,7 +145,7 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled, isFirstVisit
           <div className="relative">
             {/* The Avatar itself */}
             <div className={`relative w-[110px] h-[110px] rounded-full p-[2px] transition-all duration-500 
-              ${isSelected ? 'bg-gradient-to-tr from-[#5F97C9] via-[#93C5FD] to-[#5F97C9] scale-105 shadow-[0_0_20px_rgba(95,151,201,0.2)]' : 'bg-white/20 group-hover:bg-white/40'}`}>
+              ${isSelected ? 'bg-gradient-to-tr from-[#5F97C9] via-[#93C5FD] to-[#5F97C9] scale-105' : 'bg-white/20 group-hover:bg-white/40'}`}>
               <div className="relative w-full h-full rounded-full overflow-hidden bg-black/50 ring-4 ring-black/80 backdrop-blur-md">
                 {vet.avatar_url && vet.avatar_url.startsWith('http') ? (
                   <Image src={vet.avatar_url} alt={vet.name} fill className="object-cover transition-transform duration-1000" sizes="110px" />
@@ -162,7 +162,7 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled, isFirstVisit
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0 }}
-                  className="absolute bottom-2 right-1 w-7 h-7 rounded-full bg-gradient-to-tr from-[#5F97C9] to-[#80B2DF] border-[3px] border-[#0A0E17] flex items-center justify-center z-30 shadow-none"
+                  className="absolute bottom-2 right-1 w-7 h-7 rounded-full bg-gradient-to-tr from-[#5F97C9] to-[#80B2DF] border-[3px] border-[#0A0E17] flex items-center justify-center z-30"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -223,7 +223,7 @@ function DoctorCard({ vet, isSelected, onSelect, loading, disabled, isFirstVisit
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             className="absolute left-1/2 -translate-x-1/2 bottom-[110%] w-[280px] z-[100] pointer-events-none"
           >
-            <div className="relative p-7 rounded-[2.2rem] bg-black/90 backdrop-blur-3xl border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden">
+            <div className="relative p-7 rounded-[2.2rem] bg-black/90 backdrop-blur-3xl border border-white/10 overflow-hidden">
               <div className="space-y-4">
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-[#5F97C9] uppercase tracking-[0.3em]">Professional Bio</p>
@@ -479,7 +479,7 @@ export default function BookAppointmentPage() {
           {/* ── Left Panel ── */}
           <div className="xl:sticky xl:top-6 space-y-4">
             {/* Calendar Card */}
-            <div className="bg-gradient-to-br from-white/5 to-gray-500/20 rounded-2xl border border-white/8 p-5 shadow-2xl">
+            <div className="bg-gradient-to-br from-white/5 to-gray-500/20 rounded-2xl border border-white/8 p-5">
               <p className="text-[11px] font-semibold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-1.5">
                 <CalendarDays size={11} /> Select Date
               </p>
@@ -493,7 +493,7 @@ export default function BookAppointmentPage() {
             <AnimatePresence>
               {(selectedDate || selectedVet) && (
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="bg-gradient-to-br from-white/5 to-gray-500/10 rounded-2xl border border-[#5F97C9]/20 p-5 shadow-xl">
+                  className="bg-gradient-to-br from-white/5 to-gray-500/10 rounded-2xl border border-[#5F97C9]/20 p-5">
                   <p className="text-[11px] font-bold text-[#5F97C9] uppercase tracking-widest mb-4">Booking Summary</p>
                   <div className="space-y-3">
                     {formattedSelection ? (
@@ -528,7 +528,7 @@ export default function BookAppointmentPage() {
                   </div>
                   {selectedDate && selectedTime && selectedVetId && (
                     <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={book} disabled={loading}
-                      className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-[#5F97C9] to-[#3B72A4] text-white font-bold text-sm shadow-lg shadow-[#5F97C9]/20 hover:shadow-[#5F97C9]/40 disabled:opacity-60 flex items-center justify-center gap-2 transition-all">
+                      className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-[#5F97C9] to-[#3B72A4] text-white font-bold text-sm disabled:opacity-60 flex items-center justify-center gap-2 transition-all">
                       {loading ? <><Loader2 size={15} className="animate-spin" /> Booking...</> : <><CalendarDays size={15} /> Confirm Appointment</>}
                     </motion.button>
                   )}

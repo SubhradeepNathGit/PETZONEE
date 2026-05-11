@@ -363,7 +363,7 @@ function CheckoutContent() {
         <div className="mx-auto max-w-6xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600">
                 <Shield className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -570,7 +570,7 @@ function CheckoutContent() {
                       className="mt-6 overflow-hidden"
                     >
                       <div className="rounded-xl bg-gray-50 p-6 border border-gray-100 flex flex-col items-center text-center">
-                        <div className="relative h-48 w-48 bg-white border-4 border-white rounded-2xl shadow-xl overflow-hidden group">
+                        <div className="relative h-48 w-48 bg-white border-4 border-white rounded-2xl overflow-hidden group">
                           <div className="absolute inset-0 p-4">
                             <div className="h-full w-full bg-gray-50 rounded flex flex-center items-center justify-center relative">
                               {/* Real scannable QR code using a public API (rendering as standard img to avoid next/image domain constraints) */}
@@ -725,7 +725,7 @@ function CheckoutContent() {
             </section >
 
             {/* Right: Summary */}
-            < aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-lg sticky top-4" >
+            < aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 sticky top-4" >
               <div className="flex items-center justify-between border-b pb-4">
                 <h2 className="text-xl font-bold text-gray-900">Order Summary</h2>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-lg">

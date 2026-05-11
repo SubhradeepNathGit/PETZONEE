@@ -9,6 +9,7 @@ import SortMenu from "@/components/products/SortMenu";
 import { Product } from "@/types/product";
 import { Filter, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -141,37 +142,49 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Banner */}
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8 overflow-hidden">
+    <div className="min-h-screen bg-black text-white font-[var(--font-inter)] selection:bg-[#FF8A70]/30">
+      {/* === Hero Section (Standardized) === */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        {/* Hero Image */}
+
         <Image
           src="/images/statbg12.jpg"
           alt="Products Banner"
           fill
           priority
-          sizes="100vw"
-          quality={90}
-          className="object-cover"
+          className="object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 scale-105"
         />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A65] to-[#FF7043]">Shop</span>
-          </h1>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 text-center px-4 max-w-4xl"
+        >
+          <div className="space-y-2 mb-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+              Our <span className="text-[#FF8A65]">Shop</span>
+            </h1>
+            <p className="text-white/40 text-xs md:text-sm font-medium uppercase tracking-[0.3em]">
+              Premium supplies for your beloved companions
+            </p>
+          </div>
           <div className="flex items-center justify-center gap-2 mt-3 overflow-hidden">
             <button
               onClick={() => router.push('/')}
-              className="text-white/50 hover:text-white transition-colors duration-200 font-medium text-xs sm:text-sm"
+              className="text-white/40 hover:text-white transition-colors duration-200 font-bold text-xs sm:text-sm uppercase tracking-widest"
             >
               Home
             </button>
             <span className="text-white/20 text-xs">/</span>
-            <p className="text-xs sm:text-sm text-[#FF8A65]/80 font-semibold">Shop</p>
+            <p className="text-xs sm:text-sm text-[#FF8A65] font-bold uppercase tracking-widest">Shop</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
       {/* Layout */}
-      <div className="container mx-auto px-4 pb-12">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Sidebar (desktop) */}
           <aside className="hidden lg:block lg:col-span-3 w-full lg:max-w-[280px]">
@@ -202,11 +215,11 @@ export default function ProductsPage() {
 
               {/* Drawer */}
               <div
-                className={`absolute left-0 top-0 h-full w-4/5 max-w-xs bg-white p-4 shadow-lg overflow-y-auto z-50 transform transition-transform duration-300 ${showSidebar ? "translate-x-0" : "-translate-x-full"
+                className={`absolute left-0 top-0 h-full w-4/5 max-w-xs bg-black/80 backdrop-blur-3xl p-6 border-r border-white/10 overflow-y-auto z-50 transform transition-transform duration-300 ${showSidebar ? "translate-x-0" : "-translate-x-full"
                   }`}
               >
                 <button
-                  className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-200"
+                  className="absolute top-4 right-4 p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-all"
                   onClick={() => setShowSidebar(false)}
                   aria-label="Close sidebar"
                 >
@@ -229,8 +242,8 @@ export default function ProductsPage() {
           {/* Products */}
           <main className="lg:col-span-9 w-full">
             {/* Header Bar */}
-            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 bg-[#fef6ef] px-4 sm:px-6 py-3 rounded-full">
-              <p className="text-sm font-medium text-gray-700">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6 bg-white/[0.03] border border-white/5 backdrop-blur-xl px-4 sm:px-6 py-4 rounded-2xl relative z-30">
+              <p className="text-sm font-medium text-white/50 tracking-tight">
                 {loading
                   ? "Loading..."
                   : `Showing ${indexOfFirst + 1}–${Math.min(
@@ -243,9 +256,9 @@ export default function ProductsPage() {
                 {/* Mobile filter toggle */}
                 <button
                   onClick={() => setShowSidebar(true)}
-                  className="lg:hidden flex items-center gap-2 px-4 py-2 bg-[#FF7A7A] text-white rounded-full hover:bg-[#ff6b6b] transition"
+                  className="lg:hidden flex items-center gap-2 px-6 py-2 bg-[#FF8A70] text-white rounded-xl hover:bg-[#ff7a5c] transition-all font-bold text-xs uppercase tracking-widest"
                 >
-                  <Filter size={18} /> Filters
+                  <Filter size={16} /> Filters
                 </button>
 
                 <SortMenu sort={sort} setSort={setSort} />
@@ -254,25 +267,28 @@ export default function ProductsPage() {
 
             {/* Loader */}
             {loading && (
-              <div className="flex justify-center items-center py-20">
-                <div className="h-12 w-12 border-4 border-[#FF7A7A] border-t-transparent rounded-full animate-spin"></div>
+              <div className="flex justify-center items-center py-24">
+                <div className="h-12 w-12 border-4 border-[#FF8A70] border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
 
             {/* Empty State */}
             {!loading && filteredProducts.length === 0 && (
-              <div className="text-center text-gray-500 py-20">
-                <p className="text-xl mb-2">No products found</p>
-                <p className="text-sm">
+              <div className="text-center text-white/50 py-24 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-md">
+                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6 text-white/20">
+                  <X size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-white tracking-tighter uppercase mb-2">No products found</h3>
+                <p className="text-sm font-medium opacity-60">
                   {category !== "all" && `No products in "${category}" category`}
                   {debouncedSearch && ` matching "${debouncedSearch}"`}
                   {tags.length > 0 && ` with selected tags`}
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="mt-4 px-4 py-2 bg-[#FF7A7A] text-white rounded-lg hover:bg-[#ff6b6b]"
+                   className="mt-8 px-8 py-3 bg-[#FF8A70] text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#ff7a5c] transition-all active:scale-95"
                 >
-                  Reset Filters
+                  Reset All Filters
                 </button>
               </div>
             )}
@@ -288,7 +304,7 @@ export default function ProductsPage() {
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
-                        className={`px-4 py-2 rounded-lg shadow-md transition-colors ${currentPage === i + 1
+                        className={`px-4 py-2 rounded-lg transition-colors ${currentPage === i + 1
                           ? "bg-[#FF7A7A] text-white"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}

@@ -15,13 +15,14 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-24 px-4">
-        <div className="bg-white p-12 rounded-[40px] shadow-2xl shadow-red-100 text-center max-w-lg w-full border border-red-50">
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center py-24 px-4">
+        <div className="bg-[#0a0a0f] p-12 rounded-[40px] border border-white/5 text-center max-w-lg w-full">
           <div className="flex justify-center mb-6">
-            <Search className="w-20 h-20 text-gray-300" />
-          </div>          <h1 className="text-4xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-500 mb-8 font-medium">Sorry, we couldn&apos;t find the product you&apos;re looking for. It might have been removed or the link is incorrect.</p>
-          <Link href="/products" className="inline-block px-10 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200">
+            <Search className="w-20 h-20 text-white/10" />
+          </div>
+          <h1 className="text-4xl font-bold text-white mb-4 tracking-tighter">Product Not Found</h1>
+          <p className="text-white/40 mb-8 font-medium">Sorry, we couldn&apos;t find the product you&apos;re looking for. It might have been removed or the link is incorrect.</p>
+          <Link href="/products" className="inline-block px-10 py-4 bg-[#FF8A70] text-white rounded-2xl font-bold hover:brightness-110 transition-all">
             Browse All Products
           </Link>
         </div>
@@ -30,7 +31,7 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-black min-h-screen">
       <ProductDetailsClient product={product} details={details} />
     </div>
   );

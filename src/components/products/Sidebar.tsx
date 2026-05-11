@@ -96,18 +96,18 @@ export default function Sidebar({
   return (
     <div className="w-full p-4 space-y-6">
       {/* 🔍 Search Section */}
-      <div className="relative">
+      <div className="relative group">
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-3 bg-white rounded-full border border-gray-300 backdrop-blur-md text-gray-700 placeholder-gray-500
-                     shadow-inner focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-400 transition"
+          className="w-full px-5 py-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md text-white placeholder-white/30
+                     focus:outline-none focus:border-[#FF8A70]/50 focus:ring-1 focus:ring-[#FF8A70]/50 transition-all font-medium"
         />
         <button
           type="button"
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-400 text-white p-2 rounded-full hover:bg-red-500 active:scale-95 hover:scale-105 transition-transform duration-200"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#FF8A70] text-white p-2 rounded-xl hover:bg-[#ff7a5c] active:scale-95 hover:scale-105 transition-all duration-200"
         >
           <Search size={18} />
         </button>
@@ -115,7 +115,7 @@ export default function Sidebar({
 
       {/* Categories */}
       <div>
-        <h3 className="font-bold text-lg mb-4 text-gray-800">
+        <h3 className="font-bold text-lg mb-4 text-white tracking-tight uppercase text-[10px] tracking-[0.2em] opacity-60">
           Shop by Categories
         </h3>
 
@@ -127,16 +127,16 @@ export default function Sidebar({
           <div className="space-y-2">
             {/* All Products */}
             <div
-              className={`flex justify-between items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${category === "all"
-                  ? "bg-red-400 text-white scale-105"
-                  : "hover:bg-white/40 hover:scale-105 active:scale-95 text-gray-700"
+              className={`flex justify-between items-center p-3 rounded-2xl cursor-pointer transition-all duration-300 ${category === "all"
+                  ? "bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white"
+                  : "bg-white/5 text-white/90 hover:bg-white/10 hover:text-white border border-white/5"
                 }`}
               onClick={() => setCategory("all")}
             >
               <span className="flex items-center gap-3">
                 <PawPrint
-                  size={18}
-                  className={`font-bold ${category === "all" ? "text-white" : "text-red-400"
+                  size={16}
+                  className={`font-bold ${category === "all" ? "text-white" : "text-[#FF8A65]"
                     }`}
                 />
                 <span className="font-medium">All Products</span>
@@ -152,23 +152,23 @@ export default function Sidebar({
               return (
                 <div
                   key={c.name}
-                  className={`flex justify-between text-md items-center p-3 rounded-2xl cursor-pointer transition-all duration-200 transform ${isSelected
-                      ? "bg-red-400 text-white scale-105"
-                      : "hover:bg-[#fef6ef] hover:scale-105 active:scale-95 text-gray-700"
+                  className={`flex justify-between text-md items-center p-3 rounded-2xl cursor-pointer transition-all duration-300 ${isSelected
+                      ? "bg-gradient-to-r from-[#FF8A65] to-[#FF7043] text-white"
+                      : "bg-white/5 text-white/90 hover:bg-white/10 hover:text-white border border-white/5"
                     }`}
                   onClick={() => setCategory(c.name)}
                 >
                   <span className="flex items-center gap-3">
                     <PawPrint
-                      size={18}
-                      className={isSelected ? "text-white" : "text-red-400"}
+                      size={16}
+                      className={isSelected ? "text-white" : "text-[#FF8A65]"}
                     />
                     <span className="font-medium">{displayName}</span>
                   </span>
                   <span
-                    className={`text-sm px-2 py-1 rounded-full backdrop-blur-sm ${isSelected
-                        ? "bg-white/30 text-white"
-                        : "bg-white/40 text-gray-700 border border-white/30"
+                    className={`text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur-sm ${isSelected
+                        ? "bg-white/20 text-white"
+                        : "bg-white/5 text-white/40 border border-white/10"
                       }`}
                   >
                     {c.count}
@@ -182,10 +182,10 @@ export default function Sidebar({
 
       {/* Price Range */}
       <div>
-        <h3 className="font-bold text-lg mb-4 text-gray-800">Price Range</h3>
+        <h3 className="font-bold text-lg mb-4 text-white tracking-tight uppercase text-[10px] tracking-[0.2em] opacity-60">Price Range</h3>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-600">0</span>
+            <span className="text-xs font-bold text-white/30">0</span>
 
             <input
               type="range"
@@ -194,14 +194,14 @@ export default function Sidebar({
               step="100"
               value={priceRange[1]}
               onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
-              className="w-full h-2 bg-[#FF5E5E]/30 rounded-lg appearance-none cursor-pointer accent-red-400"
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF8A70]"
             />
 
-            <span className="text-sm font-medium text-gray-600">5000</span>
+            <span className="text-xs font-bold text-white/30">5000</span>
           </div>
 
           <div className="text-center">
-            <p className="text-gray-700 font-semibold">
+            <p className="text-white font-bold text-sm">
               Price: ₹{priceRange[0]} — ₹{priceRange[1]}
             </p>
           </div>
@@ -210,7 +210,7 @@ export default function Sidebar({
 
       {/* Tags */}
       <div>
-        <h3 className="font-bold text-lg mb-4 text-gray-800">Filter By Tags</h3>
+        <h3 className="font-bold text-lg mb-4 text-white tracking-tight uppercase text-[10px] tracking-[0.2em] opacity-60">Filter By Tags</h3>
         <div className="flex flex-wrap gap-2">
           {allTags.map((tag) => {
             const isActive = tags.includes(tag);
@@ -218,9 +218,9 @@ export default function Sidebar({
               <button
                 key={tag}
                 onClick={() => toggleTag(tag)}
-                className={`px-3 py-1 rounded-full border text-sm transition-all transform ${isActive
-                    ? "bg-red-400 text-white border-red-400 scale-105"
-                    : "bg-white/40 text-gray-700 border-gray-300 hover:bg-white/60 hover:scale-105 active:scale-95"
+                className={`px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider transition-all ${isActive
+                    ? "bg-[#FF8A70] text-white border-[#FF8A70]"
+                    : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white"
                   }`}
               >
                 {tag}
@@ -233,7 +233,7 @@ export default function Sidebar({
           <div className="mt-4">
             <button
               onClick={resetTags}
-              className="w-full bg-gray-200/60 text-gray-700 py-2 px-4 rounded-full font-medium hover:bg-gray-300/70 hover:scale-105 active:scale-95 transition-transform duration-200"
+              className="w-full bg-white/5 text-white/40 py-2.5 px-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white/10 hover:text-white transition-all border border-white/5"
             >
               Reset Tags
             </button>

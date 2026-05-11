@@ -138,14 +138,14 @@ function AppointmentCard({
                     {/* Avatar - Circular */}
                     <div className="relative flex-shrink-0">
                         <div className={`rounded-full overflow-hidden ring-1 ring-white/10 bg-zinc-950 p-0.5 transition-all duration-500
-                            ${dim ? 'w-9 h-9 opacity-50' : 'w-14 h-14 group-hover/card:ring-[#5F97C9]/50 shadow-xl shadow-[#5F97C9]/5'}
+                            ${dim ? 'w-9 h-9 opacity-50' : 'w-14 h-14 group-hover/card:ring-[#5F97C9]/50'}
                         `}>
                             {vet?.avatar_url && vet.avatar_url.startsWith('http') ? (
                                 <Image
                                     src={vet.avatar_url}
                                     alt={`Dr. ${vet?.name ?? 'Veterinarian'}`}
                                     width={dim ? 36 : 56} height={dim ? 36 : 56}
-                                    className={`w-full h-full object-cover rounded-full transition-transform duration-700 ${!dim ? 'group-hover/card:scale-110' : 'grayscale shadow-inner'}`}
+                                    className={`w-full h-full object-cover rounded-full transition-transform duration-700 ${!dim ? 'group-hover/card:scale-110' : 'grayscale'}`}
                                 />
                             ) : (
                                 <div className={`w-full h-full flex items-center justify-center bg-white/5 text-white/50 font-bold rounded-full ${dim ? 'text-[9px]' : 'text-lg'}`}>
@@ -262,7 +262,7 @@ function Section({
     return (
         <section className="mb-12">
             <div className="flex items-center gap-4 mb-8 px-2">
-                <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center border transition-all duration-500 ${accent ? 'bg-[#5F97C9]/10 border-[#5F97C9]/20 shadow-lg shadow-[#5F97C9]/5' : 'bg-white/5 border-white/10'}`}>
+                <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center border transition-all duration-500 ${accent ? 'bg-[#5F97C9]/10 border-[#5F97C9]/20' : 'bg-white/5 border-white/10'}`}>
                     <CalendarDays size={20} className={accent ? 'text-[#5F97C9]' : 'text-white/30'} />
                 </div>
                 <div>
@@ -270,7 +270,7 @@ function Section({
                     <p className="text-[#5F97C9] text-[9px] font-bold uppercase tracking-[0.2em] opacity-80">{subtitle}</p>
                 </div>
                 {count > 0 && (
-                    <span className={`ml-auto text-[10px] font-bold px-4 py-2 rounded-full border ${accent ? 'bg-[#5F97C9]/10 text-[#5F97C9] border-[#5F97C9]/20 shadow-xl shadow-[#5F97C9]/5' : 'bg-white/5 text-white/30 border-white/10'}`}>
+                    <span className={`ml-auto text-[10px] font-bold px-4 py-2 rounded-full border ${accent ? 'bg-[#5F97C9]/10 text-[#5F97C9] border-[#5F97C9]/20' : 'bg-white/5 text-white/30 border-white/10'}`}>
                         {count} Active
                     </span>
                 )}
@@ -426,7 +426,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative w-full max-w-md bg-[#0a0a0f] border border-red-500/20 rounded-3xl p-8 overflow-hidden shadow-2xl shadow-red-500/10"
+                            className="relative w-full max-w-md bg-[#0a0a0f] border border-red-500/20 rounded-3xl p-8 overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
@@ -464,7 +464,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
 
                 <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#5F97C9] to-blue-600 flex items-center justify-center text-white shadow-2xl shadow-[#5F97C9]/20 transform transition-transform group-hover:scale-110 group-hover:rotate-3 flex-shrink-0">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#5F97C9] to-blue-600 flex items-center justify-center text-white transform transition-transform group-hover:scale-110 group-hover:rotate-3 flex-shrink-0">
                             <Stethoscope size={28} className="sm:w-8 sm:h-8" />
                         </div>
                         <div>
@@ -490,7 +490,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
 
                         <Link
                             href="/appointments/new"
-                            className="w-full sm:w-auto group/btn relative flex items-center justify-center gap-3 bg-white text-[#16161f] text-xs font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-wider overflow-hidden shadow-2xl shadow-white/5"
+                            className="w-full sm:w-auto group/btn relative flex items-center justify-center gap-3 bg-white text-[#16161f] text-xs font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-wider overflow-hidden"
                         >
                             <CalendarDays size={16} />
                             <span>Book New</span>
@@ -557,7 +557,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-[#5F97C9]/5 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
 
                         <h4 className="relative z-10 text-white text-[10px] font-bold uppercase tracking-[0.4em] mb-10 flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-[#5F97C9] shadow-[0_0_10px_rgba(95,151,201,0.5)] animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-[#5F97C9] animate-pulse" />
                             Policy
                         </h4>
 
@@ -579,7 +579,7 @@ export default function UserAppointmentsView({ userId }: { userId: string }) {
                         <div className="absolute top-0 right-0 w-48 h-48 bg-[#5F97C9]/10 rounded-full -mr-24 -mt-24 blur-3xl group-hover:scale-150 transition-transform duration-1000" />
 
                         <div className="relative z-10">
-                            <div className="w-14 h-14 rounded-[1.2rem] bg-white flex items-center justify-center text-[#16161f] mb-8 transform group-hover:rotate-[10deg] transition-all duration-500 shadow-2xl shadow-white/20">
+                            <div className="w-14 h-14 rounded-[1.2rem] bg-white flex items-center justify-center text-[#16161f] mb-8 transform group-hover:rotate-[10deg] transition-all duration-500">
                                 <Stethoscope size={28} />
                             </div>
                             <p className="text-[10px] font-bold text-white uppercase tracking-[0.3em] mb-4">Emergency Care</p>

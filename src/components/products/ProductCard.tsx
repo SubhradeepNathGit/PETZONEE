@@ -2,13 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingCart, Star, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Heart, Star } from "lucide-react";
+import { useState } from "react";
 import { Product } from "@/types/product";
-import { supabase } from "@/lib/supabase";
-
-const TABLE_NAME = "cart";
 
 export default function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
@@ -44,9 +41,9 @@ export default function ProductCard({ product }: { product: Product }) {
           w-full sm:w-[90%] md:w-[88%] lg:w-[89%] 
           h-auto
           rounded-[18px] sm:rounded-[20px] md:rounded-[22px] lg:rounded-[24px] 
-          bg-white text-gray-900 shadow-md overflow-hidden 
+          bg-white/[0.03] border border-white/5 text-white overflow-hidden 
           transition-all duration-300 
-          hover:bg-[#FF7A7A] hover:text-white mt-5
+          hover:bg-white/[0.08] hover:border-white/20 mt-5
           cursor-pointer
         "
       >
@@ -59,7 +56,7 @@ export default function ProductCard({ product }: { product: Product }) {
             px-2 sm:px-3 py-0.5 sm:py-1 
             text-[9px] sm:text-[10px] md:text-xs font-bold uppercase 
             tracking-wider text-white 
-            group-hover:bg-black/10 group-hover:text-red-400 
+            group-hover:bg-white/20 group-hover:text-white 
             transition-colors duration-300 
           "
           >
@@ -113,7 +110,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {/* Product Info */}
         <div className="px-2 sm:px-3 md:px-4 pb-4 pt-1 text-center transition-colors duration-500">
-          <h3 className="mt-1 mb-1 sm:mb-2 text-base sm:text-lg md:text-xl lg:text-2xl font-bold truncate">
+          <h3 className="mt-1 mb-1 sm:mb-2 text-base sm:text-lg md:text-xl lg:text-2xl font-bold truncate text-white">
             {name}
           </h3>
 
@@ -139,7 +136,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 ₹{Number(old_price).toLocaleString()}
               </span>
             )}
-            <span className="font-bold">
+            <span className="font-bold text-[#FF8A70]">
               ₹{Number(discount_price ?? 0).toLocaleString()}
             </span>
           </div>

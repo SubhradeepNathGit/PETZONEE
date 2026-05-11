@@ -158,9 +158,7 @@ export default function ContactPage() {
 
       {/* === Hero Section (2026 Aesthetic) === */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-        {/* Animated background blobs */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FF8A70]/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-600/10 rounded-full blur-[100px] animate-pulse delay-700"></div>
+        {/* Hero Image */}
 
         <Image
           src="/images/statbg2.jpg"
@@ -169,7 +167,7 @@ export default function ContactPage() {
           priority
           className="object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -177,28 +175,25 @@ export default function ContactPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10 text-center px-4 max-w-4xl"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 backdrop-blur-md mb-6">
-            <PawPrint className="w-4 h-4 text-[#FF8A70]" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#FF8A70]">Always Here for You</span>
+
+          <div className="space-y-2 mb-6">
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+              Get in <span className="text-[#FF8A70]">Touch</span>
+            </h1>
+            <p className="text-white/40 text-xs md:text-sm font-medium uppercase tracking-[0.3em]">
+              We&apos;re here to help you and your pets 24/7
+            </p>
           </div>
-          <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent italic">
-            Get in <span className="text-[#FF8A70] not-italic">Touch</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
-            Have a question? Our team and medical experts are ready to assist you in under 24 hours. Experience the future of pet care communications.
-          </p>
 
           <div className="flex items-center justify-center gap-4 mt-10">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-lg border-2 border-black bg-zinc-800 overflow-hidden ring-4 ring-white/5">
-                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Agent" />
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden ring-4 ring-white/5">
+                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Expert" />
                 </div>
               ))}
             </div>
-            <p className="text-xs font-bold text-white/40 uppercase tracking-widest whitespace-nowrap">
-              4 EXPERTS ONLINE
-            </p>
+
           </div>
         </motion.div>
       </section>
@@ -213,7 +208,7 @@ export default function ContactPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="lg:col-span-4 space-y-6"
+            className="lg:col-span-4 space-y-8"
           >
             {[
               { icon: <Mail />, title: 'Email Us', info: 'hello@petzonee.com', sub: '24/7 Human support', color: 'bg-blue-500/10 text-blue-400' },
@@ -225,7 +220,7 @@ export default function ContactPage() {
                 key={idx}
                 variants={itemVariants}
                 whileHover={{ x: 10, scale: 1.02 }}
-                className="group p-8 rounded-lg bg-white/[0.03] border border-white/5 backdrop-blur-3xl hover:bg-white/[0.05] hover:border-[#FF8A70]/30 transition-all duration-300"
+                className="group p-8 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-3xl hover:bg-white/[0.05] hover:border-[#FF8A70]/30 transition-all duration-300"
               >
                 <div className={`w-14 h-14 ${item.color} rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                   {React.cloneElement(item.icon as React.ReactElement, { size: 24 } as any)}
@@ -244,16 +239,16 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="lg:col-span-8"
           >
-            <div className="p-10 md:p-14 rounded-lg bg-gradient-to-br from-white/[0.05] to-white/[0.01] border border-white/10 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+            <div className="p-10 md:p-14 rounded-3xl bg-gradient-to-br from-white/[0.05] to-white/[0.01] border border-white/10 backdrop-blur-3xl relative overflow-hidden">
               <div className="absolute top-0 right-0 p-10 opacity-10">
                 <MessageSquare size={120} />
               </div>
 
               <div className="relative z-10">
-                <h2 className="text-4xl font-black italic tracking-tighter mb-2">Send <span className="text-[#FF8A70] not-italic">Inquiry</span></h2>
+                <h2 className="text-4xl font-bold tracking-tighter mb-2">Send <span className="text-[#FF8A70]">Inquiry</span></h2>
                 <p className="text-white/40 mb-12 font-medium tracking-tight">Our smart engine will route your message to the right specialist.</p>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Name */}
                     <div className="space-y-2">
@@ -262,7 +257,7 @@ export default function ContactPage() {
                         {...register('name')}
                         type="text"
                         placeholder="e.g. Alex Rivera"
-                        className={`w-full bg-white/5 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} rounded-lg px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
+                        className={`w-full bg-white/5 border ${errors.name ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-6 py-6 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
                       />
                       {errors.name && <p className="text-[10px] text-red-500 ml-4 font-bold">{errors.name.message}</p>}
                     </div>
@@ -274,7 +269,7 @@ export default function ContactPage() {
                         {...register('email')}
                         type="email"
                         placeholder="alex@example.com"
-                        className={`w-full bg-white/5 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-lg px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
+                        className={`w-full bg-white/5 border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-6 py-6 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
                       />
                       {errors.email && <p className="text-[10px] text-red-500 ml-4 font-bold">{errors.email.message}</p>}
                     </div>
@@ -288,7 +283,7 @@ export default function ContactPage() {
                         {...register('phone')}
                         type="tel"
                         placeholder="+1 (000) 000-0000"
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-6 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all"
                       />
                     </div>
 
@@ -298,7 +293,7 @@ export default function ContactPage() {
                       <input
                         {...register('subject')}
                         placeholder="How can we help?"
-                        className={`w-full bg-white/5 border ${errors.subject ? 'border-red-500/50' : 'border-white/10'} rounded-lg px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
+                        className={`w-full bg-white/5 border ${errors.subject ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-6 py-6 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all`}
                       />
                       {errors.subject && <p className="text-[10px] text-red-500 ml-4 font-bold">{errors.subject.message}</p>}
                     </div>
@@ -309,9 +304,9 @@ export default function ContactPage() {
                     <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-4">Your Message</label>
                     <textarea
                       {...register('message')}
-                      rows={6}
+                      rows={12}
                       placeholder="Share your thoughts or questions with us..."
-                      className={`w-full bg-white/5 border ${errors.message ? 'border-red-500/50' : 'border-white/10'} rounded-lg px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all resize-none`}
+                      className={`w-full bg-white/5 border ${errors.message ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-6 py-6 focus:outline-none focus:ring-2 focus:ring-[#FF8A70]/50 focus:bg-white/10 transition-all resize-none`}
                     />
                     {errors.message && <p className="text-[10px] text-red-500 ml-4 font-bold">{errors.message.message}</p>}
                   </div>
@@ -321,7 +316,7 @@ export default function ContactPage() {
                     <input
                       {...register('agree')}
                       type="checkbox"
-                      className="mt-1 w-5 h-5 accent-[#FF8A70] rounded-lg cursor-pointer"
+                      className="mt-1 w-5 h-5 accent-[#FF8A70] rounded-xl cursor-pointer"
                     />
                     <div className="space-y-1">
                       <p className="text-xs text-white/60 leading-relaxed">
@@ -334,7 +329,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full h-16 rounded-lg bg-[#FF8A70] hover:bg-[#ff7043] text-black font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-16 rounded-2xl bg-[#FF8A70] hover:bg-[#ff7043] text-black font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
@@ -356,7 +351,7 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
             <div>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight italic">Our <span className="text-[#FF8A70] not-italic">Location</span></h2>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Our <span className="text-[#FF8A70]">Location</span></h2>
               <p className="text-white/40 mt-4 max-w-md font-medium tracking-tight">Visit our state-of-the-art facility in the heart of the city.</p>
             </div>
             <div className="flex items-center gap-6">
@@ -378,7 +373,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative rounded-lg overflow-hidden border border-white/10 h-[500px] shadow-2xl group"
+            className="relative rounded-lg overflow-hidden border border-white/10 h-[500px] group"
           >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689.017013408831!2d88.34796067493606!3d22.572646185258867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a027b03e5f0a0cd%3A0xf2f2b3d7a5e2f5a!2sKolkata%2C%20West%20Bengal%2C%20India!5e0!3m2!1sen!2sin!4v1693555200000!5m2!1sen!2sin"
@@ -410,7 +405,7 @@ export default function ContactPage() {
       <section className="py-24 bg-black">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter mb-4">Common <span className="text-[#FF8A70] not-italic">Questions</span></h2>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">Common <span className="text-[#FF8A70]">Questions</span></h2>
             <p className="text-white/40 font-medium tracking-tight">Everything you need to know about our medical care.</p>
           </div>
 
@@ -420,7 +415,7 @@ export default function ContactPage() {
                 key={faq.id}
                 className={`rounded-lg border transition-all duration-300 overflow-hidden 
                   ${activeFaq === faq.id
-                    ? 'bg-white/[0.05] border-[#FF8A70]/30 shadow-[0_0_30px_rgba(255,138,112,0.1)]'
+                    ? 'bg-white/[0.05] border-[#FF8A70]/30'
                     : 'bg-white/[0.02] border-white/5 hover:border-white/20'
                   }`}
               >

@@ -274,7 +274,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                 {/* WhatsApp-style Header */}
                 <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-[0_0_20px_rgba(249,115,22,0.1)]">
+                        <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
                             <PawPrint size={24} className="text-orange-500" />
                         </div>
                         <div>
@@ -311,11 +311,11 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                                 whileTap={{ scale: 0.98 }}
                                 className={`w-full p-6 text-left flex items-center gap-5 rounded-lg border transition-all overflow-hidden relative group
                                     ${selectedId === conv.id
-                                        ? 'bg-gradient-to-r from-orange-500/20 to-transparent border-orange-500/30 shadow-2xl'
+                                        ? 'bg-gradient-to-r from-orange-500/20 to-transparent border-orange-500/30'
                                         : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10'}`}
                             >
                                 <div className="relative shrink-0">
-                                    <div className="w-14 h-14 rounded-full bg-zinc-900 border border-white/10 overflow-hidden shadow-inner flex items-center justify-center transition-colors">
+                                    <div className="w-14 h-14 rounded-full bg-zinc-900 border border-white/10 overflow-hidden flex items-center justify-center transition-colors">
                                         {opponent.avatar ? (
                                             <img src={opponent.avatar} alt="" className="w-full h-full object-cover" />
                                         ) : (
@@ -368,7 +368,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                         >
                             <ArrowLeft size={18} />
                         </button>
-                        <div className="w-14 h-14 rounded-full bg-zinc-900 border border-orange-500/20 overflow-hidden flex items-center justify-center ring-4 ring-orange-500/5 shadow-2xl">
+                        <div className="w-14 h-14 rounded-full bg-zinc-900 border border-orange-500/20 overflow-hidden flex items-center justify-center ring-4 ring-orange-500/5">
                             {(() => {
                                 const opponent = role === 'vet'
                                     ? { name: `${activeConv?.users?.first_name || 'Patient'} ${activeConv?.users?.last_name || ''}`.trim(), avatar: activeConv?.users?.avatar_url }
@@ -476,7 +476,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                                 >
                                     <div className="relative max-w-[75%] flex flex-col gap-1">
                                         <div
-                                            className={`relative px-4 py-3 text-[13px] leading-[1.6] font-medium shadow-md
+                                            className={`relative px-4 py-3 text-[13px] leading-[1.6] font-medium
                                                 ${isMe
                                                     ? 'bg-orange-500 text-white rounded-2xl rounded-tr-none'
                                                     : 'bg-[#252525] text-white/90 border border-white/8 rounded-2xl rounded-tl-none'
@@ -559,7 +559,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                                         setNewMessage(reply);
                                         setTimeout(() => handleSendMessage({ preventDefault: () => { } } as React.FormEvent), 0);
                                     }}
-                                    className="shrink-0 px-5 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-orange-500 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all italic shadow-inner"
+                                    className="shrink-0 px-5 py-2 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-orange-500 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all italic"
                                 >
                                     {reply}
                                 </button>
@@ -611,7 +611,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                                 />
                                 <button
                                     type="submit"
-                                    className="w-11 h-11 rounded-full bg-orange-500 hover:bg-orange-400 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 transition-all shrink-0 active:scale-95"
+                                    className="w-11 h-11 rounded-full bg-orange-500 hover:bg-orange-400 text-white flex items-center justify-center transition-all shrink-0 active:scale-95"
                                 >
                                     <Send size={18} />
                                 </button>
@@ -625,7 +625,7 @@ export default function UserMessages({ userId, role = 'user', messageType = 'sup
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-24 h-24 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center text-orange-500/20 mb-8 shadow-inner group-hover:text-orange-500/40 transition-all"
+                        className="w-24 h-24 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center text-orange-500/20 mb-8 group-hover:text-orange-500/40 transition-all"
                     >
                         <MessageSquare size={40} />
                     </motion.div>

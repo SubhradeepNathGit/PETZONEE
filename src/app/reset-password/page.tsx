@@ -46,7 +46,7 @@ function ResetPasswordContent() {
         <main className="min-h-screen w-full bg-[#FF8A65] flex flex-col justify-center items-center px-4">
             {/* Brand Title */}
             <div className="mb-8 text-center">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
                     PETZONEE
                 </h1>
                 <p className="mt-1 text-white/90 text-xs sm:text-sm">Secure Password Reset</p>
@@ -58,7 +58,7 @@ function ResetPasswordContent() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className="bg-white/10 backdrop-blur-md rounded-[2.5rem] p-8 lg:p-12 border border-white/20 shadow-2xl">
+                <div className="bg-white/10 backdrop-blur-md rounded-[2.5rem] p-8 lg:p-12 border border-white/20">
                     <ResetCard busy={busy} onSubmit={onResetPassword} />
                 </div>
             </motion.div>
@@ -75,7 +75,7 @@ function ResetCard({
 }) {
     return (
         <div className="text-white">
-            <h2 className="mb-2 text-center text-2xl lg:text-3xl font-extrabold leading-none drop-shadow-md">
+            <h2 className="mb-2 text-center text-2xl lg:text-3xl font-extrabold leading-none">
                 New Password
             </h2>
             <p className="mb-6 text-center text-xs lg:text-sm opacity-90">
@@ -87,7 +87,7 @@ function ResetCard({
 
                 <button
                     disabled={busy}
-                    className="w-full rounded-3xl bg-[#0e2a36] py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-4"
+                    className="w-full rounded-3xl bg-[#0e2a36] py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-4"
                 >
                     {busy ? 'Updating…' : 'Update Password'}
                 </button>
@@ -114,7 +114,7 @@ function Input({
                 name={name}
                 type={isPassword && show ? 'text' : type}
                 placeholder={placeholder}
-                className="w-full rounded-full border-0 bg-white px-5 py-3.5 text-xs lg:text-sm text-[#1b2b34] placeholder-[#9aa6ad] shadow-md focus:ring-2 focus:ring-white/50 focus:outline-none transition-shadow"
+                className="w-full rounded-full border-0 bg-white px-5 py-3.5 text-xs lg:text-sm text-[#1b2b34] placeholder-[#9aa6ad] focus:ring-2 focus:ring-white/50 focus:outline-none transition-shadow"
                 required
                 autoComplete="new-password"
             />

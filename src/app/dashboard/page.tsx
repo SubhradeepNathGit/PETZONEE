@@ -26,7 +26,7 @@ import { CheckCircle, AlertCircle, Info, AlertTriangle, XCircle, PawPrint, Menu,
 const AdminDashboard = dynamic(() => import('@/components/portal/AdminDashboard'), { ssr: false });
 const VetDashboard = dynamic(() => import('@/components/portal/VetDashboard'), { ssr: false });
 const UserDashboard = dynamic(() => import('@/components/portal/UserDashboard'), { ssr: false });
-import { loadPendingVets, loadAdminStats } from '@/components/portal/AdminDashboard';
+import { loadPendingVets, loadAdminStats, loadNotiCount } from '@/components/portal/shared/api';
 import { KycPending } from '@/components/portal/VetDashboard';
 
 type UserProfileRow = {
@@ -339,7 +339,7 @@ function PortalContent() {
           <p className="text-gray-300 mb-4">Please sign in to access your dashboard.</p>
           <Link
             href="/signup"
-            className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow hover:brightness-110 transition"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:brightness-110 transition"
           >
             Sign In
           </Link>
@@ -401,7 +401,7 @@ function PortalContent() {
                   animate={{ x: 0 }}
                   exit={{ x: '-100%' }}
                   transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                  className="lg:hidden fixed left-0 top-0 h-screen w-72 bg-black z-[101] shadow-2xl"
+                  className="lg:hidden fixed left-0 top-0 h-screen w-72 bg-black z-[101]"
                 >
                   <div className="absolute top-4 right-4 z-[102]">
                     <button
@@ -422,7 +422,7 @@ function PortalContent() {
             <div className="lg:hidden sticky top-0 left-0 right-0 z-40 px-4 py-4 flex items-center bg-black/20 backdrop-blur-md border-b border-white/5">
               <button
                 onClick={() => setIsSidebarOpen(true)}
-                className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all shadow-lg shadow-white/5"
+                className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
               >
                 <Menu size={20} />
               </button>
@@ -559,7 +559,7 @@ function PortalContent() {
                     </p>
                     <Link
                       href="/pets/new"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-3 font-bold text-white bg-gradient-to-r from-[#FF8A65] to-[#FF7043] rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 hover:brightness-110 transition-all"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3 font-bold text-white bg-gradient-to-r from-[#FF8A65] to-[#FF7043] rounded-full hover:brightness-110 transition-all"
                     >
                       Add My Pet
                       <IconPlus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
@@ -670,24 +670,7 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-async function loadNotiCount(
-  userId: string,
-  _role: 'user' | 'vet' | 'admin',
-  setCount: (n: number) => void
-) {
-  try {
-    const { count, error } = await supabase
-      .from('notifications')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('seen', false);
-    if (error) throw error;
-    setCount(count ?? 0);
-  } catch (error: unknown) {
-    console.error('Load notification count error:', error);
-    setCount(0);
-  }
-}
+
 
 export default function Portal() {
   return (

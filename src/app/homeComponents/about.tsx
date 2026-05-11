@@ -163,7 +163,7 @@ export default function AboutPage() {
                     <motion.div className="reveal-text flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 pt-8">
                         {/* Glass Button */}
                         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.90 }}>
-                            <Button className="relative bg-white/15 backdrop-blur-lg text-white font-bold px-8 py-6 rounded-full text-lg border border-white/25 shadow-2xl hover:bg-[#f5f6dc] hover:text-orange-400 transition-all duration-500 overflow-hidden group">
+                            <Button className="relative bg-white/15 backdrop-blur-lg text-white font-bold px-8 py-6 rounded-full text-lg border border-white/25 hover:bg-[#f5f6dc] hover:text-orange-400 transition-all duration-500 overflow-hidden group">
                                 <span className="relative z-10">Explore</span>
                                 <motion.div
                                     className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -175,7 +175,7 @@ export default function AboutPage() {
                         {/* Client Avatars */}
                         <motion.div className="flex items-center gap-4">
                             <div className="flex -space-x-3">
-                                <motion.div className="w-[120px] h-13 rounded-full shadow-lg overflow-hidden">
+                                <motion.div className="w-[120px] h-13 rounded-full overflow-hidden">
                                     <Image
                                         src="/icons/ppl2.png"
                                         alt="Client Avatars"
@@ -211,7 +211,7 @@ export default function AboutPage() {
                             className="relative w-72 sm:w-96 lg:w-[500px] h-auto"
                             style={{
                                 transform: 'translateY(120px)',
-                                filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.15))'
+                                filter: 'none'
                             }}
                         />
 

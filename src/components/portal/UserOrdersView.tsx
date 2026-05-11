@@ -116,7 +116,7 @@ function TrackingBar({ status }: { status: Order['status'] }) {
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${((cfg.step + 1) / steps.length) * 100}%` }}
-                    className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 shadow-[0_0_10px_rgba(249,115,22,0.3)]"
+                    className="h-full bg-gradient-to-r from-orange-500 to-yellow-500"
                 />
             </div>
         </div>
@@ -342,7 +342,7 @@ function OrderCard({ order, onReturn, onViewInvoice }: {
 
 const EmptyState = ({ title, subtitle }: { title: string; subtitle: string }) => (
     <div className="text-center py-20 rounded-[2.5rem] border border-dashed border-white/10 bg-white/[0.02] backdrop-blur-3xl">
-        <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mx-auto mb-6 text-white/10 border border-white/5 shadow-2xl">
+        <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mx-auto mb-6 text-white/10 border border-white/5">
             <ShoppingBag size={36} />
         </div>
         <h3 className="text-white text-2xl font-bold tracking-tight mb-2">{title}</h3>
@@ -445,7 +445,7 @@ export default function UserOrdersView({ userId }: { userId: string }) {
 
                     <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
                         <div className="flex gap-8 items-center">
-                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center text-white shadow-2xl shadow-orange-500/20 transform group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center text-white transform group-hover:scale-110 transition-transform duration-500">
                                 <ShoppingBag size={36} />
                             </div>
                             <div>
@@ -519,7 +519,7 @@ export default function UserOrdersView({ userId }: { userId: string }) {
                     <div className="space-y-8 print:hidden">
                         <div className="p-8 rounded-[2rem] bg-white/[0.04] border border-white/10 backdrop-blur-3xl">
                             <h4 className="flex items-center gap-3 text-white text-[10px] font-bold uppercase tracking-[0.4em] mb-8">
-                                <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
                                 Policy Hub
                             </h4>
                             <div className="space-y-10">
@@ -543,7 +543,7 @@ export default function UserOrdersView({ userId }: { userId: string }) {
 
                         <div className="relative overflow-hidden p-8 rounded-[2rem] bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20 group">
                             <div className="relative z-10">
-                                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-black mb-6 shadow-xl shadow-white/10 transform group-hover:rotate-12 transition-transform">
+                                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-black mb-6 transform group-hover:rotate-12 transition-transform">
                                     <ShoppingBag size={24} />
                                 </div>
                                 <h4 className="text-white font-bold text-lg mb-3">Loyalty Program</h4>

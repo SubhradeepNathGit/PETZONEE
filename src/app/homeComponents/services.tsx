@@ -97,9 +97,9 @@ export default function PetServices() {
 
               {/* Front side */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center 
-                              rounded-3xl shadow-lg p-6 bg-transparent text-[#0F172A]
+                              rounded-3xl p-6 bg-white/[0.03] border border-white/10 backdrop-blur-md text-[#0F172A]
                               [backface-visibility:hidden]">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#FF8A65]/10 shadow-lg flex items-center justify-center mb-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#FF8A65]/10 border border-[#FF8A65]/20 flex items-center justify-center mb-4">
                   <Image
                     src={service.img}
                     alt={service.title}
@@ -113,7 +113,7 @@ export default function PetServices() {
               </div>
 
               {/* Back side */}
-              <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-lg 
+              <div className="absolute inset-0 rounded-3xl overflow-hidden border border-white/10
                               [transform:rotateY(180deg)] [backface-visibility:hidden]">
                 <Image
                   src={service.back}

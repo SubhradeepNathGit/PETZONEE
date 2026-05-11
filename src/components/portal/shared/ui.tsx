@@ -12,10 +12,10 @@ import { Stethoscope, Activity, Zap, ChevronRight } from 'lucide-react';
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`rounded-[2.5rem] p-8 md:p-10 border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl transition-all ${className}`}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`rounded-3xl p-6 md:p-8 border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl transition-all ${className}`}
     >
       {children}
     </motion.div>
@@ -113,6 +113,7 @@ export function FeatureCard({
   action,
   href,
   onClick,
+  delay,
 }: {
   title: string;
   description: string;
@@ -121,28 +122,32 @@ export function FeatureCard({
   action: string;
   href?: string;
   onClick?: () => void;
+  delay?: number;
 }) {
-  const buttonClass = `inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${gradient} text-white rounded-xl font-semibold text-sm hover:brightness-110 active:scale-95 transition-all duration-300 group-hover:translate-x-1`;
-  const arrow = <span className="group-hover:translate-x-1 transition-transform duration-300">?</span>;
+  const buttonClass = `inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${gradient} text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all duration-300 group-hover:translate-x-1`;
+  const arrow = <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />;
 
   return (
     <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut", delay }}
       whileHover={{ y: -5 }}
-      className="group relative overflow-hidden rounded-[2.5rem] p-10 bg-[#0a0a0a]/80 border border-white/5 hover:border-white/10 transition-all duration-500 shadow-2xl backdrop-blur-xl"
+      className="group relative overflow-hidden rounded-3xl p-8 bg-[#0a0a0a]/80 border border-white/5 hover:border-white/10 transition-all duration-500 backdrop-blur-xl"
     >
       <div
         className={`absolute -top-12 -right-12 h-64 w-64 bg-gradient-to-br ${gradient} opacity-5 rounded-full blur-[80px] group-hover:opacity-10 group-hover:scale-150 transition-all duration-700`}
       />
 
       <div className="relative z-10">
-        <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} p-3 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
+        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br ${gradient} p-3 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
           <div className="text-white">
             {icon}
           </div>
         </div>
 
-        <h3 className="text-2xl font-black text-white mb-3 tracking-tighter uppercase">{title}</h3>
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-8 leading-relaxed">{description}</p>
+        <h3 className="text-xl font-bold text-white mb-2 tracking-tighter uppercase">{title}</h3>
+        <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-6 leading-relaxed line-clamp-2">{description}</p>
 
         {href ? (
           <Link href={href} className={buttonClass}>
@@ -282,7 +287,7 @@ export function DashboardLoadingScreen({ message = "Initializing Systems" }: { m
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="w-24 h-24 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-3xl relative overflow-hidden"
+            className="w-24 h-24 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex items-center justify-center backdrop-blur-3xl relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-50" />
             <Activity className="text-cyan-500" size={40} />
@@ -294,14 +299,14 @@ export function DashboardLoadingScreen({ message = "Initializing Systems" }: { m
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             className="absolute -inset-4 border border-white/5 rounded-[3rem]"
           >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-cyan-400 rounded-full" />
           </motion.div>
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
             className="absolute -inset-10 border border-white/5 rounded-[3.5rem]"
           >
-            <div className="absolute bottom-0 right-1/2 translate-x-1/2 w-2 h-2 bg-orange-400 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
+            <div className="absolute bottom-0 right-1/2 translate-x-1/2 w-2 h-2 bg-orange-400 rounded-full" />
           </motion.div>
         </div>
 

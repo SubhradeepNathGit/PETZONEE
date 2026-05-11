@@ -168,7 +168,7 @@ export default function NewMultiplePetsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-7 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:brightness-110 disabled:opacity-50 transition-all"
+              className="rounded-full bg-gradient-to-r from-[#FF8A65] to-[#FF7043] px-7 py-2.5 text-sm font-bold text-white hover:brightness-110 disabled:opacity-50 transition-all"
             >
               {saving ? 'Saving…' : `Save ${rows.length} pet${rows.length > 1 ? 's' : ''}`}
             </button>
@@ -203,7 +203,7 @@ function PetRowCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl p-6 shadow-[0_4px_30px_rgba(0,0,0,0.3)]"
+      className="rounded-2xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl p-6"
     >
       {/* Card header */}
       <div className="mb-5 flex items-center justify-between">

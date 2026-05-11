@@ -100,7 +100,7 @@ export default function Team() {
           {coaches.map((coach) => (
             <div key={coach.id} className="coach-card group">
               {/* Image circle only */}
-              <div className="relative w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden mb-6 mx-auto shadow-lg">
+              <div className="relative w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden mb-6 mx-auto border-4 border-white/20 backdrop-blur-sm">
                 <Image
                   src={coach.image}
                   alt={coach.name}

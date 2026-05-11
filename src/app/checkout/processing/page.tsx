@@ -64,7 +64,7 @@ export default function ProcessingPage() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
+                className="w-full max-w-md bg-white rounded-3xl overflow-hidden border border-gray-100"
             >
                 {/* Header - Brand feel */}
                 <div className="bg-[#FF8A65] p-8 text-center">
@@ -93,7 +93,7 @@ export default function ProcessingPage() {
                             </>
                         )}
 
-                        <div className="relative z-10 bg-white p-4 rounded-full shadow-sm border border-gray-100">
+                        <div className="relative z-10 bg-white p-4 rounded-full border border-gray-100">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={step}

@@ -32,7 +32,7 @@ const SuccessHeader = ({ order }: { order: LastOrder | null }) => (
     initial={{ y: 20, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
     transition={{ duration: 0.5 }}
-    className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center print:shadow-none print:border-none print:p-0 print:text-left print:mb-8"
+    className="bg-white rounded-3xl border border-gray-100 p-8 text-center print:border-none print:p-0 print:text-left print:mb-8"
   >
     <div className="relative inline-block mb-4 print:hidden">
       <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -71,7 +71,7 @@ const OrderCard = ({ order, itemCount }: { order: LastOrder | null; itemCount: n
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full print:shadow-none print:border print:border-gray-300 print:rounded-none"
+      className="bg-white rounded-3xl border border-gray-100 overflow-hidden flex flex-col h-full print:border print:border-gray-300 print:rounded-none"
     >
       <div className="p-6 border-b border-gray-100 flex items-center justify-between print:bg-gray-50 print:border-gray-300">
         <h2 className="font-bold text-gray-900 text-lg">Order Details</h2>
@@ -159,7 +159,7 @@ const AddressCard = ({ order }: { order: LastOrder | null }) => {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 h-full print:shadow-none print:border print:border-gray-300 print:rounded-none"
+      className="bg-white rounded-3xl border border-gray-100 p-6 h-full print:border print:border-gray-300 print:rounded-none"
     >
       <h2 className="font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4 print:border-gray-300">
         Delivery Detail
@@ -360,11 +360,11 @@ export default function SuccessPage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-3"
+                className="bg-white rounded-3xl border border-gray-100 p-6 space-y-3"
               >
                 <button
                   onClick={handlePrint}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors"
                 >
                   <Printer className="h-5 w-5" /> Print Invoice
                 </button>

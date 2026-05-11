@@ -440,20 +440,20 @@ function VetDashboardInner({
         </aside>
         <main className="lg:ml-72 p-6 md:p-10 space-y-10">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black text-white tracking-tighter uppercase">My Profile</h1>
-            <p className="text-white/30 text-xs font-medium uppercase tracking-[0.4em]">Manage your practice identity</p>
+            <h1 className="text-3xl font-bold text-white tracking-tighter">My Profile</h1>
+            <p className="text-white/40 text-xs font-medium tracking-wide">Manage your practice identity</p>
           </div>
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-8 md:p-10">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl p-8 md:p-10">
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full -mr-20 -mt-20 blur-[80px] pointer-events-none" />
             <div className="flex flex-col md:flex-row md:items-center gap-10">
               <AvatarPicker name={name} currentUrl={avatarUrl} meId={meId} table="veterinarian" showMessage={showMessage} onUploaded={onAvatarChange} />
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <h2 className="text-4xl font-black text-white tracking-tighter uppercase">Dr. {name}</h2>
+                  <h2 className="text-3xl font-bold text-white tracking-tighter">Dr. {name}</h2>
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] font-black uppercase tracking-widest">{designation}</span>
                     <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-widest">{specialization}</span>
-                    <span className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[9px] font-black uppercase tracking-widest">{experienceYears} Years Exp.</span>
+                    <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold uppercase tracking-widest">{experienceYears} Years Exp.</span>
                   </div>
                 </div>
                 <p className="text-white/40 text-xs font-medium leading-relaxed max-w-2xl italic">
@@ -465,37 +465,37 @@ function VetDashboardInner({
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {/* Professional Identity */}
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-8 md:p-10 space-y-8">
-              <h3 className="text-[10px] font-black uppercase text-white/30 tracking-[0.4em] flex items-center gap-4">Professional Identity<div className="flex-1 h-[1px] bg-white/5" /></h3>
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl p-8 md:p-10 space-y-8">
+              <h3 className="text-xs font-bold text-white/40 tracking-wide flex items-center gap-4">Professional Identity<div className="flex-1 h-[1px] bg-white/5" /></h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Designation</label>
+                  <label className="text-xs font-bold text-white/30 ml-1">Designation</label>
                   <input type="text" value={designationInput} onChange={e => setDesignationInput(e.target.value)} placeholder="e.g. Senior Veterinary Surgeon" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs font-bold text-white placeholder:text-white/10 focus:outline-none focus:border-cyan-500/30 transition-all" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Specialization</label>
+                  <label className="text-xs font-bold text-white/30 ml-1">Specialization</label>
                   <input type="text" value={specializationInput} onChange={e => setSpecializationInput(e.target.value)} placeholder="e.g. Feline Medicine" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs font-bold text-white placeholder:text-white/10 focus:outline-none focus:border-emerald-500/30 transition-all" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Years of Experience</label>
-                  <input type="number" value={experienceInput} onChange={e => setExperienceInput(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs font-bold text-white focus:outline-none focus:border-orange-500/30 transition-all" />
+                  <label className="text-xs font-bold text-white/30 ml-1">Years of Experience</label>
+                  <input type="number" value={experienceInput} onChange={e => setExperienceInput(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs font-bold text-white focus:outline-none focus:border-cyan-500/30 transition-all" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Professional Bio</label>
+                <label className="text-xs font-bold text-white/30 ml-1">Professional Bio</label>
                 <textarea value={bioInput} onChange={e => setBioInput(e.target.value)} placeholder="Tell us about your medical background and philosophy..." className="w-full h-32 bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-xs font-medium leading-relaxed text-white placeholder:text-white/10 focus:outline-none focus:border-cyan-500/30 transition-all resize-none" />
               </div>
             </div>
 
             {/* Consultation & Economics */}
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-8 md:p-10 space-y-8">
-              <h3 className="text-[10px] font-black uppercase text-white/30 tracking-[0.4em] flex items-center gap-4">Economics & Services<div className="flex-1 h-[1px] bg-white/5" /></h3>
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl p-8 md:p-10 space-y-8">
+              <h3 className="text-xs font-bold text-white/40 tracking-wide flex items-center gap-4">Economics & Services<div className="flex-1 h-[1px] bg-white/5" /></h3>
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Standard Consultation Fee</label>
+                  <label className="text-xs font-bold text-white/30 ml-1">Standard Consultation Fee</label>
                   <div className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-[2rem] p-6 group focus-within:border-cyan-500/30 transition-all">
                     <IndianRupee className="text-cyan-400 flex-shrink-0" size={28} />
                     <input type="number" min="0" step="0.01" value={feeInput} onChange={e => setFeeInput(e.target.value)} placeholder="0.00" className="flex-1 bg-transparent text-white font-black text-4xl tracking-tighter focus:outline-none placeholder:text-white/10" />
@@ -503,12 +503,12 @@ function VetDashboardInner({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase text-white/20 tracking-widest ml-1">Fee Description</label>
+                  <label className="text-xs font-bold text-white/30 ml-1">Fee Description</label>
                   <input type="text" value={feeDescInput} onChange={e => setFeeDescInput(e.target.value)} placeholder="e.g. Includes primary diagnostic checkup..." className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[11px] font-bold text-white placeholder:text-white/10 focus:outline-none focus:border-cyan-500/30 transition-all" />
                 </div>
 
                 <div className="pt-4">
-                  <button onClick={saveProfile} disabled={feeLoading} className="w-full py-5 rounded-[2rem] bg-cyan-500 text-black text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-cyan-400 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50 shadow-xl shadow-cyan-500/20">
+                  <button onClick={saveProfile} disabled={feeLoading} className="w-full py-4 rounded-full bg-cyan-500 text-black text-sm font-bold flex items-center justify-center gap-3 hover:bg-cyan-400 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50">
                     {feeLoading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />} Sync Practice Identity
                   </button>
                   <p className="text-center text-white/20 text-[8px] font-bold uppercase tracking-widest mt-4">Database synchronization is encrypted and instantaneous</p>
@@ -532,8 +532,8 @@ function VetDashboardInner({
           <div className="space-y-10">
             {/* Page Header */}
             <div className="space-y-1">
-              <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Manage Appointments</h1>
-              <p className="text-white/30 text-xs font-medium uppercase tracking-[0.4em]">Schedule & Patient Management</p>
+              <h1 className="text-3xl font-bold text-white tracking-tighter">Manage Appointments</h1>
+              <p className="text-white/40 text-xs font-medium tracking-wide">Schedule & Patient Management</p>
             </div>
 
             {/* Quick Stats Cards */}
@@ -562,7 +562,7 @@ function VetDashboardInner({
               />
             </div>
 
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-8 md:p-10">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl  p-8 md:p-10">
               {/* Section header */}
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
                 <div>
@@ -574,7 +574,7 @@ function VetDashboardInner({
                 <button
                   onClick={fetchAppointments}
                   disabled={loading}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:border-white/20 transition-all"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/40 hover:text-white hover:border-white/20 transition-all"
                 >
                   <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
                   Refresh
@@ -591,7 +591,7 @@ function VetDashboardInner({
                     placeholder="Search patient name or email..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 py-3.5 text-[11px] font-bold uppercase tracking-widest focus:outline-none focus:border-cyan-500/30 transition-all placeholder:text-white/10 text-white"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-medium focus:outline-none focus:border-cyan-500/30 transition-all placeholder:text-white/20 text-white"
                   />
                 </div>
 
@@ -712,7 +712,7 @@ function VetDashboardInner({
                                 {appt.status === 'accepted' && !appt.is_completed && (
                                   <button
                                     onClick={() => handleManage(appt)}
-                                    className="px-3 py-2 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 hover:bg-orange-500 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                    className="px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all text-xs font-semibold flex items-center gap-1.5"
                                   >
                                     Manage
                                   </button>
@@ -757,7 +757,7 @@ function VetDashboardInner({
           </div>
         ) : (
           <>
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-6 md:p-8">
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl  p-6 md:p-8">
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full -mr-32 -mt-32 blur-[80px] pointer-events-none" />
               <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/5 rounded-full -ml-20 -mb-20 blur-[80px] pointer-events-none" />
 
@@ -774,15 +774,15 @@ function VetDashboardInner({
                     />
                   </div>
                   <div className="space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-400 flex items-center gap-2">
-                      Medical Professional <Stethoscope className="w-3 h-3" />
-                    </p>
-                    <h2 className="text-xl md:text-2xl font-black uppercase text-white leading-none tracking-tight">
-                      Welcome, {name ? `Dr. ${name}` : 'Doctor'}
-                    </h2>
-                    <p className="text-white/30 text-[10px] font-bold uppercase tracking-[0.3em]">
-                      Manage your patients and appointment schedule
-                    </p>
+                     <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-cyan-400 flex items-center gap-2 mb-1">
+                       Medical Professional <Stethoscope className="w-3 h-3" />
+                     </p>
+                     <h2 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tighter">
+                       Welcome, {name ? `Dr. ${name}` : 'Doctor'}
+                     </h2>
+                     <p className="text-white/40 text-xs font-medium tracking-wide">
+                       Manage your patients and appointment schedule
+                     </p>
                   </div>
                 </div>
 
@@ -830,17 +830,17 @@ function VetDashboardInner({
               <ControlButton
                 label="Settings"
                 icon={<Save />}
-                color="orange"
+                color="cyan"
                 onClick={() => setEditingFee(true)}
               />
             </div>
 
             {/* ── Fee Management Card ── */}
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl p-6 md:p-8">
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-3xl  p-6 md:p-8">
               <div className="absolute top-0 left-0 w-64 h-64 bg-cyan-500/5 rounded-full -ml-20 -mt-20 blur-[80px] pointer-events-none" />
               <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
-                  <h3 className="text-[10px] font-black uppercase text-white/30 tracking-[0.4em] flex items-center gap-4 mb-1">
+                  <h3 className="text-xs font-bold text-white/40 tracking-wide flex items-center gap-4 mb-1">
                     Consultation Fee
                     <div className="flex-1 h-[1px] bg-white/5 min-w-[60px]" />
                   </h3>
@@ -874,14 +874,14 @@ function VetDashboardInner({
                       <button
                         onClick={saveProfile}
                         disabled={feeLoading}
-                        className="flex-1 py-3 rounded-2xl bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-cyan-400 transition-all disabled:opacity-50"
+                        className="flex-1 py-3 rounded-full bg-cyan-500 text-black text-xs font-bold flex items-center justify-center gap-2 hover:bg-cyan-400 transition-all disabled:opacity-50"
                       >
                         {feeLoading ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                         Save Profile
                       </button>
                       <button
                         onClick={() => { setEditingFee(false); setFeeInput(String(consultationFee)); setFeeDescInput(feeDescription); }}
-                        className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-all"
+                        className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white/40 hover:text-white transition-all"
                       >
                         Cancel
                       </button>
@@ -916,13 +916,13 @@ function VetDashboardInner({
             {/* Analytics Section Integrated into Overview */}
             <div id="practice-analytics" className="space-y-8 pt-8 border-t border-white/5">
               <div className="space-y-1">
-                <h2 className="text-2xl font-black text-white tracking-tight uppercase">Practice Analytics</h2>
-                <p className="text-white/30 text-xs font-medium uppercase tracking-[0.4em]">Operations & Financial Overview</p>
+                <h2 className="text-2xl font-bold text-white tracking-tighter">Practice Analytics</h2>
+                <p className="text-white/40 text-xs font-medium tracking-wide">Operations & Financial Overview</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard label="Total Revenue" value={`₹${analyticsData.revenue.toLocaleString()}`} trend="Lifetime" icon={<CreditCard className="text-emerald-500" />} color="emerald" />
-                <StatCard label="Comped (Petverse)" value={`₹${analyticsData.compedRevenue.toLocaleString()}`} trend="Platform Paid" icon={<Zap className="text-yellow-500" />} color="orange" />
+                <StatCard label="Comped (Petverse)" value={`₹${analyticsData.compedRevenue.toLocaleString()}`} trend="Platform Paid" icon={<Zap className="text-yellow-500" />} color="cyan" />
                 <StatCard label="Patient Paid" value={`₹${analyticsData.directRevenue.toLocaleString()}`} trend="Direct" icon={<User className="text-cyan-500" />} color="cyan" />
                 <StatCard label="Accepted Rate" value={`${analyticsData.total > 0 ? Math.round((analyticsData.accepted / analyticsData.total) * 100) : 0}%`} trend="Target 90%" icon={<CheckCircle className="text-emerald-400" />} color="emerald" />
               </div>
@@ -942,7 +942,7 @@ function VetDashboardInner({
                 </ChartWrapper>
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 flex flex-col justify-center gap-4 relative overflow-hidden group">
                   <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-emerald-500/10 blur-[80px] group-hover:bg-emerald-500/20 transition-all duration-500"></div>
-                  <h3 className="text-3xl font-black tracking-tight text-white">System Health</h3>
+                  <h3 className="text-2xl font-bold tracking-tighter text-white">System Health</h3>
                   <p className="text-white/50 text-sm font-medium leading-relaxed max-w-sm">The consultation engine is operating at optimal capacity. Patient engagement remains high with a {analyticsData.avgRating} average rating across {analyticsData.totalReviews} transmissions.</p>
                   <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-max">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -1010,13 +1010,13 @@ function VetDashboardInner({
                 <div className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 flex flex-col justify-between gap-6 relative overflow-hidden group">
                   <div className="absolute -right-20 -bottom-20 w-48 h-48 bg-cyan-500/10 blur-[80px] group-hover:bg-cyan-500/20 transition-all duration-500"></div>
                   <div>
-                    <h3 className="text-3xl font-black tracking-tight text-white mb-2">Production Portal</h3>
-                    <p className="text-white/50 text-sm font-medium leading-relaxed max-w-sm">Your medical practice is operating at optimal capacity. Manage your appointments, communicate with patients, and track your revenue growth from this command center.</p>
+                    <h3 className="text-2xl font-bold tracking-tighter text-white mb-2">Production Portal</h3>
+                    <p className="text-white/40 text-sm font-medium leading-relaxed max-w-sm">Your medical practice is operating at optimal capacity. Manage your appointments, communicate with patients, and track your revenue growth from this command center.</p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
                         <TrendingUp size={20} />
                       </div>
                       <div>
@@ -1056,13 +1056,13 @@ function VetDashboardInner({
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0a] border border-white/10 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col md:flex-row"
+              className="relative w-full max-w-5xl max-h-[90vh] bg-[#0a0a0a] border border-white/10 rounded-[3rem]  overflow-hidden flex flex-col md:flex-row"
             >
               {/* Left Column: Patient Info & History */}
               <div className="w-full md:w-1/3 border-r border-white/5 bg-white/[0.01] flex flex-col h-full overflow-hidden">
                 <div className="p-8 border-b border-white/5 space-y-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5 shadow-xl shadow-cyan-500/10">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5">
                       <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                         {managingAppt.users?.avatar_url ? (
                           <Image src={managingAppt.users.avatar_url} alt="" width={64} height={64} className="object-cover" />
@@ -1140,7 +1140,7 @@ function VetDashboardInner({
                   </div>
                   <button
                     onClick={() => setManagingAppt(null)}
-                    className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/20 hover:text-white transition-all shadow-lg"
+                    className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/20 hover:text-white transition-all"
                   >
                     <XCircle size={20} />
                   </button>
@@ -1157,7 +1157,7 @@ function VetDashboardInner({
                       value={summaryInput}
                       onChange={e => setSummaryInput(e.target.value)}
                       placeholder="Enter detailed clinical notes, observations, and recommendations..."
-                      className="w-full h-32 bg-white/[0.03] border border-white/5 rounded-[1.5rem] p-4 text-xs text-white placeholder:text-white/10 focus:outline-none focus:border-orange-500/30 transition-all resize-none font-medium leading-relaxed"
+                      className="w-full h-32 bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-cyan-500/30 transition-all resize-none font-medium leading-relaxed"
                     />
                   </div>
 
@@ -1220,18 +1220,18 @@ function VetDashboardInner({
                   </div>
 
                   {/* Checkbox logic */}
-                  <div className="p-5 rounded-[1.5rem] bg-orange-500/5 border border-orange-500/10 flex items-center justify-between group hover:bg-orange-500/10 transition-all">
+                  <div className="p-5 rounded-2xl bg-cyan-500/5 border border-cyan-500/10 flex items-center justify-between group hover:bg-cyan-500/10 transition-all">
                     <div className="space-y-0.5">
-                      <p className="text-white font-black text-[10px] uppercase tracking-tight">First Physical Visit Completed</p>
-                      <p className="text-white/30 text-[8px] font-bold uppercase tracking-widest">Confirm the initial consultation has taken place</p>
+                      <p className="text-white font-semibold text-sm">First Physical Visit Completed</p>
+                      <p className="text-white/40 text-xs font-medium">Confirm the initial consultation has taken place</p>
                     </div>
                     <div
                       onClick={() => setIsFirstVisitDone(!isFirstVisitDone)}
-                      className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${isFirstVisitDone ? 'bg-orange-500 shadow-lg shadow-orange-500/20' : 'bg-white/10'}`}
+                      className={`w-10 h-5 rounded-full transition-all relative cursor-pointer ${isFirstVisitDone ? 'bg-cyan-500' : 'bg-white/10'}`}
                     >
                       <motion.div
                         animate={{ x: isFirstVisitDone ? 20 : 4 }}
-                        className="absolute top-1 w-3 h-3 rounded-full bg-white shadow-md"
+                        className="absolute top-1 w-3 h-3 rounded-full bg-white"
                       />
                     </div>
                   </div>
@@ -1241,7 +1241,7 @@ function VetDashboardInner({
                   <button
                     disabled={submittingNote || !summaryInput.trim()}
                     onClick={handleCompleteAppointment}
-                    className="w-full py-4 rounded-[1.5rem] bg-orange-500 text-black text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-orange-400 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:grayscale shadow-xl shadow-orange-500/20"
+                    className="w-full py-4 rounded-full bg-cyan-500 text-black text-sm font-bold flex items-center justify-center gap-3 hover:bg-cyan-400 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:grayscale"
                   >
                     {submittingNote ? (
                       <Loader2 className="animate-spin" size={16} />
@@ -1272,7 +1272,7 @@ function VetDashboardInner({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-              className="relative w-full max-w-md h-screen bg-[#0a0a0a] border-l border-white/10 p-8 md:p-10 shadow-2xl overflow-y-auto"
+              className="relative w-full max-w-md h-screen bg-[#0a0a0a] border-l border-white/10 p-8 md:p-10  overflow-y-auto"
             >
               <button
                 onClick={() => setSelectedAppt(null)}
@@ -1283,7 +1283,7 @@ function VetDashboardInner({
 
               {/* Patient avatar */}
               <div className="flex items-center gap-6 mb-10">
-                <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-emerald-600 p-0.5 shadow-2xl overflow-hidden flex-shrink-0">
+                <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-emerald-600 p-0.5  overflow-hidden flex-shrink-0">
                   {selectedAppt.users?.avatar_url ? (
                     <Image src={selectedAppt.users.avatar_url} alt="" width={80} height={80} className="w-full h-full object-cover rounded-[1.8rem]" />
                   ) : (
@@ -1402,7 +1402,7 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`relative w-full max-w-lg rounded-[2.5rem] ${cfg.glow} ${cfg.border} border p-12 text-center overflow-hidden bg-[#0a0a0a]/80 backdrop-blur-3xl shadow-2xl`}
+        className={`relative w-full max-w-lg rounded-[2.5rem] ${cfg.glow} ${cfg.border} border p-12 text-center overflow-hidden bg-[#0a0a0a]/80 backdrop-blur-3xl `}
       >
         <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent ${cfg.barColor} to-transparent opacity-60`} />
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.02] rounded-full -mr-20 -mt-20 blur-[80px]" />
@@ -1436,7 +1436,7 @@ export function KycPending({ status }: { status: 'pending' | 'rejected' | 'appro
 function ControlButton({ label, icon, color, onClick, count }: any) {
   const colors: any = {
     blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-    orange: "text-orange-500 bg-orange-500/10 border-orange-500/20",
+    orange: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
     emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     pink: "text-pink-500 bg-pink-500/10 border-pink-500/20",
     cyan: "text-cyan-500 bg-cyan-500/10 border-cyan-500/20"
@@ -1447,13 +1447,13 @@ function ControlButton({ label, icon, color, onClick, count }: any) {
       onClick={onClick}
       className="group relative bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-6 flex flex-col items-center gap-4 hover:border-white/10 hover:bg-white/[0.02] transition-all overflow-hidden"
     >
-      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${colors[color]} transition-transform group-hover:scale-110 shadow-lg`}>
+      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${colors[color]} transition-transform group-hover:scale-110`}>
         {React.cloneElement(icon, { size: 24 })}
       </div>
       <div className="text-center">
         <p className="text-white font-black text-[10px] uppercase tracking-widest">{label}</p>
         {count !== undefined && count > 0 && (
-          <p className="text-orange-500 text-[8px] font-black uppercase mt-1 animate-pulse">{count} NEW</p>
+          <p className="text-cyan-400 text-[8px] font-bold uppercase mt-1 animate-pulse">{count} NEW</p>
         )}
       </div>
       <ArrowRight size={14} className="absolute bottom-4 right-4 text-white/10 group-hover:text-white/30 transition-colors" />
@@ -1463,22 +1463,22 @@ function ControlButton({ label, icon, color, onClick, count }: any) {
 
 function StatCard({ label, value, trend, icon, color, alert }: any) {
   const colors: any = {
-    blue: "from-blue-500 to-indigo-600 shadow-blue-500/10",
-    orange: "from-orange-500 to-yellow-600 shadow-orange-500/10",
-    purple: "from-purple-500 to-pink-600 shadow-purple-500/10",
-    pink: "from-pink-500 to-rose-600 shadow-pink-500/10",
-    emerald: "from-emerald-500 to-teal-600 shadow-emerald-500/10",
-    cyan: "from-cyan-500 to-blue-500 shadow-cyan-500/10",
-    red: "from-red-500 to-rose-600 shadow-red-500/10",
+    blue: "from-blue-500 to-indigo-600",
+    orange: "from-cyan-500 to-blue-500",
+    purple: "from-purple-500 to-pink-600",
+    pink: "from-pink-500 to-rose-600",
+    emerald: "from-emerald-500 to-teal-600",
+    cyan: "from-cyan-500 to-blue-500",
+    red: "from-red-500 to-rose-600",
   };
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 space-y-6 group hover:border-white/10 transition-all shadow-2xl overflow-hidden relative"
+      className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-8 space-y-6 group hover:border-white/10 transition-all  overflow-hidden relative"
     >
       <div className="flex items-center justify-between relative z-10">
-        <div className={`w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform`}>
+        <div className={`w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-xl group-hover:scale-110 transition-transform`}>
           {icon}
         </div>
         <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${alert ? 'bg-red-500/20 text-red-500 border-red-500/30 animate-pulse' : 'bg-white/5 text-white/40 border-white/10'}`}>
@@ -1496,15 +1496,15 @@ function StatCard({ label, value, trend, icon, color, alert }: any) {
 
 function ChartWrapper({ title, subtitle, children, className }: any) {
   return (
-    <div className={`bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8 shadow-2xl space-y-6 flex flex-col ${className}`}>
+    <div className={`bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-8  space-y-6 flex flex-col ${className}`}>
       <div className="flex flex-col gap-1">
-        <h3 className="text-2xl font-black text-white tracking-tight uppercase flex items-center justify-between">
+        <h3 className="text-xl font-bold text-white tracking-tighter flex items-center justify-between">
           {title}
           <div className="w-5 h-5 flex items-center justify-center text-white/20">
             <ChevronRight size={20} className="-rotate-45" />
           </div>
         </h3>
-        <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">{subtitle}</p>
+        <p className="text-white/40 text-xs font-medium tracking-wide">{subtitle}</p>
       </div>
       <div className="w-full flex-1 min-h-[300px]">
         {children}

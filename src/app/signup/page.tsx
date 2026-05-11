@@ -222,7 +222,7 @@ function AuthContent() {
     <main className="min-h-screen lg:h-screen w-full bg-[#FF8A65] flex flex-col lg:overflow-hidden">
       {/* Brand Title */}
       <div className="pt-0 pb-3 mt-5 lg:pt-4 lg:pb-2 text-center flex-shrink-0">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
           PETZONEE
         </h1>
         <p className="mt-1 text-white/90 text-xs sm:text-sm"> Your Pets Trusted All-in-One Companion</p>
@@ -231,7 +231,7 @@ function AuthContent() {
       <div className="flex-1 flex flex-col lg:overflow-hidden px-4 lg:px-40">
         {/* Toggle */}
         <div className="mb-0 lg:mb-3 flex justify-center flex-shrink-0">
-          <div className="relative inline-flex rounded-full bg-white/30 p-1 shadow-lg">
+          <div className="relative inline-flex rounded-full bg-white/30 p-1">
             <button
               onClick={() => setMode('signup')}
               className={`relative z-10 rounded-full px-6 lg:px-6 py-1 lg:py-1.5 text-sm lg:text-base font-semibold transition-colors duration-200 ${isSignup ? 'text-[#FF8A65]' : 'text-white'
@@ -247,7 +247,7 @@ function AuthContent() {
               Signin
             </button>
             <motion.span
-              className="absolute inset-y-1 rounded-full bg-white shadow-md"
+              className="absolute inset-y-1 rounded-full bg-white"
               initial={false}
               animate={{
                 left: isSignup ? '4px' : '50%',
@@ -401,7 +401,7 @@ function LoginCard({
   return (
     <div className="mx-auto w-full h-full flex flex-col justify-start -mt-35 lg:-mt-10 lg:justify-center lg:pt-0 text-white px-4 py-6 lg:py-0">
       <div className="max-w-[500px] lg:max-w-[450px] mx-auto w-full">
-        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none">
           Sign in
         </h2>
         <p className="mb-5 lg:mb-6 text-center text-xs lg:text-sm opacity-90">Welcome back, sign in to continue</p>
@@ -421,7 +421,7 @@ function LoginCard({
 
           <button
             disabled={busy}
-            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {busy ? 'Signing in…' : 'Login'}
           </button>
@@ -453,7 +453,7 @@ function ForgotCard({
   return (
     <div className="mx-auto w-full h-full flex flex-col justify-start -mt-35 lg:-mt-10 lg:justify-center lg:pt-0 text-white px-4 py-6 lg:py-0">
       <div className="max-w-[500px] lg:max-w-[450px] mx-auto w-full">
-        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+        <h2 className="mb-2 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none">
           Reset Password
         </h2>
         <p className="mb-5 lg:mb-6 text-center text-xs lg:text-sm opacity-90">
@@ -464,7 +464,7 @@ function ForgotCard({
 
           <button
             disabled={busy}
-            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-md hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full rounded-3xl lg:rounded-3xl bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {busy ? 'Sending Link…' : 'Send Reset Link'}
           </button>
@@ -504,7 +504,7 @@ function RegisterCard({
   return (
     <div className="mx-auto w-full h-full flex flex-col justify-start lg:justify-center text-white overflow-y-auto lg:overflow-hidden px-0 lg:px-0 py-8 lg:py-0">
       <div className="max-w-[450px] mx-auto w-full">
-        <h2 className="mb-1 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none drop-shadow-md">
+        <h2 className="mb-1 text-center text-2xl lg:text-3xl xl:text-4xl font-extrabold leading-none">
           Sign up
         </h2>
         <p className="mb-3 lg:mb-4 text-center text-xs opacity-90">
@@ -513,7 +513,7 @@ function RegisterCard({
 
         {/* Role tabs */}
         <div className="mb-4 flex justify-center">
-          <div className="relative inline-flex rounded-full bg-white/30 p-1 shadow-lg">
+          <div className="relative inline-flex rounded-full bg-white/30 p-1">
             <button
               type="button"
               onClick={() => setRole('user')}
@@ -531,7 +531,7 @@ function RegisterCard({
               Veterinarian
             </button>
             <motion.span
-              className="absolute inset-y-1 rounded-full bg-white shadow-md"
+              className="absolute inset-y-1 rounded-full bg-white"
               initial={false}
               animate={{
                 left: role === 'user' ? '4px' : '50%',
@@ -553,7 +553,7 @@ function RegisterCard({
             <Input name="password" type="password" placeholder="Password *" />
             <button
               disabled={busy}
-              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-lg hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {busy ? 'Creating…' : 'Register'}
             </button>
@@ -583,12 +583,12 @@ function RegisterCard({
                 name="medical_pdf"
                 type="file"
                 accept="application/pdf"
-                className="w-full rounded-full border-0 bg-white px-4 py-2.5 text-xs lg:text-sm text-gray-600 shadow-md file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FF8A65] file:text-white hover:file:bg-[#ff7a50] file:cursor-pointer"
+                className="w-full rounded-full border-0 bg-white px-4 py-2.5 text-xs lg:text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FF8A65] file:text-white hover:file:bg-[#ff7a50] file:cursor-pointer"
               />
             </div>
             <button
               disabled={busy}
-              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white shadow-lg hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full rounded-full bg-[#0e2a36] py-2.5 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {busy ? 'Creating…' : 'Register as Vet'}
             </button>
@@ -627,7 +627,7 @@ function Input({
         name={name}
         type={isPassword && show ? 'text' : type}
         placeholder={placeholder}
-        className="w-full rounded-full border-0 bg-white px-4 lg:px-4 py-2.5 lg:py-3.5 text-xs lg:text-sm text-[#1b2b34] placeholder-[#9aa6ad] shadow-md focus:ring-2 focus:ring-white/50 focus:outline-none transition-shadow"
+        className="w-full rounded-full border-0 bg-white px-4 lg:px-4 py-2.5 lg:py-3.5 text-xs lg:text-sm text-[#1b2b34] placeholder-[#9aa6ad] focus:ring-2 focus:ring-white/50 focus:outline-none transition-shadow"
         required
         autoComplete={isPassword ? 'new-password' : 'on'}
       />

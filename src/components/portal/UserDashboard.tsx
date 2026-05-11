@@ -1,6 +1,8 @@
 'use client';
 import { Card, FeatureCard, AvatarPicker } from './shared/ui';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { PawPrint, Calendar, ShoppingBag, Bell, ShieldCheck, Crown, Zap, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -14,6 +16,7 @@ export default function UserDashboard({
   showMessage: (msg: string, type?: 'success' | 'error' | 'info') => void;
   onExploreMyPets: () => void;
 }) {
+  const router = useRouter();
   const [subscription, setSubscription] = useState<any>(null);
   const [loadingSub, setLoadingSub] = useState(true);
 
@@ -47,14 +50,14 @@ export default function UserDashboard({
   }, [meId]);
 
   return (
-    <div className="space-y-8 pb-10">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="space-y-6 pb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Welcome Card */}
-        <Card className="lg:col-span-2 relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-6 md:p-10 transition-all duration-500">
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent opacity-50" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full -mr-32 -mt-32 blur-[80px]" />
+        <Card className="lg:col-span-2 relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-10 md:p-14 flex flex-col justify-center transition-all duration-500">
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent opacity-30" />
 
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
             <div className="flex-shrink-0">
               <AvatarPicker
                 name={firstName}
@@ -65,74 +68,77 @@ export default function UserDashboard({
                 onUploaded={onAvatarChange}
               />
             </div>
-            <div className="flex-1 space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#FF8A65] mb-2">Member Portal</p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter uppercase leading-tight">
+            <div className="space-y-1 text-center md:text-left">
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FF8A70] mb-1">Member Portal</p>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tighter leading-tight">
                 Hello{firstName ? `, ${firstName}` : ''}
               </h2>
+              <p className="text-white/40 text-xs md:text-sm font-medium tracking-wide">
+                Manage your pet care and services with ease
+              </p>
             </div>
           </div>
         </Card>
 
         {/* Membership Plan Card */}
-        <Card className="relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-8 flex flex-col justify-between group">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-50" />
+        <Card className="relative overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-6 md:p-7 flex flex-col justify-between group">
+
 
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
-              <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
-                {subscription ? <Crown className="w-6 h-6 text-yellow-500" /> : <ShieldCheck className="w-6 h-6 text-white/40" />}
+              <div className="p-2.5 rounded-2xl bg-white/5 border border-white/10">
+                {subscription ? <Crown className="w-5 h-5 text-yellow-500" /> : <ShieldCheck className="w-5 h-5 text-white/40" />}
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
+              <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">
                 Current Plan
               </span>
             </div>
 
             {loadingSub ? (
               <div className="animate-pulse space-y-3">
-                <div className="h-8 w-3/4 bg-white/5 rounded-lg" />
-                <div className="h-4 w-1/2 bg-white/5 rounded-lg" />
+                <div className="h-6 w-3/4 bg-white/5 rounded-lg" />
+                <div className="h-3 w-1/2 bg-white/5 rounded-lg" />
               </div>
             ) : subscription ? (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-3xl font-black text-white tracking-tighter uppercase mb-1">
+                  <h3 className="text-2xl font-bold text-white tracking-tighter uppercase mb-1">
                     {subscription.plan_name}
                   </h3>
-                  <p className="text-orange-500 text-xs font-bold uppercase tracking-widest">Active Member</p>
+                  <p className="text-[#FF8A70] text-[10px] font-bold uppercase tracking-widest">Active Member</p>
                 </div>
                 <div className="flex items-center gap-4 py-4 border-y border-white/5">
                   <div className="flex-1">
                     <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Benefit</p>
-                    <p className="text-white text-sm font-bold">
+                    <p className="text-white text-[11px] font-bold">
                       {subscription.plan_name === 'Premium Care' ? 'Unlimited' : subscription.plan_name === 'Complete Care' ? '4 Free' : '1+1 Free'} Consults
                     </p>
                   </div>
                   <div className="h-8 w-[1px] bg-white/5" />
                   <div className="flex-1">
                     <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Discount</p>
-                    <p className="text-white text-sm font-bold">
+                    <p className="text-white text-[11px] font-bold">
                       {subscription.plan_name === 'Premium Care' ? '25%' : subscription.plan_name === 'Complete Care' ? '15%' : '5%'} Off Shop
                     </p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <h3 className="text-3xl font-black text-white/20 tracking-tighter uppercase">No Active Plan</h3>
-                <p className="text-sm text-gray-400 font-medium">Unlock premium benefits, free consultations, and shop discounts.</p>
-                <button
-                  onClick={() => window.location.href = '/vet'}
-                  className="w-full mt-4 py-3 rounded-xl bg-orange-500 text-white font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-colors"
+              <div className="space-y-3">
+                <h3 className="text-2xl font-bold text-white/20 tracking-tighter uppercase">No Active Plan</h3>
+                <p className="text-xs text-white/40 font-medium leading-relaxed">Unlock premium benefits, free consultations, and shop discounts.</p>
+                <Link
+                  href="/vet"
+                  className="w-full mt-2 py-3.5 rounded-2xl bg-[#FF8A70] text-white font-bold uppercase tracking-widest text-[10px] hover:bg-[#ff7050] transition-all active:scale-[0.98] flex items-center justify-center"
                 >
                   View Plans
-                </button>
+                </Link>
               </div>
             )}
           </div>
 
           {subscription && (
-            <div className="relative z-10 mt-6 pt-4 flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest">
+            <div className="relative z-10 mt-6 pt-4 flex items-center gap-2 text-[10px] font-bold text-white/20 uppercase tracking-widest">
               <Clock className="w-3 h-3" />
               Renews: {new Date(subscription.end_date).toLocaleDateString()}
             </div>
@@ -140,7 +146,7 @@ export default function UserDashboard({
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <FeatureCard
           title="Pet Profiles"
           description="Create and manage detailed profiles for your furry friends with daily photos and activity feed."
@@ -148,6 +154,7 @@ export default function UserDashboard({
           gradient="from-orange-500 to-yellow-500"
           action="Manage Pets"
           onClick={onExploreMyPets}
+          delay={0.1}
         />
         <FeatureCard
           title="Book Appointments"
@@ -156,6 +163,7 @@ export default function UserDashboard({
           gradient="from-cyan-500 to-blue-500"
           action="Book Now"
           href="/appointments/new"
+          delay={0.2}
         />
         <FeatureCard
           title="Shop Products"
@@ -164,15 +172,16 @@ export default function UserDashboard({
           gradient="from-rose-500 to-fuchsia-600"
           action="Shop Now"
           href="/products"
+          delay={0.3}
         />
       </div>
 
-      <Card className="bg-[#0a0a0a]/80 border border-white/5 backdrop-blur-3xl p-10 mt-10">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 rounded-2xl bg-orange-500/10 text-orange-500 border border-orange-500/20">
-            <Bell className="w-6 h-6" />
+      <Card className="bg-[#0a0a0a]/80 border border-white/5 backdrop-blur-3xl p-6 mt-6">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 rounded-2xl bg-[#FF8A70]/10 text-[#FF8A70] border border-[#FF8A70]/20">
+            <Bell className="w-5 h-5" />
           </div>
-          <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Recent Activity</h3>
+          <h3 className="text-xl font-bold uppercase tracking-tighter text-white">Recent Activity</h3>
         </div>
 
         <div className="space-y-4">

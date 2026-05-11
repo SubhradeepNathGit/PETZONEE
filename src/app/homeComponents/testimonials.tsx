@@ -110,7 +110,7 @@ export default function TestimonialSection() {
           {testimonials.map((t) => (
             <SwiperSlide key={t.id}>
               {/* Card */}
-              <div className="group relative overflow-hidden rounded-2xl shadow-lg transition-shadow duration-500 hover:shadow-2xl">
+              <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
                 {/* Image with reverse zoom */}
                 <img
                   src={t.img}
@@ -124,7 +124,7 @@ export default function TestimonialSection() {
                 {/* Play Button */}
                 <button
                   onClick={() => handleOpenVideo(t.video)}
-                  className="absolute top-4 left-4 rounded-full bg-white/20 backdrop-blur-md p-3 text-orange-500 shadow-lg ring-1 ring-orange-400 transition-all hover:bg-orange-500 hover:text-white hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="absolute top-4 left-4 rounded-full bg-white/20 backdrop-blur-md p-3 text-orange-500 ring-1 ring-orange-400 transition-all hover:bg-orange-500 hover:text-white hover:scale-110 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   aria-label="Play testimonial video"
                 >
                   <Play className="h-6 w-6" />
@@ -168,7 +168,7 @@ export default function TestimonialSection() {
               {/* Close Button */}
               <button
                 onClick={() => setActiveVideo(null)}
-                className="absolute -right-8 -top-8 rounded-full bg-orange-500 p-3 text-white shadow-md transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="absolute -right-8 -top-8 rounded-full bg-orange-500 p-3 text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
                 aria-label="Close video"
               >
                 <X className="h-6 w-6" />
