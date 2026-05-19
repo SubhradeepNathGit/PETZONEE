@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle2, Home, Printer, Gift, ArrowLeft, Package, Crown } from "lucide-react";
@@ -323,22 +323,86 @@ const PrintInvoice = ({ order }: { order: LastOrder | null }) => {
 
 // Main Component
 export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><p>Loading order details...</p></div>}>
+      <SuccessContent />
+    </Suspense>
+  );
+}
+
+function SuccessContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderNumber = searchParams.get('order');
+  
   const [order, setOrder] = useState<LastOrder | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const raw = localStorage.getItem("last_order");
-    if (raw) {
-      try { setOrder(JSON.parse(raw)); } catch { }
-    }
-  }, []);
+    const fetchOrder = async () => {
+      if (orderNumber) {
+        // We import supabase dynamically or globally. Since it might not be imported, let's use the project's setup.
+        // Assuming supabase is imported at the top. I need to make sure supabase is imported.
+        // I will add the import at the top of the file separately.
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(
+           process.env.NEXT_PUBLIC_SUPABASE_URL || '', 
+           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+        );
+        
+        const { data: orderData, error } = await supabase
+          .from('orders')
+          .select(`*, order_items(*)`)
+          .eq('order_number', orderNumber)
+          .single();
+
+        if (orderData && !error) {
+          const formattedOrder: LastOrder = {
+            orderId: orderData.order_number,
+            when: orderData.created_at || new Date().toISOString(),
+            items: orderData.order_items.map((it: any) => ({
+              id: it.id,
+              name: it.product_name,
+              price: it.unit_price,
+              quantity: it.quantity,
+              image_url: it.image_url,
+              product_id: it.product_id
+            })),
+            summary: orderData.summary || {
+               subtotal: orderData.total_amount, sgst: 0, cgst: 0, totalTax: 0, deliveryFee: 0, total: orderData.total_amount
+            },
+            contact: orderData.contact_details || { email: '', phone: '' },
+            address: orderData.shipping_address || { name: '', line1: '', city: '', state: '', pincode: '' },
+            delivery: orderData.delivery_type || 'standard',
+            payMode: orderData.payment_method || 'card'
+          };
+          setOrder(formattedOrder);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      const raw = localStorage.getItem("last_order");
+      if (raw) {
+        try { setOrder(JSON.parse(raw)); } catch { }
+      }
+      setLoading(false);
+    };
+
+    fetchOrder();
+  }, [orderNumber]);
 
   const itemCount = useMemo(() => order?.items?.reduce((s, it) => s + it.quantity, 0) ?? 0, [order]);
-  const isPlanOrder = useMemo(() => order?.items?.some(it => it.product_id === "PLAN"), [order]);
+  const isPlanOrder = useMemo(() => order?.items?.some(it => it.product_id === "PLAN" || !it.product_id), [order]);
 
   const handlePrint = () => {
     window.print();
   };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50"><p>Loading order details...</p></div>;
+  }
+
 
   return (
     <div className="relative min-h-screen bg-gray-50 pb-20 print:bg-white print:pb-0 print:h-auto print:min-h-0 print:overflow-visible">

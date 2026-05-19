@@ -437,8 +437,9 @@ export default function BookAppointmentPage() {
       <ToastContainer position="top-right" autoClose={3500} theme="dark"
         toastStyle={{ background: '#131927', borderRadius: '12px', border: '1px solid rgba(95,151,201,0.2)' }} />
 
-      {/* ── Header ── */}
-      <div className="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 mb-8 overflow-hidden">
+      {/* === Hero Section (Standardized) === */}
+      <section className="relative h-[45vh] min-h-[300px] flex items-center justify-center overflow-hidden">
+        {/* Hero Image */}
         <Image
           src="/images/statbg15.jpg"
           alt="Book Appointment"
@@ -446,30 +447,39 @@ export default function BookAppointmentPage() {
           priority
           sizes="100vw"
           quality={90}
-          className="object-cover"
+          className="object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 scale-105"
         />
-        <div className="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-center px-4 z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 text-center px-4 max-w-4xl flex flex-col items-center"
+        >
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-xl bg-[#5F97C9]/20 flex items-center justify-center border border-[#5F97C9]/20">
               <Stethoscope size={16} className="text-[#5F97C9]" />
             </div>
             <span className="text-xs font-bold text-[#5F97C9] uppercase tracking-[0.2em]">Veterinary Care</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Book an <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5F97C9] to-[#93C5FD]">Appointment</span>
+          
+          <h1 className="text-2xl md:text-4xl font-sans font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+            Book an <span className="text-[#5F97C9]">Appointment</span>
           </h1>
+
           <div className="flex items-center justify-center gap-2 mt-4 overflow-hidden">
-            <Link
-              href="/"
-              className="text-white/40 hover:text-white transition-colors duration-200 font-bold text-[10px] sm:text-xs uppercase tracking-widest"
+            <button
+              onClick={() => router.push('/')}
+              className="text-white/40 hover:text-white transition-colors duration-200 font-bold text-xs sm:text-sm uppercase tracking-widest cursor-pointer"
             >
               Home
-            </Link>
-            <span className="text-white/10 text-[10px]">/</span>
-            <p className="text-[10px] sm:text-xs text-[#5F97C9] font-bold uppercase tracking-widest">Appointments</p>
+            </button>
+            <span className="text-white/20 text-xs">/</span>
+            <p className="text-xs sm:text-sm text-[#5F97C9] font-bold uppercase tracking-widest">Appointments</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
 
       {/* ── Main Grid ── */}

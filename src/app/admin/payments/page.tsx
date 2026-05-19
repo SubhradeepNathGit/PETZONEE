@@ -206,10 +206,10 @@ export default function VetPaymentsPage() {
                                     >
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-black p-0.5 border border-white/5">
-                                                    <div className="w-full h-full rounded-[0.6rem] overflow-hidden bg-black flex items-center justify-center">
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-800 to-black p-0.5 border border-white/5">
+                                                    <div className="w-full h-full rounded-full overflow-hidden bg-black flex items-center justify-center">
                                                         {appt.veterinarian?.avatar_url ? (
-                                                            <Image src={appt.veterinarian.avatar_url} alt="" width={48} height={48} className="object-cover" />
+                                                            <Image src={appt.veterinarian.avatar_url} alt="" width={48} height={48} className="object-cover rounded-full" />
                                                         ) : (
                                                             <Stethoscope size={20} className="text-white/10" />
                                                         )}

@@ -174,11 +174,11 @@ export default function AdminKycPage() {
                                         {/* Avatar & Basic Info */}
                                         <div className="flex items-start gap-6 flex-1">
                                             <div className="relative flex-shrink-0">
-                                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-white/10 to-transparent p-1 shadow-2xl relative z-10 overflow-hidden">
+                                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/10 to-transparent p-1 shadow-2xl relative z-10 overflow-hidden">
                                                     {vet.avatar_url ? (
-                                                        <Image src={vet.avatar_url} alt={vet.name} width={96} height={96} className="w-full h-full object-cover rounded-[1.8rem]" />
+                                                        <Image src={vet.avatar_url} alt={vet.name} width={96} height={96} className="w-full h-full object-cover rounded-full" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-white/10 bg-white/5 rounded-[1.8rem]">
+                                                        <div className="w-full h-full flex items-center justify-center text-white/10 bg-white/5 rounded-full">
                                                             <Stethoscope size={32} />
                                                         </div>
                                                     )}

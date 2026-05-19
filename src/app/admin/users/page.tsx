@@ -174,7 +174,7 @@ export default function AdminUsersPage() {
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center border border-white/10 overflow-hidden shadow-lg">
                                                     {u.avatar_url ? (
-                                                        <Image src={u.avatar_url} alt={u.first_name} width={48} height={48} className="object-cover" />
+                                                        <Image src={u.avatar_url} alt={u.first_name} width={48} height={48} className="object-cover rounded-full" />
                                                     ) : (
                                                         <User size={20} className="text-blue-500" />
                                                     )}
@@ -236,9 +236,9 @@ export default function AdminUsersPage() {
                             </button>
 
                             <div className="flex items-center gap-8 mb-12">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-500 to-indigo-600 p-1 shadow-2xl overflow-hidden">
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 p-1 shadow-2xl overflow-hidden">
                                     {selectedUser.avatar_url ? (
-                                        <Image src={selectedUser.avatar_url} alt={selectedUser.first_name} width={96} height={96} className="w-full h-full object-cover rounded-[1.8rem]" />
+                                        <Image src={selectedUser.avatar_url} alt={selectedUser.first_name} width={96} height={96} className="w-full h-full object-cover rounded-full" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-white/20"><User size={40} /></div>
                                     )}

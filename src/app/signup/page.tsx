@@ -74,7 +74,8 @@ function AuthContent() {
 
     const user = data.user;
     const userRole = (user?.user_metadata as { role?: string })?.role;
-    router.replace('/dashboard');
+    const redirectTo = searchParams.get('redirect') || '/dashboard';
+    router.replace(redirectTo);
   }
 
   async function onSignupUser(e: React.FormEvent<HTMLFormElement>) {

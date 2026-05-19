@@ -45,6 +45,23 @@ const Navbar = () => {
     setUnreadCount(count || 0);
   }, []);
 
+  const fetchLocalCount = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      const localCartRaw = localStorage.getItem('local_cart');
+      if (localCartRaw) {
+        try {
+          const localCart = JSON.parse(localCartRaw);
+          const count = localCart.reduce((sum: number, r: any) => sum + Number(r.quantity || 0), 0);
+          setCartCount(count);
+        } catch {
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
+      }
+    }
+  }, []);
+
   // Initialize and handle auth changes
   useEffect(() => {
     let cleanup: (() => void)[] = [];
@@ -55,6 +72,50 @@ const Navbar = () => {
 
       if (user) {
         setUserId(user.id);
+        
+        // Merge guest cart to DB if any
+        if (typeof window !== 'undefined') {
+          const localCartRaw = localStorage.getItem('local_cart');
+          if (localCartRaw) {
+            try {
+              const localCart = JSON.parse(localCartRaw);
+              if (Array.isArray(localCart) && localCart.length > 0) {
+                for (const item of localCart) {
+                  // Check if item already exists in DB cart
+                  const { data: existing } = await supabase
+                    .from('cart')
+                    .select('id, quantity')
+                    .eq('user_id', user.id)
+                    .eq('product_id', item.product_id)
+                    .single();
+
+                  if (existing) {
+                    const newQty = Math.min(5, existing.quantity + item.quantity);
+                    await supabase
+                      .from('cart')
+                      .update({ quantity: newQty })
+                      .eq('id', existing.id)
+                      .eq('user_id', user.id);
+                  } else {
+                    await supabase.from('cart').insert({
+                      user_id: user.id,
+                      product_id: item.product_id,
+                      name: item.name,
+                      price: item.price,
+                      quantity: item.quantity,
+                      image_url: item.image_url,
+                      inserted_at: item.inserted_at,
+                    });
+                  }
+                }
+              }
+              localStorage.removeItem('local_cart');
+            } catch (e) {
+              console.error("Error merging cart:", e);
+            }
+          }
+        }
+
         const { data: profile } = await supabase.from('users').select('first_name').eq('id', user.id).single();
         setFirstName(profile?.first_name || 'Friend');
         fetchCounts(user.id);
@@ -84,13 +145,19 @@ const Navbar = () => {
       } else {
         setUserId(null);
         setFirstName('Guest');
-        setCartCount(0);
+        fetchLocalCount();
         setUnreadCount(0);
       }
       setIsLoading(false);
     };
 
     initUser();
+
+    // Listen for guest cart updates
+    if (typeof window !== "undefined") {
+      window.addEventListener("cart-updated", fetchLocalCount);
+      cleanup.push(() => window.removeEventListener("cart-updated", fetchLocalCount));
+    }
 
     // Auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -101,8 +168,9 @@ const Navbar = () => {
       } else if (event === 'SIGNED_OUT') {
         setUserId(null);
         setFirstName('Guest');
-        setCartCount(0);
+        fetchLocalCount();
         setUnreadCount(0);
+        setDropdownOpen(false);
         setDropdownOpen(false);
         setMobileDropdownOpen(false);
         setIsMobileMenuOpen(false);
@@ -115,7 +183,7 @@ const Navbar = () => {
       subscription.unsubscribe();
       cleanup.forEach(fn => fn());
     };
-  }, [fetchCounts]);
+  }, [fetchCounts, fetchLocalCount]);
 
   const handleSignOut = async () => {
     setDropdownOpen(false);
@@ -248,10 +316,10 @@ const Navbar = () => {
 
             {/* Desktop Right Side */}
             <div className="hidden md:flex items-center gap-4 z-50 relative">
+              <CartIcon />
               {!isLoading && userId ? (
                 <>
                   <NotificationIcon />
-                  <CartIcon />
                   <UserDropdown />
                 </>
               ) : !isLoading && (
@@ -298,11 +366,11 @@ const Navbar = () => {
                 className="lg:hidden bg-black/20 backdrop-blur-md rounded-lg mt-2"
               >
                 <div className="px-4 py-6 space-y-4">
-                  {!isLoading && userId && (
+                  {!isLoading && (
                     <div className="flex items-center gap-4">
-                      <NotificationIcon onClick={() => setIsMobileMenuOpen(false)} />
+                      {userId && <NotificationIcon onClick={() => setIsMobileMenuOpen(false)} />}
                       <CartIcon onClick={() => setIsMobileMenuOpen(false)} />
-                      <UserDropdown isMobile />
+                      {userId && <UserDropdown isMobile />}
                     </div>
                   )}
 

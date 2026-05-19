@@ -144,7 +144,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-black text-white font-[var(--font-inter)] selection:bg-[#FF8A70]/30">
       {/* === Hero Section (Standardized) === */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[45vh] min-h-[300px] flex items-center justify-center overflow-hidden">
         {/* Hero Image */}
 
         <Image
@@ -163,7 +163,7 @@ export default function ProductsPage() {
           className="relative z-10 text-center px-4 max-w-4xl"
         >
           <div className="space-y-2 mb-6">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+            <h1 className="text-2xl md:text-4xl font-sans font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
               Our <span className="text-[#FF8A65]">Shop</span>
             </h1>
             <p className="text-white/40 text-xs md:text-sm font-medium uppercase tracking-[0.3em]">

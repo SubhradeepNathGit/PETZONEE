@@ -401,7 +401,7 @@ export default function AdminMessagingHub() {
                                     <img
                                         src={conv.users?.avatar_url || `https://ui-avatars.com/api/?name=${conv.guest_name || 'G'}&background=f97316&color=000&bold=true`}
                                         alt="User"
-                                        className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                                        className="w-full h-full object-cover rounded-full grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
                                     />
                                 </div>
                                 {conv.status === 'active' && (

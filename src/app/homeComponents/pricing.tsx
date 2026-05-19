@@ -78,7 +78,9 @@ export default function PricingSection() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSelectPlan = (plan: any) => {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleSelectPlan = async (plan: any) => {
     if (!isSignedIn) {
       router.push("/signup?mode=signin");
       return;
@@ -103,16 +105,64 @@ export default function PricingSection() {
 
     const planPeriod = isYearly ? "year" : "month";
 
-    // Encode plan details to pass through URL params
-    const params = new URLSearchParams({
-      plan: plan.title,
-      price: planPrice.toString(),
-      period: planPeriod,
-      img: plan.img,
-      isUpgrade: isUpgrade.toString()
-    });
+    setLoadingPlan(plan.title);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const userId = session?.user?.id;
 
-    router.push(`/checkout?${params.toString()}`);
+      if (!userId) {
+        throw new Error("User session not found. Please log in again.");
+      }
+
+      const payload = {
+        userId,
+        items: [],
+        total: planPrice,
+        subtotal: planPrice,
+        contact: {},
+        addr: {},
+        delivery: "standard",
+        payMode: "stripe",
+        isPlanCheckout: true,
+        planDetails: {
+          name: plan.title,
+          price: planPrice,
+          period: planPeriod
+        },
+        deliveryFee: 0,
+        totalTax: 0,
+        promoDiscount: 0,
+        subDiscount: 0,
+        promoCode: null
+      };
+
+      const response = await fetch('/api/checkout/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initialize checkout');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned from server.");
+      }
+    } catch (err: any) {
+      console.error("Plan checkout error:", err);
+      alert(err.message || "An error occurred during checkout. Please try again.");
+    } finally {
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -196,7 +246,7 @@ export default function PricingSection() {
               {/* Purchase Button */}
               <button
                 onClick={() => handleSelectPlan(plan)}
-                disabled={currentSub?.plan_name === plan.title || (currentSub && ["Essential Care", "Complete Care", "Premium Care"].indexOf(plan.title) <= ["Essential Care", "Complete Care", "Premium Care"].indexOf(currentSub.plan_name))}
+                disabled={loadingPlan !== null || currentSub?.plan_name === plan.title || (currentSub && ["Essential Care", "Complete Care", "Premium Care"].indexOf(plan.title) <= ["Essential Care", "Complete Care", "Premium Care"].indexOf(currentSub.plan_name))}
                 className={`mt-6 w-full py-3 rounded-xl font-semibold 
              transition-transform duration-300 hover:scale-105 active:scale-95 
              ${currentSub?.plan_name === plan.title || (currentSub && ["Essential Care", "Complete Care", "Premium Care"].indexOf(plan.title) <= ["Essential Care", "Complete Care", "Premium Care"].indexOf(currentSub.plan_name))
@@ -204,7 +254,7 @@ export default function PricingSection() {
                     : "bg-[#FF8A65] text-white group-hover:bg-white group-hover:text-[#FF8A65]"
                   }`}
               >
-                {currentSub?.plan_name === plan.title ? "Current Plan" : "Select Plan"}
+                {loadingPlan === plan.title ? "Redirecting..." : currentSub?.plan_name === plan.title ? "Current Plan" : "Select Plan"}
               </button>
 
             </div>

@@ -77,7 +77,38 @@ export default function ProductDetailsClient({
 
             const { data: userData, error: userErr } = await supabase.auth.getUser();
             if (userErr || !userData?.user) {
-                setMsg("Please sign in to add items to your cart.");
+                // GUEST CART: Add to localStorage
+                if (typeof window !== "undefined") {
+                    const localCartRaw = localStorage.getItem("local_cart");
+                    let localCart = localCartRaw ? JSON.parse(localCartRaw) : [];
+                    
+                    const existingIdx = localCart.findIndex((it: any) => it.product_id === product.id);
+                    if (existingIdx > -1) {
+                        if (localCart[existingIdx].quantity >= 5) {
+                            setMsg("Limit reached: Maximum 5 units allowed.");
+                            setOpen(true);
+                            return;
+                        }
+                        localCart[existingIdx].quantity = Math.min(5, localCart[existingIdx].quantity + quantity);
+                        setMsg("Updated quantity in Cart");
+                    } else {
+                        localCart.push({
+                            id: `local-${Date.now()}`,
+                            user_id: "local",
+                            product_id: product.id,
+                            name: product.name,
+                            price: Number(product.discount_price ?? 0),
+                            quantity: Math.min(5, quantity),
+                            image_url: product.img_1 ?? null,
+                            inserted_at: new Date().toISOString(),
+                        });
+                        setMsg("Added to Cart");
+                    }
+                    localStorage.setItem("local_cart", JSON.stringify(localCart));
+                    
+                    // Dispatch a custom event to notify Navbar/other components that the cart count changed
+                    window.dispatchEvent(new Event("cart-updated"));
+                }
                 setOpen(true);
                 return;
             }

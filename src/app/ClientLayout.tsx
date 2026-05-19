@@ -168,7 +168,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
 
   return (
-    <div className={`relative min-h-screen ${!scrollUnlock ? "h-screen overflow-hidden" : "overflow-x-hidden"} ${pathname === "/cart" || pathname.startsWith("/checkout") ? "bg-white" : ""}`}>
+    <div className={`relative min-h-screen ${!scrollUnlock ? "h-screen overflow-hidden" : "overflow-x-hidden"} ${pathname.startsWith("/checkout") ? "bg-white" : ""}`}>
 
       {/* Put ScrollHandler in Suspense to isolate useSearchParams dependency */}
       <Suspense fallback={null}>

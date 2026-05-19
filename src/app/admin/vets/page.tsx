@@ -170,7 +170,7 @@ export default function AdminVetsPage() {
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500/20 to-emerald-500/20 flex items-center justify-center border border-white/10 overflow-hidden shadow-lg">
                                                     {v.avatar_url ? (
-                                                        <Image src={v.avatar_url} alt={v.name} width={48} height={48} className="object-cover" />
+                                                        <Image src={v.avatar_url} alt={v.name} width={48} height={48} className="object-cover rounded-full" />
                                                     ) : (
                                                         <Stethoscope size={20} className="text-teal-500" />
                                                     )}
@@ -232,9 +232,9 @@ export default function AdminVetsPage() {
                             </button>
 
                             <div className="flex items-center gap-8 mb-12">
-                                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-teal-500 to-emerald-600 p-1 shadow-2xl overflow-hidden">
+                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 p-1 shadow-2xl overflow-hidden">
                                     {selectedVet.avatar_url ? (
-                                        <Image src={selectedVet.avatar_url} alt={selectedVet.name} width={96} height={96} className="w-full h-full object-cover rounded-[1.8rem]" />
+                                        <Image src={selectedVet.avatar_url} alt={selectedVet.name} width={96} height={96} className="w-full h-full object-cover rounded-full" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-white/20"><Stethoscope size={40} /></div>
                                     )}

@@ -146,12 +146,13 @@ const ServiceMarquee = () => {
 };
 
 /* ---------- Flip Pricing Card ---------- */
-const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub }: {
+const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub, loadingPlan }: {
   plan: typeof plans[0];
   index: number;
   isYearly: boolean;
   onSelect: () => void;
   currentSub: any;
+  loadingPlan: string | null;
 }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -258,7 +259,7 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub }: {
         {/* CTA Button */}
         <button
           onClick={onSelect}
-          disabled={isCurrentPlan || !isHigherTier}
+          disabled={loadingPlan !== null || isCurrentPlan || !isHigherTier}
           className={`w-full py-3.5 rounded-2xl font-bold text-sm transition-all duration-300 active:scale-96 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isCurrentPlan
             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
             : !isHigherTier && currentSub
@@ -268,7 +269,7 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub }: {
                 : "bg-white/10 text-white hover:bg-white/20 border border-white/10 focus:ring-white/20"
             }`}
         >
-          {isCurrentPlan ? "Current Plan" : proratedPrice !== null ? "Upgrade Now" : "Get Started"}
+          {loadingPlan === plan.title ? "Redirecting..." : isCurrentPlan ? "Current Plan" : proratedPrice !== null ? "Upgrade Now" : "Get Started"}
         </button>
       </div>
     </motion.div>
@@ -304,7 +305,9 @@ const PricingSection = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSelectPlan = (plan: typeof plans[0]) => {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleSelectPlan = async (plan: typeof plans[0]) => {
     if (!isSignedIn) { router.push("/signup?mode=signin"); return; }
 
     // Calculate final price (full or prorated)
@@ -326,13 +329,66 @@ const PricingSection = () => {
       }
     }
 
-    const params = new URLSearchParams({
-      plan: plan.title,
-      price: finalPrice.toString(),
-      period: isYearly ? "year" : "month",
-      isUpgrade: isUpgrade.toString()
-    });
-    router.push(`/checkout?${params.toString()}`);
+    const planPeriod = isYearly ? "year" : "month";
+
+    setLoadingPlan(plan.title);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const userId = session?.user?.id;
+
+      if (!userId) {
+        throw new Error("User session not found. Please log in again.");
+      }
+
+      const payload = {
+        userId,
+        items: [],
+        total: finalPrice,
+        subtotal: finalPrice,
+        contact: {},
+        addr: {},
+        delivery: "standard",
+        payMode: "stripe",
+        isPlanCheckout: true,
+        planDetails: {
+          name: plan.title,
+          price: finalPrice,
+          period: planPeriod
+        },
+        deliveryFee: 0,
+        totalTax: 0,
+        promoDiscount: 0,
+        subDiscount: 0,
+        promoCode: null
+      };
+
+      const response = await fetch('/api/checkout/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initialize checkout');
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned from server.");
+      }
+    } catch (err: any) {
+      console.error("Plan checkout error:", err);
+      alert(err.message || "An error occurred during checkout. Please try again.");
+    } finally {
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -384,6 +440,7 @@ const PricingSection = () => {
               isYearly={isYearly}
               onSelect={() => handleSelectPlan(plan)}
               currentSub={currentSub}
+              loadingPlan={loadingPlan}
             />
           ))}
         </div>
@@ -418,7 +475,7 @@ const VeterinaryServices: React.FC = () => {
     <div className="min-h-screen bg-black text-white font-[var(--font-inter)] selection:bg-[#FF8A70]/30">
 
       {/* === Hero Section (Standardized) === */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[45vh] min-h-[300px] flex items-center justify-center overflow-hidden">
         {/* Hero Image */}
 
         <Image
@@ -437,7 +494,7 @@ const VeterinaryServices: React.FC = () => {
           className="relative z-10 text-center px-4 max-w-4xl"
         >
           <div className="space-y-2 mb-6">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
+            <h1 className="text-2xl md:text-4xl font-sans font-extrabold tracking-tighter bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent uppercase">
               Veterinary <span className="text-[#5F97C9]">Support</span>
             </h1>
             <p className="text-white/40 text-xs md:text-sm font-medium uppercase tracking-[0.3em]">

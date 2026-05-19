@@ -23,11 +23,13 @@ import {
   PlusCircle, 
   Headphones, 
   Mail, 
-  Trash2 
+  Trash2,
+  Loader2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import React from "react";
+import { toast } from "react-toastify";
 
 type SidebarProps = {
   role: "admin" | "vet" | "user";
@@ -69,14 +71,22 @@ function SidebarInner({ role, name, avatarUrl, onItemClick }: SidebarProps) {
     return sp ? `${pathname}?${sp}` : pathname;
   }, [pathname, searchParams]);
 
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      toast.success("Successfully logged out");
       onItemClick?.();
       router.push("/signup");
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(err.message || "Logout failed");
       console.error("Logout failed:", err);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -151,10 +161,17 @@ function SidebarInner({ role, name, avatarUrl, onItemClick }: SidebarProps) {
         <div className="px-4 mt-8">
           <button
             onClick={handleLogout}
-            className="group w-full flex items-center justify-center gap-3 text-white/40 hover:text-white font-bold py-4 rounded-2xl transition-all duration-300 bg-white/[0.03] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20"
+            disabled={isLoggingOut}
+            className="group w-full flex items-center justify-center gap-3 text-white/40 hover:text-white font-bold py-2.5 rounded-2xl transition-all duration-300 bg-white/[0.03] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LogOut className="w-5 h-5 transition-transform group-hover:rotate-12 group-hover:text-red-500" />
-            <span className="text-sm tracking-tight">Sign Out</span>
+            {isLoggingOut ? (
+              <Loader2 className="w-5 h-5 animate-spin text-red-500" />
+            ) : (
+              <LogOut className="w-5 h-5 transition-transform group-hover:rotate-12 group-hover:text-red-500" />
+            )}
+            <span className="text-sm tracking-tight">
+              {isLoggingOut ? "Signing Out..." : "Sign Out"}
+            </span>
           </button>
         </div>
       </div>
