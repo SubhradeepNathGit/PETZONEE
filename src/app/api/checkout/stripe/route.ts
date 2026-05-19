@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_for_build');
 
 // Since we are in an API route, we need a service role key to insert securely if needed, 
 // but we can just use the user's token or anon key if RLS allows it.
 export async function POST(req: Request) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        console.error("STRIPE_SECRET_KEY is missing from environment variables.");
+        return NextResponse.json({ error: 'Stripe configuration is missing' }, { status: 500 });
+    }
+
     try {
         const authHeader = req.headers.get('Authorization');
         

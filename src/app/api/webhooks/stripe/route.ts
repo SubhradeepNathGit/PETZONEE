@@ -2,17 +2,28 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_for_build');
 
 export async function POST(req: Request) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        console.error("STRIPE_SECRET_KEY is missing from environment variables.");
+        return NextResponse.json({ error: 'Stripe configuration is missing' }, { status: 500 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+        console.error("Supabase environment variables are missing.");
+        return NextResponse.json({ error: 'Supabase configuration is missing' }, { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+
     try {
         const body = await req.text();
+
         const signature = req.headers.get('stripe-signature') as string;
 
         let event: Stripe.Event;
