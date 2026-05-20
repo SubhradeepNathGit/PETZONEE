@@ -8,7 +8,7 @@ import {
   PawPrint, ShoppingBag, TrendingUp, ArrowUpRight,
   ArrowDownRight, Zap, Settings, Bell, Search,
   Plus, MoreHorizontal, LayoutDashboard, Database,
-  ArrowRight, Activity, CreditCard, Share2, Heart, Star, Crown, IndianRupee
+  ArrowRight, Activity, CreditCard, Share2, Heart, Star, IndianRupee
 } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -364,7 +364,7 @@ export default function AdminAnalyticsPage() {
               </p>
             </div>
             <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 shadow-lg relative z-10">
-              <Crown size={32} />
+              <IndianRupee size={32} />
             </div>
             <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-orange-500/10 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>

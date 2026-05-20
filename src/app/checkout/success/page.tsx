@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CheckCircle2, Home, Printer, Gift, ArrowLeft, Package, Crown } from "lucide-react";
+import { CheckCircle2, Home, Printer, Gift, ArrowLeft, Package } from "lucide-react";
 
 // Types
 type OrderItem = {
@@ -117,7 +117,7 @@ const OrderCard = ({ order, itemCount }: { order: LastOrder | null; itemCount: n
 
           {order.summary.subDiscount && order.summary.subDiscount > 0 ? (
             <div className="flex justify-between text-sm text-amber-600 bg-amber-50 p-2 rounded-lg print:bg-transparent print:p-0">
-              <span className="font-medium flex items-center gap-1.5"><Crown className="h-3.5 w-3.5 print:hidden" />Membership Discount</span>
+              <span className="font-medium flex items-center gap-1.5">Membership Discount</span>
               <span className="font-bold">- ₹{order.summary.subDiscount.toLocaleString()}</span>
             </div>
           ) : null}

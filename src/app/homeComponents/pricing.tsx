@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Crown } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const plans = [

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-    Crown, Users, CreditCard, Activity,
+    Users, CreditCard, Activity,
     Search, ShieldCheck, ArrowRight, User,
     TrendingUp, Calendar
 } from "lucide-react";
@@ -62,26 +62,41 @@ export default function AdminSubscriptionsPage() {
             });
 
             if (profile?.role === "admin") {
-                const { data: subs } = await supabase
+                // Fetch all user_subscriptions
+                const { data: subsData } = await supabase
                     .from("user_subscriptions")
-                    .select(`
-            *,
-            user:users (first_name, last_name, email)
-          `)
+                    .select("*")
                     .order('created_at', { ascending: false });
 
-                setSubscriptions((subs as any) || []);
+                let subs = subsData || [];
 
-                const { data: pays } = await supabase
-                    .from("orders")
-                    .select(`
-                        *,
-                        user:users (first_name, last_name, email)
-                    `)
-                    .eq('is_subscription_purchase', true)
-                    .order('created_at', { ascending: false });
+                // Manually fetch related users since foreign key might be missing
+                if (subs.length > 0) {
+                    const userIds = [...new Set(subs.map(s => s.user_id))];
+                    const { data: usersData } = await supabase
+                        .from("users")
+                        .select("id, first_name, last_name, email")
+                        .in("id", userIds);
 
-                setPayments(pays || []);
+                    const userMap = new Map();
+                    usersData?.forEach(u => userMap.set(u.id, u));
+
+                    subs = subs.map(s => ({
+                        ...s,
+                        user: userMap.get(s.user_id) || { first_name: 'Unknown', last_name: 'User', email: 'unknown@example.com' }
+                    }));
+                }
+
+                setSubscriptions(subs as any);
+
+                // Use subscriptions for payments history as well since we don't have a reliable flag in orders
+                const pseudoPayments = subs.map(s => ({
+                    id: `SUB-${s.id.split('-')[0].toUpperCase()}`,
+                    user: s.user,
+                    total_amount: s.price,
+                    created_at: s.created_at || s.start_date,
+                }));
+                setPayments(pseudoPayments);
             }
             setLoading(false);
         };
@@ -128,21 +143,7 @@ export default function AdminSubscriptionsPage() {
         ].filter(d => d.value > 0);
     }, [subscriptions]);
 
-    const handleCancelSubscription = async (subId: string) => {
-        if (!confirm("Are you sure you want to cancel this subscription? This will stop all benefits for the user.")) return;
 
-        const { error } = await supabase
-            .from("user_subscriptions")
-            .update({ status: 'cancelled' })
-            .eq('id', subId);
-
-        if (error) {
-            toast.error("Failed to cancel subscription");
-        } else {
-            toast.success("Subscription cancelled successfully");
-            setRefreshTrigger(p => p + 1);
-        }
-    };
 
     const filtered = subscriptions.filter(s =>
         s.plan_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -177,7 +178,6 @@ export default function AdminSubscriptionsPage() {
                     <div className="space-y-1">
                         <h1 className="text-3xl font-black text-white tracking-tighter uppercase flex items-center gap-4">
                             Member Subscriptions
-                            <Crown className="text-yellow-500 w-6 h-6" />
                         </h1>
                         <p className="text-white/30 text-xs font-medium uppercase tracking-[0.4em]">Membership Revenue & Lifecycle Control</p>
                     </div>
@@ -306,7 +306,6 @@ export default function AdminSubscriptionsPage() {
                                         <th className="px-8 py-6 text-[10px] font-black text-white/40 uppercase tracking-widest">Status</th>
                                         <th className="px-8 py-6 text-[10px] font-black text-white/40 uppercase tracking-widest">Validity</th>
                                         <th className="px-8 py-6 text-[10px] font-black text-white/40 uppercase tracking-widest text-right">Revenue</th>
-                                        <th className="px-8 py-6 text-[10px] font-black text-white/40 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/[0.03]">
@@ -351,17 +350,6 @@ export default function AdminSubscriptionsPage() {
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <p className="text-white font-black text-lg tracking-tighter">₹{Number(sub.price).toLocaleString()}</p>
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                {sub.status === 'active' && (
-                                                    <button
-                                                        onClick={() => handleCancelSubscription(sub.id)}
-                                                        className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
-                                                        title="Cancel Subscription"
-                                                    >
-                                                        <Activity size={14} />
-                                                    </button>
-                                                )}
                                             </td>
                                         </tr>
                                     ))}

@@ -194,20 +194,28 @@ export async function POST(req: Request) {
             metadata.planPeriod = planDetails.period;
         }
 
-        // Create Checkout Session
-        const session = await stripe.checkout.sessions.create({
+        // Create Checkout Session Configuration
+        const sessionConfig: Stripe.Checkout.SessionCreateParams = {
             payment_method_types: ['card'],
-            shipping_address_collection: {
-                allowed_countries: ['IN', 'US', 'GB'],
-            },
             line_items,
             mode: 'payment',
-            success_url: `${origin}/checkout/success?order=${orderNumber}`,
-            cancel_url: `${origin}/cart`,
+            success_url: isPlanCheckout 
+                ? `${origin}/checkout/plan-success?session_id={CHECKOUT_SESSION_ID}`
+                : `${origin}/checkout/success?order=${orderNumber}`,
+            cancel_url: isPlanCheckout ? `${origin}/` : `${origin}/cart`,
             customer_email: contact?.email || undefined,
             metadata,
             discounts: discounts.length > 0 ? discounts : undefined,
-        });
+        };
+
+        if (!isPlanCheckout) {
+            sessionConfig.shipping_address_collection = {
+                allowed_countries: ['IN', 'US', 'GB'],
+            };
+        }
+
+        // Create Checkout Session
+        const session = await stripe.checkout.sessions.create(sessionConfig);
 
         return NextResponse.json({ url: session.url, orderNumber });
     } catch (err: any) {

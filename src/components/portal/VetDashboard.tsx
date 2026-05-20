@@ -189,35 +189,61 @@ function VetDashboardInner({
       setSubmittingNote(true);
       let prescriptionUrl = managingAppt.prescription_url || null;
 
+      // Upload prescription file if provided (non-blocking — warns on failure)
       if (prescriptionFile) {
-        const ext = prescriptionFile.name.split('.').pop();
-        const path = `prescriptions/${managingAppt.id}-${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from('prescriptions').upload(path, prescriptionFile);
-        if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from('prescriptions').getPublicUrl(path);
-        prescriptionUrl = pub.publicUrl;
+        try {
+          const ext = prescriptionFile.name.split('.').pop();
+          const path = `${managingAppt.id}-${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from('prescriptions').upload(path, prescriptionFile);
+          if (upErr) {
+            console.error('Prescription upload failed:', upErr);
+            showMessage('Prescription upload failed, but continuing to finalize session.', 'info');
+          } else {
+            const { data: pub } = supabase.storage.from('prescriptions').getPublicUrl(path);
+            prescriptionUrl = pub.publicUrl;
+          }
+        } catch (uploadErr) {
+          console.error('Prescription upload exception:', uploadErr);
+          showMessage('Prescription upload failed, but continuing to finalize session.', 'info');
+        }
+      }
+
+      const updatePayload: Record<string, unknown> = {
+        medical_summary: summaryInput,
+        prescription_url: prescriptionUrl,
+        is_completed: true,
+        completed_at: new Date().toISOString(),
+        next_appointment_date: nextDateInput ? new Date(nextDateInput).toISOString() : null,
+        status: 'accepted',
+      };
+
+      // Ensure fee_at_booking is set for revenue tracking
+      if (!managingAppt.fee_at_booking || managingAppt.fee_at_booking === 0) {
+        updatePayload.fee_at_booking = consultationFee;
+      }
+
+      // Only include is_first_visit_completed if it's been toggled (column may not exist)
+      if (isFirstVisitDone) {
+        updatePayload.is_first_visit_completed = true;
       }
 
       const { error } = await supabase
         .from('appointments')
-        .update({
-          medical_summary: summaryInput,
-          prescription_url: prescriptionUrl,
-          is_completed: true,
-          completed_at: new Date().toISOString(),
-          next_appointment_date: nextDateInput ? new Date(nextDateInput).toISOString() : null,
-          is_first_visit_completed: isFirstVisitDone,
-          status: 'accepted' // Ensure it's still accepted but now completed
-        })
+        .update(updatePayload)
         .eq('id', managingAppt.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Appointment update failed:', error);
+        throw error;
+      }
 
       showMessage('Appointment finalized and revenue recorded!', 'success');
       setManagingAppt(null);
       fetchAppointments();
-    } catch (err) {
-      showMessage('Failed to complete appointment', 'error');
+    } catch (err: unknown) {
+      console.error('handleCompleteAppointment error:', err);
+      const message = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err ? String((err as { message: unknown }).message) : 'Unknown error');
+      showMessage(`Failed to complete appointment: ${message}`, 'error');
     } finally {
       setSubmittingNote(false);
     }
@@ -229,15 +255,17 @@ function VetDashboardInner({
     const accepted = appointments.filter(a => a.status === 'accepted').length;
     const pending = appointments.filter(a => a.status === 'pending').length;
     const rejected = appointments.filter(a => a.status === 'rejected').length;
-    // const revenue = accepted * fee; // Current month approx or total lifetime from table? Let's use total lifetime from DB
+
+    // Helper: use fee_at_booking if available, otherwise fall back to vet's current consultation fee
+    const getFee = (a: AppointmentRow) => a.fee_at_booking || consultationFee || 0;
 
     const compedRevenue = appointments
       .filter(a => a.is_completed && (a.is_free_visit || a.is_subscription_benefit))
-      .reduce((sum, a) => sum + (a.fee_at_booking || 0), 0);
+      .reduce((sum, a) => sum + getFee(a), 0);
 
     const directRevenue = appointments
       .filter(a => a.is_completed && !a.is_free_visit && !a.is_subscription_benefit)
-      .reduce((sum, a) => sum + (a.fee_at_booking || 0), 0);
+      .reduce((sum, a) => sum + getFee(a), 0);
 
     const lifetimeRevenue = compedRevenue + directRevenue;
 
@@ -250,7 +278,7 @@ function VetDashboardInner({
         if (!a.is_completed || !a.appointment_time) return false;
         const t = new Date(a.appointment_time);
         return t >= start && t <= end;
-      }).reduce((s, a) => s + (a.fee_at_booking || 0), 0);
+      }).reduce((s, a) => s + getFee(a), 0);
       return { name: format(d, 'MMM'), value: sum };
     });
 
@@ -291,7 +319,7 @@ function VetDashboardInner({
       avgRating,
       totalReviews: reviews.length
     };
-  }, [appointments, reviews]);
+  }, [appointments, reviews, consultationFee]);
 
   const fetchProfile = useCallback(async () => {
     if (!meId) return;
@@ -1283,11 +1311,11 @@ function VetDashboardInner({
 
               {/* Patient avatar */}
               <div className="flex items-center gap-6 mb-10">
-                <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-emerald-600 p-0.5  overflow-hidden flex-shrink-0">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-emerald-600 p-0.5  overflow-hidden flex-shrink-0">
                   {selectedAppt.users?.avatar_url ? (
-                    <Image src={selectedAppt.users.avatar_url} alt="" width={80} height={80} className="w-full h-full object-cover rounded-[1.8rem]" />
+                    <Image src={selectedAppt.users.avatar_url} alt="" width={80} height={80} className="w-full h-full object-cover rounded-full" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white/30 rounded-[1.8rem] bg-black">
+                    <div className="w-full h-full flex items-center justify-center text-white/30 rounded-full bg-black">
                       <User size={32} />
                     </div>
                   )}

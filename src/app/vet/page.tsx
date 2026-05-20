@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Globe, UserCheck, ShieldCheck, CheckCircle2, Star, HeartPulse, ArrowRight, Crown } from 'lucide-react';
+import { Globe, UserCheck, ShieldCheck, CheckCircle2, Star, HeartPulse, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -229,7 +229,7 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub, loadingP
           </div>
           {proratedPrice !== null && (
             <div className={`mt-2 flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold ${plan.popular ? "bg-white/20 text-white" : "bg-orange-500/10 text-orange-400 border border-orange-500/20"}`}>
-              <Crown className="w-3 h-3" /> Upgrade Price (Prorated)
+              <Star className="w-3 h-3" /> Upgrade Price (Prorated)
             </div>
           )}
           {isYearly && !proratedPrice && (

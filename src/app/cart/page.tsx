@@ -16,7 +16,6 @@ import {
   Truck,
   Heart,
   Star,
-  Crown,
 } from "lucide-react";
 import SpinnerLoader from "@/components/SpinnerLoader";
 
@@ -555,7 +554,6 @@ export default function CartPage() {
                   {subDiscount > 0 && activeSub && (
                     <div className="flex items-center justify-between py-2 px-3 bg-amber-50 rounded-lg border border-amber-100">
                       <div className="flex items-center gap-2 text-amber-700">
-                        <Crown className="h-4 w-4" />
                         <span className="font-medium">{activeSub.plan_name} Discount</span>
                       </div>
                       <span className="font-bold text-amber-700">

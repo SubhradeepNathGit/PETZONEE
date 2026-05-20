@@ -3,7 +3,7 @@ import { Card, FeatureCard, AvatarPicker } from './shared/ui';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { PawPrint, Calendar, ShoppingBag, Bell, ShieldCheck, Crown, Zap, Clock } from 'lucide-react';
+import { PawPrint, Calendar, ShoppingBag, Bell, ShieldCheck, Zap, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export default function UserDashboard({
@@ -28,6 +28,8 @@ export default function UserDashboard({
         .select('*')
         .eq('user_id', meId)
         .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (data) {
@@ -35,8 +37,6 @@ export default function UserDashboard({
         const expiry = new Date(data.end_date);
 
         if (expiry < now) {
-          // Auto-expire in UI/DB if needed 
-          // (Usually done by a cron/edge function, but we can handle UI state)
           setSubscription(null);
         } else {
           setSubscription(data);
@@ -87,7 +87,7 @@ export default function UserDashboard({
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <div className="p-2.5 rounded-2xl bg-white/5 border border-white/10">
-                {subscription ? <Crown className="w-5 h-5 text-yellow-500" /> : <ShieldCheck className="w-5 h-5 text-white/40" />}
+                <ShieldCheck className={`w-5 h-5 ${subscription ? 'text-yellow-500' : 'text-white/40'}`} />
               </div>
               <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">
                 Current Plan
