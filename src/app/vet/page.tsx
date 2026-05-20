@@ -269,7 +269,18 @@ const FlipPricingCard = ({ plan, index, isYearly, onSelect, currentSub, loadingP
                 : "bg-white/10 text-white hover:bg-white/20 border border-white/10 focus:ring-white/20"
             }`}
         >
-          {loadingPlan === plan.title ? "Redirecting..." : isCurrentPlan ? "Current Plan" : proratedPrice !== null ? "Upgrade Now" : "Get Started"}
+          {loadingPlan === plan.title ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <span>Redirecting</span>
+            </div>
+          ) : isCurrentPlan ? (
+            "Current Plan"
+          ) : proratedPrice !== null ? (
+            "Upgrade Now"
+          ) : (
+            "Get Started"
+          )}
         </button>
       </div>
     </motion.div>

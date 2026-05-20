@@ -115,14 +115,15 @@ export default function ProductDetailsClient({
 
             const user_id = userData.user.id;
 
-            const { data: existing, error: fetchErr } = await supabase
+            const { data: existingItems, error: fetchErr } = await supabase
                 .from(TABLE_NAME)
                 .select("id, quantity")
                 .eq("user_id", user_id)
-                .eq("product_id", product.id)
-                .single();
+                .eq("product_id", product.id);
 
-            if (fetchErr && fetchErr.code !== "PGRST116") throw fetchErr;
+            if (fetchErr) throw fetchErr;
+
+            const existing = existingItems && existingItems.length > 0 ? existingItems[0] : null;
 
             if (existing) {
                 // Restore original "5 unit" limit
@@ -141,6 +142,13 @@ export default function ProductDetailsClient({
                     .eq("user_id", user_id);
 
                 if (updateErr) throw updateErr;
+                
+                // If there were duplicates (due to previous bugs), clean them up
+                if (existingItems.length > 1) {
+                    const idsToRemove = existingItems.slice(1).map(item => item.id);
+                    await supabase.from(TABLE_NAME).delete().in("id", idsToRemove);
+                }
+
                 setMsg("Updated quantity in Cart");
             } else {
                 const payload = {

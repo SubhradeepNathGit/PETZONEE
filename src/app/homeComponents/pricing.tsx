@@ -253,7 +253,16 @@ export default function PricingSection() {
                     : "bg-[#FF8A65] text-white group-hover:bg-white group-hover:text-[#FF8A65]"
                   }`}
               >
-                {loadingPlan === plan.title ? "Redirecting..." : currentSub?.plan_name === plan.title ? "Current Plan" : "Select Plan"}
+                {loadingPlan === plan.title ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>Redirecting</span>
+                  </div>
+                ) : currentSub?.plan_name === plan.title ? (
+                  "Current Plan"
+                ) : (
+                  "Select Plan"
+                )}
               </button>
 
             </div>

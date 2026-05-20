@@ -3,12 +3,48 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, ShieldCheck, Star } from "lucide-react";
+import { CheckCircle2, ArrowRight, ShieldCheck, Check } from "lucide-react";
 import SpinnerLoader from "@/components/SpinnerLoader";
+
+const PLAN_BENEFITS: Record<string, string[]> = {
+  "Essential Care": [
+    "1 Free Monthly Consultation",
+    "5% Product Discount",
+    "Basic Health Tracking",
+    "Monthly Pet Care Tips",
+    "Community Access",
+  ],
+  "Complete Care": [
+    "4 Free Monthly Consultations",
+    "15% Product Discount",
+    "Priority Booking",
+    "24/7 Dedicated Vet Chat",
+    "Seasonal Flea Treatment",
+  ],
+  "Premium Care": [
+    "Unlimited Free Consultations",
+    "25% Product Discount",
+    "VIP Spa Treatments",
+    "Priority Emergency Hotline",
+    "Skin Health Analysis",
+  ]
+};
 
 export default function PlanSuccessPage() {
   return (
-    <Suspense fallback={<SpinnerLoader text="Loading subscription details..." />}>
+    <Suspense fallback={
+      <div className="h-screen w-screen bg-[#0a0a0a] flex flex-col items-center justify-center gap-6">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-4 border-[#FF8A65]/10" />
+          <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-t-[#FF8A65] border-r-[#FF8A65]/40 border-b-transparent border-l-transparent animate-spin" />
+          <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-[#FF8A65]/20 to-orange-500/20 animate-pulse" />
+        </div>
+        <div className="text-center space-y-1.5">
+          <p className="text-white font-bold tracking-tight text-lg">Loading subscription details...</p>
+          <p className="text-[#FF8A65] text-xs font-semibold uppercase tracking-[0.2em] animate-pulse">Please wait</p>
+        </div>
+      </div>
+    }>
       <PlanSuccessContent />
     </Suspense>
   );
@@ -31,11 +67,9 @@ function PlanSuccessContent() {
   useEffect(() => {
     if (!sessionId) {
       if (!planDetails.orderNumber) {
-        // If there's neither session_id nor fallback order params, we can't verify
         setError(true);
         setLoading(false);
       } else {
-        // Fallback for old success URLs if they somehow hit this
         setLoading(false);
       }
       return;
@@ -78,59 +112,74 @@ function PlanSuccessContent() {
       }
     };
 
-    verifySession();
+    const timer = setTimeout(() => {
+      verifySession();
+    }, 800); // Small delay to allow webhook completion
+
+    return () => clearTimeout(timer);
   }, [sessionId]);
 
   if (loading) {
-    return <SpinnerLoader text="Activating your subscription..." />;
-  }
-
-  if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-        <p className="text-gray-500 mb-6">We could not verify your subscription details.</p>
-        <button onClick={() => router.push("/dashboard")} className="px-6 py-2 bg-gray-900 text-white rounded-lg">Go to Dashboard</button>
+      <div className="h-screen w-screen bg-[#0a0a0a] flex flex-col items-center justify-center gap-6">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-4 border-[#FF8A65]/10" />
+          <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-t-[#FF8A65] border-r-[#FF8A65]/40 border-b-transparent border-l-transparent animate-spin" />
+          <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-[#FF8A65]/20 to-orange-500/20 animate-pulse" />
+        </div>
+        <div className="text-center space-y-1.5">
+          <p className="text-white font-bold tracking-tight text-lg">Activating your subscription...</p>
+          <p className="text-[#FF8A65] text-xs font-semibold uppercase tracking-[0.2em] animate-pulse">Setting up your perks</p>
+        </div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
+        <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
+        <p className="text-gray-400 mb-6">We could not verify your subscription details.</p>
+        <button onClick={() => router.push("/dashboard")} className="px-6 py-2 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors">Dashboard</button>
+      </div>
+    );
+  }
+
+  const benefits = PLAN_BENEFITS[planDetails.planName] || PLAN_BENEFITS["Premium Care"];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 py-20 relative overflow-hidden">
+    <div className="h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 relative overflow-hidden">
       
       {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-[50vh] bg-[#FF8A65] rounded-b-[50px] -z-10 shadow-lg" />
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#FF8A65]/10 blur-[120px] rounded-full" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#FF8A65]/5 blur-[120px] rounded-full" />
+      </div>
       
-      <div className="max-w-2xl w-full">
+      <div className="max-w-4xl w-full h-full lg:h-auto flex flex-col lg:flex-row items-stretch justify-center gap-6 overflow-y-auto lg:overflow-visible py-12 lg:py-0">
+        
+        {/* Left Side: Activation Status */}
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="bg-white rounded-[32px] p-8 md:p-12 shadow-2xl border border-gray-100 text-center relative overflow-hidden"
+          className="flex-1 bg-[#121212] rounded-[32px] p-8 shadow-2xl border border-white/10 text-center relative flex flex-col justify-center min-h-[400px]"
         >
-          {/* Confetti / Sparkles (visual only) */}
-          <div className="absolute top-10 left-10 text-[#FF8A65] opacity-20">
-            <Star className="w-8 h-8 animate-pulse" />
-          </div>
-          <div className="absolute top-16 right-12 text-yellow-400 opacity-30">
-            <Star className="w-6 h-6 animate-pulse delay-150" />
-          </div>
-
           <motion.div 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-            className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"
+            className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(34,197,94,0.3)] border border-green-500/30"
           >
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+            <CheckCircle2 className="w-10 h-10 text-green-400" />
           </motion.div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Subscription Activated!
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            Subscription Active!
           </h1>
           
-          <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
-            Welcome to the family. You now have access to exclusive perks, premium support, and better pet care.
+          <p className="text-gray-400 text-base mb-8 max-w-sm mx-auto">
+            Welcome to the family. Your account has been upgraded and your premium perks are now unlocked.
           </p>
 
           {/* Plan Card */}
@@ -138,62 +187,80 @@ function PlanSuccessContent() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-orange-50 to-[#fff3ed] rounded-3xl p-6 border border-orange-100 mb-10 shadow-sm relative overflow-hidden"
+            className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-2xl p-5 border border-[#FF8A65]/30 mb-8 shadow-lg relative overflow-hidden"
           >
-            <div className="absolute -right-6 -top-6 text-orange-200 opacity-50">
-              <Star className="w-32 h-32 rotate-12" />
-            </div>
-
             <div className="relative z-10 flex flex-col items-center">
-              <div className="flex items-center gap-2 mb-2">
-                <Star className="w-6 h-6 text-[#FF8A65]" />
-                <span className="text-[#FF8A65] font-bold tracking-widest text-sm uppercase">Your Current Plan</span>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[#FF8A65] font-bold tracking-widest text-xs uppercase">Your Plan</span>
               </div>
-              <h2 className="text-2xl font-black text-gray-900 mb-1">{planDetails.planName}</h2>
-              <div className="inline-block bg-white px-4 py-1.5 rounded-full text-sm font-semibold text-gray-700 shadow-sm border border-gray-100 mt-2">
+              <h2 className="text-2xl font-black text-white mb-1">{planDetails.planName}</h2>
+              <div className="inline-block bg-white/5 px-3 py-1 rounded-full text-xs font-semibold text-gray-300 shadow-sm border border-white/10 mt-1">
                 Billed {planDetails.planPeriod}
               </div>
             </div>
             
             {planDetails.orderNumber && (
-              <div className="mt-6 pt-4 border-t border-orange-200/50 flex justify-between items-center text-sm relative z-10">
-                <span className="text-gray-500 font-medium">Order Reference</span>
-                <span className="font-mono font-bold text-gray-900 bg-white px-2 py-1 rounded">{planDetails.orderNumber}</span>
+              <div className="mt-4 pt-3 border-t border-white/10 flex justify-between items-center text-xs relative z-10">
+                <span className="text-gray-400 font-medium">Order Ref</span>
+                <span className="font-mono text-gray-300 bg-black/50 px-2 py-0.5 rounded">{planDetails.orderNumber}</span>
               </div>
             )}
           </motion.div>
 
-          {/* Next Steps List */}
-          <div className="text-left space-y-4 mb-10 pl-2">
-            <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">What's Next?</h3>
-            <div className="flex items-start gap-4">
-              <div className="bg-blue-100 p-2 rounded-xl text-blue-600 shrink-0 mt-1">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-bold text-gray-900">Enjoy your benefits</p>
-                <p className="text-gray-500 text-sm">Discounts and perks are applied automatically at checkout.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="w-full max-w-sm mx-auto">
             <button 
               onClick={() => router.push("/dashboard?view=profile")}
-              className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-bold py-4 px-8 rounded-2xl transition-all hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2"
+              className="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 px-6 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2 text-sm"
             >
-              View My Plan <ArrowRight className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => router.push("/shop")}
-              className="flex-1 bg-white hover:bg-orange-50 text-[#FF8A65] border-2 border-[#FF8A65] font-bold py-4 px-8 rounded-2xl transition-all flex items-center justify-center"
-            >
-              Start Shopping
+              Dashboard <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
+        </motion.div>
+
+        {/* Right Side: Benefits */}
+        <motion.div 
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          className="flex-1 bg-gradient-to-br from-[#FF8A65]/10 to-transparent rounded-[32px] p-8 border border-[#FF8A65]/20 relative flex flex-col justify-center min-h-[400px]"
+        >
+           <div className="mb-6 flex items-center gap-3">
+             <div className="w-10 h-10 rounded-full bg-[#FF8A65]/20 flex items-center justify-center text-[#FF8A65]">
+               <ShieldCheck className="w-5 h-5" />
+             </div>
+             <div>
+               <h3 className="text-xl font-bold text-white">Your Benefits</h3>
+               <p className="text-sm text-[#FF8A65]">Available immediately</p>
+             </div>
+           </div>
+
+           <div className="space-y-4">
+             {benefits.map((benefit, index) => (
+               <motion.div 
+                 key={index}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.4 + (index * 0.1) }}
+                 className="flex items-center gap-4 bg-white/5 border border-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors group"
+               >
+                 <div className="w-6 h-6 rounded-full bg-[#FF8A65]/20 flex items-center justify-center text-[#FF8A65] group-hover:scale-110 transition-transform">
+                   <Check className="w-3.5 h-3.5" />
+                 </div>
+                 <span className="text-gray-200 font-medium">{benefit}</span>
+               </motion.div>
+             ))}
+           </div>
+           
+           <div className="mt-8 p-4 bg-[#FF8A65]/10 rounded-xl border border-[#FF8A65]/20 flex items-start gap-3">
+             <ShieldCheck className="w-5 h-5 text-[#FF8A65] shrink-0 mt-0.5" />
+             <p className="text-xs text-gray-300 leading-relaxed">
+               All perks are applied automatically. You can view your remaining benefits and manage your subscription anytime from your dashboard.
+             </p>
+           </div>
         </motion.div>
       </div>
     </div>
   );
 }
+

@@ -363,16 +363,16 @@ export default function CartPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-20"
+            className="text-center py-10 -mt-8 md:-mt-16"
           >
-            <div className="bg-transparent rounded-3xl p-10 max-w-md mx-auto">
-              <div className="w-16 h-16 bg-[#FF8A70]/10 text-[#FF8A70] rounded-full flex items-center justify-center mx-auto mb-6">
-                <ShoppingCart className="w-8 h-8" />
+            <div className="bg-transparent rounded-3xl p-12 max-w-md mx-auto">
+              <div className="w-20 h-20 bg-[#FF8A70]/10 text-[#FF8A70] rounded-full flex items-center justify-center mx-auto mb-6">
+                <ShoppingCart className="w-10 h-10" />
               </div>
-              <p className="text-xl font-bold text-white mb-2">
+              <h3 className="text-xl font-bold text-white mb-3">
                 Sign in Required
-              </p>
-              <p className="text-[#FF8A70] font-semibold mb-6">{msg || "Please sign in to view your cart"}</p>
+              </h3>
+              <p className="text-gray-400 mb-6">{msg || "Please sign in to view your cart"}</p>
               <button
                 onClick={() => router.push("/signup?redirect=/cart")}
                 className="w-[85%] flex mx-auto justify-center items-center gap-2 rounded-3xl bg-[#0e2a36] py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors active:scale-[0.98]"
@@ -616,7 +616,7 @@ export default function CartPage() {
                   {busy ? (
                     <div className="relative flex items-center justify-center gap-3">
                       <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Redirecting…</span>
+                      <span>Redirecting</span>
                     </div>
                   ) : (
                     <div className="relative flex items-center justify-center gap-3">
@@ -722,19 +722,19 @@ function EnhancedEmptyCart({ router }: { router: ReturnType<typeof useRouter> })
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="text-center py-20"
+      className="text-center py-10 -mt-8 md:-mt-16"
     >
-      <div className="bg-white rounded-3xl p-12 border border-rose-100 max-w-md mx-auto">
-        <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <ShoppingCart className="w-10 h-10 text-rose-600" />
+      <div className="bg-transparent rounded-3xl p-12 max-w-md mx-auto">
+        <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <ShoppingCart className="w-10 h-10 text-rose-500" />
         </div>
-        <h3 className="text-xl font-bold text-gray-800 mb-3">Your cart is empty</h3>
-        <p className="text-gray-500 mb-6">
+        <h3 className="text-xl font-bold text-white mb-3">Your cart is empty</h3>
+        <p className="text-gray-400 mb-6">
           Looks like you haven&apos;t added anything to your cart yet.
         </p>
         <button
           onClick={() => router.push("/products")}
-          className="inline-flex items-center gap-2 rounded-2xl bg-red-400 px-6 py-3 font-bold text-white transition-all"
+          className="w-[85%] flex mx-auto justify-center items-center gap-2 rounded-3xl bg-[#0e2a36] py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#1a3d4d] transition-colors active:scale-[0.98]"
         >
           Start Shopping <ArrowRight className="h-4 w-4" />
         </button>

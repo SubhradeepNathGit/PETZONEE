@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from 'lucide-react'
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
+// @ts-expect-error: swiper CSS import may not have type declarations in this project setup
 import 'swiper/css';
 
 export default function Footer() {
@@ -23,7 +24,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-[#fdf6f0] overflow-hidden">
+    <footer className="relative bg-black overflow-hidden">
       {/* Newsletter */}
       <div className="mx-auto w-full max-w-[1200px] px-4 pt-14">
         <div className="relative rounded-3xl bg-[#FF8A65] px-6 py-10 sm:px-10 md:py-14 text-center text-white">
@@ -106,7 +107,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3 md:items-start relative z-10">
           {/* Contact */}
           <div>
-            <h3 className="mb-4 text-lg font-bold text-gray-900">Contact Info</h3>
+            <h3 className="mb-4 text-lg font-bold text-gray-600">Contact Info</h3>
             <ul className="space-y-3 text-[15px] text-gray-700">
               <li className="flex items-center gap-2">
                 <Phone size={18} className="text-[#FF6B40]" />
@@ -169,7 +170,7 @@ export default function Footer() {
 
           {/* Links */}
           <div className="relative">
-            <h3 className="mb-4 text-lg font-bold text-gray-900">Find Out About Us</h3>
+            <h3 className="mb-4 text-lg font-bold text-gray-600">Find Out About Us</h3>
             <ul className="space-y-2 text-[15px] text-gray-700">
               <li><Link href="#" className="hover:text-[#FF6B40] transition-colors">Refund and Returns</Link></li>
               <li><Link href="#" className="hover:text-[#FF6B40] transition-colors">Shipping Rates &amp; Policies</Link></li>

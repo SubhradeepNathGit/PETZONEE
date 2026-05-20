@@ -76,7 +76,7 @@ function ClientLayoutContent({ children }: ClientLayoutProps) {
 
   const lastPathname = useRef<string | null>(null);
 
-  const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success"];
+  const skipLoaderRoutes = ["/cart", "/checkout", "/checkout/success", "/checkout/plan-success"];
   const skipLoader = skipLoaderRoutes.includes(pathname);
 
   const hideNavbar = pathname.startsWith('/checkout') || pathname === '/feed' || pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/signup') || pathname.startsWith('/reset-password') || pathname === '/cart' || (pathname.startsWith('/products/') && pathname !== '/products') || pathname.startsWith('/pets') || pathname === '/delete';

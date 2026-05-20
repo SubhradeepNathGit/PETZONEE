@@ -454,17 +454,6 @@ function PortalContent() {
                         Personalise your experience and manage your pet care needs effectively
                       </motion.p>
                     </div>
-                    <div className="flex items-center gap-3 text-md mr-1 font-semibold">
-                      <span className="px-3 py-1 rounded-full bg-gradient-to-r from-orange-700 to-yellow-400 text-white border border-white/10">
-                        {role === 'admin'
-                          ? `Admin${firstName ? ` ${firstName}` : ''}`
-                          : role === 'vet'
-                            ? `Vet ${vetKyc ?? 'pending'}`
-                            : role === 'user'
-                              ? `User${firstName ? ` ${firstName}` : ''}`
-                              : 'Guest'}
-                      </span>
-                    </div>
                   </header>
                 )}
 

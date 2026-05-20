@@ -346,56 +346,133 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* === Modern Map Section === */}
-      <section className="py-24 relative overflow-hidden bg-[#0A0A0A]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Our <span className="text-[#FF8A70]">Location</span></h2>
-              <p className="text-white/40 mt-4 max-w-md font-medium tracking-tight">Visit our state-of-the-art facility in the heart of the city.</p>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-right">
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Clinic Status</p>
-                <div className="flex items-center gap-2 justify-end">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <span className="text-sm font-bold text-emerald-400">Open Now</span>
-                </div>
-              </div>
-              <div className="h-12 w-px bg-white/10"></div>
-              <div className="p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-md">
-                <Clock className="w-6 h-6 text-[#FF8A70]" />
-              </div>
-            </div>
-          </div>
+      {/* === Premium Map Section === */}
+      <section className="py-28 relative overflow-hidden bg-black">
+        {/* Ambient background glows */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#FF8A70]/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
 
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Section header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-14"
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF8A70] mb-4">Headquarters</p>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <div>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tighter">
+                  Find <span className="bg-gradient-to-r from-[#FF8A70] to-[#FF6B4A] bg-clip-text text-transparent">Us</span>
+                </h2>
+                <p className="text-white/30 mt-3 text-sm font-medium max-w-md">
+                  Visit our state-of-the-art veterinary center, equipped with cutting-edge diagnostics and care facilities.
+                </p>
+              </div>
+              <div className="flex items-center gap-5">
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-1.5">Clinic Status</p>
+                  <div className="flex items-center gap-2 justify-end">
+                    <div className="relative flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                      <div className="absolute w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+                    </div>
+                    <span className="text-sm font-bold text-emerald-400">Open Now</span>
+                  </div>
+                </div>
+                <div className="h-10 w-px bg-white/[0.06]" />
+                <a
+                  href="https://maps.google.com/?q=22.572646,88.347960"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#FF8A70] hover:text-black hover:border-[#FF8A70] transition-all duration-300"
+                >
+                  Open in Maps
+                </a>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Map container */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative rounded-lg overflow-hidden border border-white/10 h-[500px] group"
+            transition={{ duration: 0.6 }}
+            className="relative rounded-[2rem] overflow-hidden border border-white/[0.08] h-[550px] group bg-[#0a0a0a]"
           >
+            {/* Map iframe */}
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689.017013408831!2d88.34796067493606!3d22.572646185258867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a027b03e5f0a0cd%3A0xf2f2b3d7a5e2f5a!2sKolkata%2C%20West%20Bengal%2C%20India!5e0!3m2!1sen!2sin!4v1693555200000!5m2!1sen!2sin"
               width="100%"
               height="100%"
-              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(0.9)' }}
+              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(0.85) contrast(1.1) saturate(0.3)' }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0"
             />
-            {/* Overlay Gradient for integration */}
-            <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-lg"></div>
 
-            {/* Map Card Floating */}
-            <div className="absolute top-8 left-8 p-6 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 max-w-[280px] hidden md:block">
-              <h4 className="text-lg font-bold mb-2">PetZonee HQ</h4>
-              <p className="text-xs text-white/50 leading-relaxed">
-                42nd Neville Street, Discovery District, New Albany, 90210
-              </p>
-              <button className="mt-4 flex items-center gap-2 text-[#FF8A70] text-[10px] font-bold border-b border-[#FF8A70]">
-                GET DIRECTIONS <ChevronRight size={12} />
-              </button>
+            {/* Edge gradient overlays for seamless blending */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#0a0a0a] to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+              <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+              <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+            </div>
+
+            {/* Inner ring overlay */}
+            <div className="absolute inset-0 pointer-events-none rounded-[2rem] ring-1 ring-inset ring-white/[0.06]" />
+
+            {/* Floating location card */}
+            <div className="absolute bottom-8 left-8 right-8 md:right-auto md:max-w-[380px] z-10">
+              <div className="p-6 md:p-8 rounded-[1.5rem] bg-black/70 backdrop-blur-2xl border border-white/[0.08] shadow-2xl shadow-black/50">
+                {/* Location pin accent */}
+                <div className="flex items-start gap-5">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF8A70] to-[#FF6B4A] flex items-center justify-center shadow-lg shadow-[#FF8A70]/20">
+                    <MapPin size={20} className="text-black" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-lg font-black text-white tracking-tight mb-1">PetZonee HQ</h4>
+                    <p className="text-xs text-white/40 leading-relaxed font-medium">
+                      42nd Neville Street, Discovery District,<br />New Albany, 90210
+                    </p>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="my-5 h-px bg-white/[0.06]" />
+
+                {/* Operating hours grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20 mb-1">Weekdays</p>
+                    <p className="text-xs font-bold text-white/70">9:00 AM – 8:00 PM</p>
+                  </div>
+                  <div className="px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                    <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20 mb-1">Weekends</p>
+                    <p className="text-xs font-bold text-white/70">10:00 AM – 6:00 PM</p>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <a
+                  href="https://maps.google.com/?q=22.572646,88.347960"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#FF8A70] hover:text-black hover:border-[#FF8A70] transition-all duration-300 group/btn"
+                >
+                  Get Directions
+                  <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+
+            {/* Floating coordinates badge (desktop) */}
+            <div className="absolute top-8 right-8 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/[0.06]">
+              <div className="w-2 h-2 rounded-full bg-[#FF8A70] animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-white/40 tracking-wider">22.5726° N, 88.3480° E</span>
             </div>
           </motion.div>
         </div>
