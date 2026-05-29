@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Facebook } from 'lucide-react';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -146,13 +146,40 @@ export default function Footer() {
             </ul>
             <div className="pt-2 flex items-center gap-4">
               {[
-                { icon: <Instagram size={18} />, href: "#", color: "hover:bg-gradient-to-tr hover:from-yellow-500 hover:to-purple-600 hover:text-white" },
-                { icon: <Facebook size={18} />, href: "#", color: "hover:bg-[#1877F2] hover:text-white" },
-                { icon: <Twitter size={18} />, href: "#", color: "hover:bg-[#1DA1F2] hover:text-white" },
+                { 
+                  icon: <Instagram size={18} />, 
+                  href: "https://www.instagram.com", 
+                  color: "hover:bg-gradient-to-tr hover:from-yellow-500 hover:to-purple-600 hover:text-white" 
+                },
+                { 
+                  icon: <Facebook size={18} />, 
+                  href: "https://www.facebook.com", 
+                  color: "hover:bg-[#1877F2] hover:text-white" 
+                },
+                { 
+                  icon: (
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  ), 
+                  href: "https://x.com", 
+                  color: "hover:bg-white hover:text-black" 
+                },
+                { 
+                  icon: (
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.504-5.714-1.464L0 24zm6.59-4.846c1.666.988 3.396 1.502 5.355 1.503 5.439 0 9.865-4.423 9.868-9.86.002-2.635-1.025-5.11-2.89-6.973C17.062 2.012 14.59 1.01 11.96 1.01c-5.448 0-9.88 4.425-9.883 9.864 0 1.836.486 3.633 1.408 5.22L2.52 21.43l5.227-1.37zM17.18 14.28c-.284-.144-1.684-.83-1.947-.927-.263-.096-.454-.144-.645.144-.191.288-.74.927-.907 1.117-.167.19-.334.215-.618.072-.284-.144-1.202-.442-2.29-1.42-.847-.756-1.42-1.69-1.586-1.978-.166-.287-.018-.443.124-.585.128-.127.284-.33.426-.496.143-.165.19-.284.285-.473.095-.19.047-.354-.024-.497-.07-.144-.645-1.553-.883-2.128-.23-.557-.464-.48-.64-.488-.167-.008-.358-.01-.55-.01-.19 0-.501.07-.763.355-.262.288-1.003.98-1.003 2.39 0 1.41 1.027 2.77 1.17 2.96.143.19 2.02 3.084 4.895 4.328.684.296 1.218.473 1.634.605.688.22 1.314.189 1.81.115.552-.083 1.684-.688 1.922-1.352.238-.665.238-1.236.167-1.352-.07-.117-.262-.19-.547-.333z" />
+                    </svg>
+                  ), 
+                  href: "https://www.whatsapp.com", 
+                  color: "hover:bg-[#25D366] hover:text-white" 
+                },
               ].map((social, i) => (
                 <Link
                   key={i}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`w-10 h-10 rounded-xl bg-white/[0.02] border border-white/[0.06] text-white/40 flex items-center justify-center transition-all ${social.color}`}
                 >
                   {social.icon}
@@ -202,18 +229,18 @@ export default function Footer() {
             </h3>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[13px] text-white/40 font-medium">
               {[
-                "Refund and Returns",
-                "Shipping Rates & Policies",
-                "Returns & Replacements",
-                "Your Orders",
-                "Help Center",
-                "Cookie Settings",
-                "Terms and Conditions",
-                "Privacy Policy"
-              ].map((linkText) => (
-                <li key={linkText}>
-                  <Link href="#" className="hover:text-[#FF8A65] transition-colors block py-0.5">
-                    {linkText}
+                { text: "Refund and Returns", href: "/contactUs" },
+                { text: "Shipping Rates & Policies", href: "/contactUs" },
+                { text: "Returns & Replacements", href: "/contactUs" },
+                { text: "Your Orders", href: "/dashboard?view=orders" },
+                { text: "Help Center", href: "/contactUs" },
+                { text: "Cookie Settings", href: "/contactUs" },
+                { text: "Terms and Conditions", href: "/contactUs" },
+                { text: "Privacy Policy", href: "/contactUs" }
+              ].map((link) => (
+                <li key={link.text}>
+                  <Link href={link.href} className="hover:text-[#FF8A65] transition-colors block py-0.5">
+                    {link.text}
                   </Link>
                 </li>
               ))}
@@ -235,10 +262,10 @@ export default function Footer() {
         {/* bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-5 border-t border-white/[0.04] pt-8 text-xs text-white/30 font-medium md:flex-row">
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-[#FF8A65] transition-colors">
+            <Link href="/contactUs" className="hover:text-[#FF8A65] transition-colors">
               Privacy Notice
             </Link>
-            <Link href="#" className="hover:text-[#FF8A65] transition-colors">
+            <Link href="/contactUs" className="hover:text-[#FF8A65] transition-colors">
               Terms of Use
             </Link>
           </div>
