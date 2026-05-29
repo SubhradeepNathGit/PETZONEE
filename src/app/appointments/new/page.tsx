@@ -484,6 +484,19 @@ export default function BookAppointmentPage() {
 
       {/* ── Main Grid ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        
+        {/* Quick tips row at top */}
+        {vets.length > 0 && (
+          <div className="mb-6 p-4 rounded-2xl bg-[#5F97C9]/5 border border-[#5F97C9]/10">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-white/30">
+              <div className="flex items-center gap-1.5"><CalendarDays size={12} className="text-[#5F97C9]" /> Step 1: Pick a date above</div>
+              <div className="flex items-center gap-1.5"><Clock size={12} className="text-[#5F97C9]" /> Step 2: Choose a time slot</div>
+              <div className="flex items-center gap-1.5"><Phone size={12} className="text-[#5F97C9]" /> Step 3: Select a doctor</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[#5F97C9]" /> Step 4: Confirm!</div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-6 xl:gap-8 items-start">
 
           {/* ── Left Panel ── */}
@@ -595,18 +608,6 @@ export default function BookAppointmentPage() {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-              </div>
-            )}
-
-            {/* Quick tips row at bottom */}
-            {vets.length > 0 && (
-              <div className="mt-8 p-4 rounded-2xl bg-[#5F97C9]/5 border border-[#5F97C9]/10">
-                <div className="flex flex-wrap items-center gap-4 text-xs text-white/30">
-                  <div className="flex items-center gap-1.5"><CalendarDays size={12} className="text-[#5F97C9]" /> Step 1: Pick a date above</div>
-                  <div className="flex items-center gap-1.5"><Clock size={12} className="text-[#5F97C9]" /> Step 2: Choose a time slot</div>
-                  <div className="flex items-center gap-1.5"><Phone size={12} className="text-[#5F97C9]" /> Step 3: Select a doctor</div>
-                  <div className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-[#5F97C9]" /> Step 4: Confirm!</div>
-                </div>
               </div>
             )}
           </div>
