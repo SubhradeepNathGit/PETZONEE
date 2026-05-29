@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
+import FAQSection from '../homeComponents/faq';
 
 /* ================= Validation Schema ================= */
 const contactSchema = z.object({
@@ -28,15 +29,6 @@ const contactSchema = z.object({
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
-
-/* ================= FAQ Data ================= */
-const faqData = [
-  { id: 'vet', question: 'Could you suggest a trustworthy veterinarian?', answer: 'We recommend certified local veterinarians with proven track records in pet care. You can also check our partner directory for trusted professionals near you.' },
-  { id: 'service', question: 'Are there affordable yet reliable service options?', answer: 'Yes, we provide budget-friendly packages covering checkups, grooming, vaccinations, and preventive care without compromising quality.' },
-  { id: 'products', question: 'Which products help control odors and shedding?', answer: 'Use high-quality grooming products such as deshedding tools, enzymatic cleaners, and specialized shampoos designed to minimize odors and reduce shedding.' },
-  { id: 'training', question: 'Do you offer specialized training for pets?', answer: 'Yes, our certified trainers provide personalized programs ranging from basic obedience to advanced behavior training.' },
-  { id: 'adoption', question: 'Are there any adoption events this week?', answer: 'Check our events calendar for adoption drives, meet-and-greets, and workshops that help pets find loving homes.' },
-];
 
 /* ================= Animation Variants ================= */
 const containerVariants = {
@@ -56,7 +48,6 @@ const itemVariants = {
 export default function ContactPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeFaq, setActiveFaq] = useState<string | null>(null);
 
   const {
     register,
@@ -477,62 +468,8 @@ export default function ContactPage() {
           </motion.div>
         </div>
       </section>
-
-      {/* === Overhauled FAQ Section === */}
-      <section className="py-24 bg-black">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">Common <span className="text-[#FF8A70]">Questions</span></h2>
-            <p className="text-white/40 font-medium tracking-tight">Everything you need to know about our medical care.</p>
-          </div>
-
-          <div className="space-y-4">
-            {faqData.map((faq) => (
-              <div
-                key={faq.id}
-                className={`rounded-lg border transition-all duration-300 overflow-hidden 
-                  ${activeFaq === faq.id
-                    ? 'bg-white/[0.05] border-[#FF8A70]/30'
-                    : 'bg-white/[0.02] border-white/5 hover:border-white/20'
-                  }`}
-              >
-                <button
-                  onClick={() => setActiveFaq(activeFaq === faq.id ? null : faq.id)}
-                  className="w-full px-8 py-7 flex items-center justify-between text-left"
-                >
-                  <span className={`text-lg font-bold transition-colors ${activeFaq === faq.id ? 'text-[#FF8A70]' : 'text-white/80'}`}>
-                    {faq.question}
-                  </span>
-                  <motion.div
-                    animate={{ rotate: activeFaq === faq.id ? 180 : 0 }}
-                    className={`p-2 rounded-full ${activeFaq === faq.id ? 'bg-[#FF8A70] text-black' : 'text-white/20'}`}
-                  >
-                    <ChevronDown size={20} />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence>
-                  {activeFaq === faq.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="px-8 pb-8"
-                    >
-                      <p className="text-white/50 leading-relaxed font-medium">
-                        {faq.answer}
-                      </p>
-                      <button className="mt-6 flex items-center gap-2 text-[#FF8A70] text-[10px] font-bold border-b border-[#FF8A70] uppercase">
-                        Learn More <ChevronRight size={10} />
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* === FAQ Section === */}
+      <FAQSection dark />
 
       {/* Footer Branding */}
       <footer className="py-12 border-t border-white/5 text-center px-6">

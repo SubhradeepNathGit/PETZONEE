@@ -26,9 +26,10 @@ const faqData: FAQItem[] = [
 
 interface FAQSectionProps {
   className?: string;
+  dark?: boolean;
 }
 
-const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
+const FAQSection: React.FC<FAQSectionProps> = ({ className = "", dark = false }) => {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const toggleFAQ = (id: string): void => {
@@ -45,11 +46,19 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-all duration-300"
+      className={`rounded-lg border overflow-hidden transition-all duration-300 ${
+        dark 
+          ? 'bg-white/[0.02] border-white/5 hover:border-white/20' 
+          : 'bg-white border-gray-100'
+      }`}
     >
       <button
         onClick={() => toggleFAQ(faq.id)}
-        className="w-full px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between text-left group hover:bg-[#FF8A65] hover:text-white transition-colors duration-300"
+        className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between text-left group transition-colors duration-300 ${
+          dark 
+            ? 'text-white/80 hover:bg-[#FF8A65]/10 hover:text-white' 
+            : 'hover:bg-[#FF8A65] hover:text-white'
+        }`}
         aria-expanded={openId === faq.id}
         aria-controls={`faq-answer-${faq.id}`}
       >
@@ -59,7 +68,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
           transition={{ duration: 0.3 }}
           className="group-hover:text-white flex-shrink-0"
         >
-          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
+          <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 ${dark ? 'text-white/40 group-hover:text-[#FF8A65]' : ''}`} />
         </motion.div>
       </button>
 
@@ -74,7 +83,9 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
             id={`faq-answer-${faq.id}`}
           >
             <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">{faq.answer}</p>
+              <p className={`text-xs sm:text-sm md:text-base leading-relaxed ${
+                dark ? 'text-white/50' : 'text-gray-600'
+              }`}>{faq.answer}</p>
             </div>
           </motion.div>
         )}
@@ -83,7 +94,11 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
   );
 
   return (
-    <section className={`relative w-full bg-gradient-to-b from-gray-50 to-white py-8 sm:py-12 px-3 sm:px-6 lg:px-10 ${className}`}>
+    <section className={`relative w-full py-8 sm:py-12 px-3 sm:px-6 lg:px-10 transition-colors duration-300 ${
+      dark 
+        ? 'bg-black text-white' 
+        : 'bg-gradient-to-b from-gray-50 to-white'
+    } ${className}`}>
       <div className="max-w-6xl mx-auto">
         
         {/* Section Label */}
@@ -103,7 +118,9 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 sm:mb-12"
         >
-          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-800">
+          <h1 className={`text-lg sm:text-2xl md:text-3xl font-bold ${
+            dark ? 'text-white' : 'text-gray-800'
+          }`}>
             Ask Anything? Get Answers Right Here!
           </h1>
         </motion.header>
@@ -121,7 +138,9 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "" }) => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-center mt-8 sm:mt-12"
         >
-          <p className="text-xs sm:text-sm md:text-base text-gray-600">
+          <p className={`text-xs sm:text-sm md:text-base ${
+            dark ? 'text-white/40' : 'text-gray-600'
+          }`}>
             Still have questions?{" "}
             <motion.a
               href="#contact"
