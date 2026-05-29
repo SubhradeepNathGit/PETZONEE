@@ -165,7 +165,7 @@ export default function Footer() {
           <div className="text-center md:text-left space-y-5">
             <div>
               <div className="text-3xl font-black text-white tracking-tight uppercase">
-                PET<span className="text-[#FF8A65]">ZONE</span>EE
+                PET<span className="text-[#FF8A65]">ZONE</span>E
               </div>
               <p className="mt-3 max-w-[400px] text-sm text-white/50 leading-relaxed font-medium">
                 Give your pets the love, care, and attention they deserve every single day 24/7 with our state-of-the-art medical and social base.
