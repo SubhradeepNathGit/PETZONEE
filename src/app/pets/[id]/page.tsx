@@ -268,26 +268,26 @@ export default function PetProfilePage() {
           {/* Bottom info strip */}
           <div className="relative flex flex-col gap-4 px-6 pt-0 pb-6 sm:flex-row sm:items-end sm:justify-between">
             {/* Avatar - overlaps cover */}
-            <div className="-mt-10 flex items-end gap-4">
-              <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#FF8A65]/70">
+            <div className="-mt-14 sm:-mt-18 flex items-center gap-4 sm:gap-6">
+              <div className="h-28 w-28 sm:h-36 sm:w-36 flex-shrink-0 overflow-hidden rounded-full ring-[4px] ring-[#FF8A65]/70 shadow-xl bg-[#0e1520]">
                 <Image
                   src={avatarSrc}
                   alt={`${pet.name} avatar`}
-                  width={96}
-                  height={96}
+                  width={144}
+                  height={144}
                   className="object-cover w-full h-full"
                 />
               </div>
-              <div className="pb-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{pet.name}</h1>
-                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+              <div className="flex flex-col justify-center">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">{pet.name}</h1>
+                <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   {pet.species && (
-                    <span className="rounded-full bg-[#FF8A65]/15 border border-[#FF8A65]/20 px-2.5 py-0.5 text-xs font-semibold text-[#FF8A65]">
+                    <span className="rounded-full bg-[#FF8A65]/15 border border-[#FF8A65]/20 px-3 py-0.5 text-xs font-semibold text-[#FF8A65]">
                       {pet.species}
                     </span>
                   )}
                   {pet.breed && (
-                    <span className="rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-xs font-medium text-white/50">
+                    <span className="rounded-full bg-white/5 border border-white/10 px-3 py-0.5 text-xs font-medium text-white/50">
                       {pet.breed}
                     </span>
                   )}
