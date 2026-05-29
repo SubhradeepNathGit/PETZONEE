@@ -123,6 +123,14 @@ export default function MapInner({
                                         <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-medium border border-white/5">U</div>
                                         <span className="truncate font-medium">Owner: <span className="text-white/90">{u.owner_name}</span></span>
                                     </div>
+                                    <a
+                                        href={`https://www.google.com/maps/dir/?api=1&destination=${u.latitude},${u.longitude}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-3.5 w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#FF8A65] hover:bg-[#ff7043] text-black text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 text-center font-bold"
+                                    >
+                                        Get Directions
+                                    </a>
                                 </div>
                             </div>
                         </Popup>

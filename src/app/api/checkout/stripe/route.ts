@@ -164,7 +164,7 @@ export async function POST(req: Request) {
         // Adjust the unit_amount of items, OR create a single negative line item (Stripe doesn't allow this).
         // Since Stripe requires unit_amount > 0, we can create an ephemeral coupon if there's a discount.
 
-        let discounts: Stripe.Checkout.SessionCreateParams.Discount[] = [];
+        const discounts: Stripe.Checkout.SessionCreateParams.Discount[] = [];
         const totalDiscountAmount = (promoDiscount || 0) + (subDiscount || 0);
 
         if (totalDiscountAmount > 0) {

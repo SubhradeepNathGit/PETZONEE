@@ -117,7 +117,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <MapPin size={18} className="text-[#FF6B40]" />
-                Kolkata, India
+                Salt Lake Sector V, Kolkata, India
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={18} className="text-[#FF6B40]" />

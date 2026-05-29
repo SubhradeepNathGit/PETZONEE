@@ -78,6 +78,21 @@ export default function LocationsPage() {
           };
         });
 
+        const petzoneeHQ: PetMapRow = {
+          id: 'petzonee-hq',
+          name: 'PetZonee HQ & Hospital',
+          species: 'HQ',
+          breed: 'Ecosystem Base',
+          avatar_url: '/icons/footer1.png',
+          owner_id: 'admin',
+          owner_name: 'Subhradeep Nath',
+          owner_phone: '+91 98300 98300',
+          city: 'Salt Lake Sector V',
+          state: 'Kolkata',
+          latitude: 22.573531,
+          longitude: 88.433119,
+        };
+
         // Put logged-in user's pets at the top
         let reordered = mappedData;
         if (user) {
@@ -87,13 +102,13 @@ export default function LocationsPage() {
           ];
         }
 
+        // Prepend PetZonee Headquarters to the list so it is always present
+        reordered = [petzoneeHQ, ...reordered];
+
         setRows(reordered);
 
-        // Auto-select first pet with coords
-        const firstWithCoords = reordered.find(
-          (p) => p.latitude != null && p.longitude != null
-        );
-        if (firstWithCoords) setSelectedId(firstWithCoords.id);
+        // Auto-select PetZonee HQ
+        setSelectedId('petzonee-hq');
       }
       setLoading(false);
     })();
@@ -131,8 +146,8 @@ export default function LocationsPage() {
   );
   const selected = filtered.find((r) => r.id === selectedId) ?? null;
 
-  const defaultCenter: [number, number] = [20.5937, 78.9629];
-  const defaultZoom = 4;
+  const defaultCenter: [number, number] = [22.573531, 88.433119];
+  const defaultZoom = 13;
 
   const uniqueSpecies = useMemo(() => {
     const speciesSet = new Set(rows.map(r => r.species?.toLowerCase()).filter(Boolean));

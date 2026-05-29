@@ -80,7 +80,7 @@ export default function ProductDetailsClient({
                 // GUEST CART: Add to localStorage
                 if (typeof window !== "undefined") {
                     const localCartRaw = localStorage.getItem("local_cart");
-                    let localCart = localCartRaw ? JSON.parse(localCartRaw) : [];
+                    const localCart = localCartRaw ? JSON.parse(localCartRaw) : [];
                     
                     const existingIdx = localCart.findIndex((it: any) => it.product_id === product.id);
                     if (existingIdx > -1) {

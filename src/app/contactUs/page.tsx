@@ -212,8 +212,8 @@ export default function ContactPage() {
           >
             {[
               { icon: <Mail />, title: 'Email Us', info: 'hello@petzonee.com', sub: '24/7 Human support', color: 'bg-blue-500/10 text-blue-400' },
-              { icon: <Phone />, title: 'Call Center', info: '+1 (555) 902-1234', sub: 'Mon-Fri, 9am - 6pm', color: 'bg-[#FF8A70]/10 text-[#FF8A70]' },
-              { icon: <MapPin />, title: 'Visit Base', info: 'Neville St, New Albany', sub: 'HQ & Medical Center', color: 'bg-emerald-500/10 text-emerald-400' },
+              { icon: <Phone />, title: 'Call Center', info: '+91 98300 98300', sub: 'Mon-Fri, 9am - 6pm (IST)', color: 'bg-[#FF8A70]/10 text-[#FF8A70]' },
+              { icon: <MapPin />, title: 'Visit Base', info: 'Sector V, Salt Lake, Kolkata', sub: 'HQ & Medical Center', color: 'bg-emerald-500/10 text-emerald-400' },
               { icon: <ShieldCheck />, title: 'Encryption', info: 'End-to-End Secure', sub: 'Your data is protected', color: 'bg-purple-500/10 text-purple-400' },
             ].map((item, idx) => (
               <motion.div
@@ -383,7 +383,7 @@ export default function ContactPage() {
                 </div>
                 <div className="h-10 w-px bg-white/[0.06]" />
                 <a
-                  href="https://maps.google.com/?q=22.572646,88.347960"
+                  href="https://www.google.com/maps/search/?api=1&query=Sector+V+Salt+Lake+Kolkata"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#FF8A70] hover:text-black hover:border-[#FF8A70] transition-all duration-300"
@@ -404,7 +404,7 @@ export default function ContactPage() {
           >
             {/* Map iframe */}
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689.017013408831!2d88.34796067493606!3d22.572646185258867!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a027b03e5f0a0cd%3A0xf2f2b3d7a5e2f5a!2sKolkata%2C%20West%20Bengal%2C%20India!5e0!3m2!1sen!2sin!4v1693555200000!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.286280424564!2d88.43054367584144!3d22.568434779494396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0275ad67c8052d%3A0xc3b836489a748c8!2sSector%20V%2C%20Salt%20Lake%20City%2C%20Kolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(0.85) contrast(1.1) saturate(0.3)' }}
@@ -436,7 +436,7 @@ export default function ContactPage() {
                   <div className="flex-1 min-w-0">
                     <h4 className="text-lg font-black text-white tracking-tight mb-1">PetZonee HQ</h4>
                     <p className="text-xs text-white/40 leading-relaxed font-medium">
-                      42nd Neville Street, Discovery District,<br />New Albany, 90210
+                      Block EP & GP, Sector V, Salt Lake,<br />Kolkata, West Bengal 700091
                     </p>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function ContactPage() {
 
                 {/* CTA */}
                 <a
-                  href="https://maps.google.com/?q=22.572646,88.347960"
+                  href="https://www.google.com/maps/dir/?api=1&destination=22.573531,88.433119"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-5 w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white/60 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#FF8A70] hover:text-black hover:border-[#FF8A70] transition-all duration-300 group/btn"
@@ -472,7 +472,7 @@ export default function ContactPage() {
             {/* Floating coordinates badge (desktop) */}
             <div className="absolute top-8 right-8 hidden md:flex items-center gap-3 px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/[0.06]">
               <div className="w-2 h-2 rounded-full bg-[#FF8A70] animate-pulse" />
-              <span className="text-[10px] font-mono font-bold text-white/40 tracking-wider">22.5726° N, 88.3480° E</span>
+              <span className="text-[10px] font-mono font-bold text-white/40 tracking-wider">22.5735° N, 88.4331° E</span>
             </div>
           </motion.div>
         </div>
