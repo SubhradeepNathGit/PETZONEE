@@ -337,6 +337,14 @@ function FeedPageContent() {
       const { data, error } = await supabase
         .from('activities')
         .select('*')
+        .in('verb', [
+          'pet.media_added',
+          'pet.avatar_updated',
+          'user.avatar_updated',
+          'pet.photo_updated',
+          'pet.cover_updated',
+          'pet.created'
+        ])
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -450,7 +458,15 @@ function FeedPageContent() {
         .channel('rt_activities')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activities' }, async (payload) => {
           const row = payload.new as Activity;
-          if (row.visibility === 'public' || row.owner_id === meId) {
+          const allowedVerbs = [
+            'pet.media_added',
+            'pet.avatar_updated',
+            'user.avatar_updated',
+            'pet.photo_updated',
+            'pet.cover_updated',
+            'pet.created'
+          ];
+          if (allowedVerbs.includes(row.verb) && (row.visibility === 'public' || row.owner_id === meId)) {
             const { data: likesCount } = await supabase
               .from('activity_likes')
               .select('activity_id')
