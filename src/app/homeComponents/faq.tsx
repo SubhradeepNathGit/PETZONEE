@@ -27,9 +27,10 @@ const faqData: FAQItem[] = [
 interface FAQSectionProps {
   className?: string;
   dark?: boolean;
+  hideFooter?: boolean;
 }
 
-const FAQSection: React.FC<FAQSectionProps> = ({ className = "", dark = false }) => {
+const FAQSection: React.FC<FAQSectionProps> = ({ className = "", dark = false, hideFooter = false }) => {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const toggleFAQ = (id: string): void => {
@@ -132,25 +133,27 @@ const FAQSection: React.FC<FAQSectionProps> = ({ className = "", dark = false })
         </div>
 
         {/* Footer */}
-        <motion.footer
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="text-center mt-8 sm:mt-12"
-        >
-          <p className={`text-xs sm:text-sm md:text-base ${
-            dark ? 'text-white/40' : 'text-gray-600'
-          }`}>
-            Still have questions?{" "}
-            <motion.a
-              href="#contact"
-              className="text-[#FF8A65] hover:text-[#ff7043] font-medium underline transition-colors"
-              whileHover={{ scale: 1.05 }}
-            >
-              Contact us
-            </motion.a>
-          </p>
-        </motion.footer>
+        {!hideFooter && (
+          <motion.footer
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-center mt-8 sm:mt-12"
+          >
+            <p className={`text-xs sm:text-sm md:text-base ${
+              dark ? 'text-white/40' : 'text-gray-600'
+            }`}>
+              Still have questions?{" "}
+              <motion.a
+                href="#contact"
+                className="text-[#FF8A65] hover:text-[#ff7043] font-medium underline transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                Contact us
+              </motion.a>
+            </p>
+          </motion.footer>
+        )}
       </div>
 
       {/* Food Bowl PNG Bottom Left with Fade-in */}

@@ -469,11 +469,11 @@ export default function ContactPage() {
         </div>
       </section>
       {/* === FAQ Section === */}
-      <FAQSection dark />
+      <FAQSection dark hideFooter />
 
       {/* Footer Branding */}
-      <footer className="py-12 border-t border-white/5 text-center px-6">
-        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">PETZONEE SECURE COMMS OS v2.6</p>
+      <footer className="py-12 text-center px-6 bg-black">
+        <p className="text-[10px] font-bold text-white/15 uppercase tracking-[0.4em] select-none">PETZONEE SECURE COMMS OS v2.6</p>
       </footer>
     </div>
   );
