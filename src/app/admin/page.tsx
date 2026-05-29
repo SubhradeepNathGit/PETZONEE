@@ -108,12 +108,20 @@ export default function AdminAnalyticsPage() {
             supabase.from("users").select("*"),
             supabase.from("veterinarian").select("*"),
             supabase.from("products").select("*"),
-            supabase.from("orders").select("id, total_amount, status, created_at, is_subscription_purchase"),
+            supabase.from("orders").select("id, total_amount, status, created_at, order_items(product_id, product_name)"),
             supabase.from("appointments").select("id, status, created_at, is_completed, fee_at_booking, vet_id, is_subscription_benefit, is_free_visit"),
             supabase.from("user_subscriptions").select("*", { count: "exact" }).eq("status", "active")
           ]);
 
-          const allOrders = ordersRes.data || [];
+          const allOrders = (ordersRes.data || []).map((o: any) => ({
+            ...o,
+            is_subscription_purchase: o.order_items?.some((item: any) => 
+              !item.product_id || 
+              item.product_name?.toLowerCase().includes('membership') || 
+              item.product_name?.toLowerCase().includes('tier') || 
+              item.product_name?.toLowerCase().includes('plan')
+            ) || false
+          }));
           setUsers(usersRes.data || []);
           setVets(vetsRes.data || []);
           setProducts(productsRes.data || []);

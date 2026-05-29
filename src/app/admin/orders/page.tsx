@@ -91,7 +91,7 @@ export default function AdminOrdersPage() {
     const filteredOrders = useMemo(() => {
         return orders.filter(o => {
             const matchesSearch = o.order_number.toLowerCase().includes(search.toLowerCase()) ||
-                o.contact_details.email.toLowerCase().includes(search.toLowerCase());
+                (o.contact_details?.email || "").toLowerCase().includes(search.toLowerCase());
             const matchesStatus = filterStatus === "all" || o.status === filterStatus;
             return matchesSearch && matchesStatus;
         });
@@ -258,11 +258,11 @@ export default function AdminOrdersPage() {
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-9 h-9 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 font-bold text-xs border border-orange-500/20">
-                                                            {o.contact_details.email[0].toUpperCase()}
+                                                            {(o.contact_details?.email?.[0] || "U").toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <p className="text-white font-bold text-xs truncate max-w-[150px]">{o.contact_details.email}</p>
-                                                            <p className="text-[9px] text-white/30 font-bold uppercase">{o.shipping_address.city}</p>
+                                                            <p className="text-white font-bold text-xs truncate max-w-[150px]">{o.contact_details?.email || "Unknown Customer"}</p>
+                                                            <p className="text-[9px] text-white/30 font-bold uppercase">{o.shipping_address?.city || "N/A"}</p>
                                                         </div>
                                                     </div>
                                                 </td>

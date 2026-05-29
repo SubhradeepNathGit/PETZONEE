@@ -147,14 +147,14 @@ function PrintInvoice({ order }: { order: Order | null }) {
             <div className="flex justify-between items-start mb-10">
                 <div className="w-1/2">
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Billed To</h3>
-                    <p className="font-bold text-gray-900 text-lg">{order.shipping_address.name || 'Customer'}</p>
+                    <p className="font-bold text-gray-900 text-lg">{order.shipping_address?.name || 'Customer'}</p>
                     <div className="text-sm text-gray-600 mt-1 leading-relaxed">
-                        <p>{order.shipping_address.line1}</p>
-                        {order.shipping_address.line2 && <p>{order.shipping_address.line2}</p>}
-                        <p>{order.shipping_address.city}, {order.shipping_address.state} - {order.shipping_address.pincode}</p>
+                        <p>{order.shipping_address?.line1 || "No Street Address"}</p>
+                        {order.shipping_address?.line2 && <p>{order.shipping_address.line2}</p>}
+                        <p>{order.shipping_address?.city || "N/A"}, {order.shipping_address?.state || "N/A"} - {order.shipping_address?.pincode || "N/A"}</p>
                         <div className="mt-2 text-xs space-y-0.5">
-                            <p>Ph: {order.contact_details.phone}</p>
-                            <p className="break-all text-[10px] text-gray-500">{order.contact_details.email}</p>
+                            <p>Ph: {order.contact_details?.phone || "N/A"}</p>
+                            <p className="break-all text-[10px] text-gray-500">{order.contact_details?.email || "No Email Provided"}</p>
                         </div>
                     </div>
                 </div>
@@ -307,7 +307,7 @@ function OrderCard({ order, onReturn, onViewInvoice }: {
                         <div className="flex items-center gap-2">
                             <MapPin size={12} className="text-orange-500/50" />
                             <span className="text-[10px] font-bold uppercase tracking-tight truncate max-w-[150px]">
-                                {order.shipping_address.city}, {order.shipping_address.state}
+                                {order.shipping_address?.city || "N/A"}, {order.shipping_address?.state || "N/A"}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
