@@ -295,30 +295,32 @@ export default function PetProfilePage() {
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex flex-wrap items-center gap-2 sm:pb-1">
-              <Link
-                href={`/pets/${pet.id}/edit`}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur hover:bg-white/[0.12] hover:text-white transition-all"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                Edit
-              </Link>
-              <button
-                onClick={handleDeletePet}
-                disabled={!iOwnIt || deleting}
-                className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/20 transition-all disabled:opacity-40"
-              >
-                {deleting ? (
-                  <span className="text-xs">.</span>
-                ) : (
-                  <Trash2 className="w-3.5 h-3.5" />
-                )}
-                {deleting ? 'Deleting' : 'Delete'}
-              </button>
-            </div>
+            {/* Action buttons (owner only) */}
+            {iOwnIt && (
+              <div className="flex flex-wrap items-center gap-2 sm:pb-1">
+                <Link
+                  href={`/pets/${pet.id}/edit`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur hover:bg-white/[0.12] hover:text-white transition-all"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                  Edit
+                </Link>
+                <button
+                  onClick={handleDeletePet}
+                  disabled={deleting}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/20 transition-all disabled:opacity-40"
+                >
+                  {deleting ? (
+                    <span className="text-xs">.</span>
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5" />
+                  )}
+                  {deleting ? 'Deleting' : 'Delete'}
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
 
