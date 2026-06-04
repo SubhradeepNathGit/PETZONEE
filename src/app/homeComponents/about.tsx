@@ -69,7 +69,7 @@ export default function AboutPage() {
         const paw = document.querySelector('.paw-float');
 
         if (paw) {
-            // 1️⃣ Scroll-triggered rotation from 0° → 15°
+            // 1️ Scroll-triggered rotation from 0° → 15°
             gsap.to(paw, {
                 rotation: 20,
                 scrollTrigger: {
@@ -80,7 +80,7 @@ export default function AboutPage() {
                 },
             });
 
-            // 2️⃣ Continuous floating (after rotation)
+            // 2️ Continuous floating (after rotation)
             gsap.to(paw, {
                 y: "-=20",   // float up/down
                 x: "+=10",   // float left/right
@@ -151,7 +151,7 @@ export default function AboutPage() {
                     </motion.p>
 
                     <motion.h1 className="reveal-text text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.1] sm:leading-[0.95] tracking-tight">
-                        Start Your Pet&apos;s Journey with Us
+                        Start Your Pet Journey with Us
                     </motion.h1>
 
                     <motion.p className="reveal-text text-base lg:text-lg leading-relaxed max-w-2xl mx-auto lg:mx-0 opacity-95 font-medium">
