@@ -1,179 +1,194 @@
-# 🐾 PETZONEE - The Complete Pet Care Ecosystem (2026 Edition)
+# PETZONEE 🐾
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.0-black?logo=next.js)](https://nextjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com/)
-[![React Query](https://img.shields.io/badge/React_Query-5.0-FF4154?logo=react-query)](https://tanstack.com/query/latest)
-[![GSAP](https://img.shields.io/badge/GSAP-Animations-88CE02?logo=greensock)](https://greensock.com/gsap/)
-[![Stripe](https://img.shields.io/badge/Stripe-Payments-008CDD?logo=stripe)](https://stripe.com/)
+> An ultra-modern, enterprise-grade Pet Care Ecosystem offering advanced Telemedicine, eCommerce, Social Networking, and Multi-Role Management with Real-Time Capabilities.
 
-> **PETZONEE** is an expansive, enterprise-grade Next.js application designed to be the ultimate digital home for pet owners, veterinarians, and administrators. It transcends standard pet applications by merging a **Social Media Engine** for pets, a high-performance **E-Commerce Store**, a sophisticated **Medical Operating System** for vets, and a **Real-Time Discovery Map** into a single, seamless platform powered by cutting-edge infrastructure.
+![PetZonee Platform Overview](https://via.placeholder.com/1200x600/1a1a1a/ff8a70?text=PETZONEE+PLATFORM)
+
+## 📖 Overview
+PETZONEE is a highly sophisticated, multi-tenant platform designed to revolutionize the pet care industry. Built with a robust **Next.js 14 App Router** architecture and backed by **Supabase**, it seamlessly integrates Veterinary Telemedicine, an e-commerce Pet Shop, an interactive Pet Social Feed, and a Subscription Membership model. The system provides three distinct, specialized portals for **Users (Pet Owners)**, **Veterinarians**, and **Administrators**, all woven together with real-time bidirectional communication, rich analytics, and an undeniably premium user interface powered by Framer Motion and Tailwind CSS.
 
 ---
 
-## 📖 Comprehensive Documentation
+## ✨ Exhaustive Feature List & Workflows
 
-1. [Core Infrastructure](#1-core-infrastructure)
-2. [Project Architecture & File Mapping](#2-project-architecture--file-mapping)
-3. [Feature Matrix & Workflows](#3-feature-matrix--workflows)
-4. [Advanced Technical Implementations](#4-advanced-technical-implementations)
-5. [Installation & Setup Guide](#5-installation--setup-guide)
-6. [Database Schema Overview](#6-database-schema-overview)
+### 1. 👥 Multi-Role Dashboard Ecosystem
+The platform utilizes an intelligent routing and role-based access control (RBAC) mechanism. Upon login, the system evaluates the user's role and dynamically serves one of three vastly different, highly-specialized environments.
 
----
+#### A. The User (Pet Owner) Portal
+A premium, personalized gateway for pet owners to manage every aspect of their pet's life.
+- **Dynamic Welcome & Avatar Picker:** Personalized greetings and avatar uploads stored securely in Supabase storage.
+- **Membership & Subscription Management:** 
+  - Real-time display of active membership plans (e.g., *Premium Care*, *Complete Care*).
+  - Tracks and enforces benefits like "Unlimited Consults," "4 Free Consults," or "1+1 Free".
+  - Calculates and applies global discounts (5% to 25% Off) across the shop based on tier.
+  - Automated expiration warnings and renewal prompts via pulse notifications.
+- **My Pets (Deep Pet Profiles & Gallery):**
+  - **Pet Bios & Physical Stats:** Create and manage profiles with detailed information like Weight, Age, Breed, and Medical Notes.
+  - **Interactive Lightbox Gallery:** Upload daily snapshots to a pet's gallery, featuring a cinematic Lightbox UI with next/previous navigation.
+  - **Timeline Chips:** Automatically track "Joined Date" and "Birthday" markers.
+  - **Custom Cover & Avatars:** Dynamic overlapping UI mimicking modern social networks.
+- **Appointment Hub & Booking Workflow:**
+  - **Booking Interface:** An intuitive 4-step wizard with an interactive Calendar, Time Slot Picker, and hoverable Doctor Cards revealing Professional Bios and Experience.
+  - **Automated Free Logic:** Displays pulsing "FREE FIRST VISIT" tags or "MEMBERSHIP CREDIT" tags depending on user history.
+  - **Management Console:** Complete history of *Active Consultations* and *Past Records*. Actionable buttons to reschedule, complete, or terminate/cancel slots with a secure warning modal.
+- **eCommerce & Orders Console (Shipment Tracking):**
+  - Track live logistics statuses (Processing, Shipped, Delivered, Returned) through animated progress bars.
+  - Return window logic (auto-disabled after 7 days post-delivery).
+  - Dynamic **Printable Invoices** (A4 format) featuring automated 18% GST calculation, shipping fees, and granular order breakdowns.
+  - **Loyalty Program:** Earn 10 PETZ points on every purchase above ₹500, displayed in a dynamic rewards widget.
 
-## 1. Core Infrastructure
+#### B. The Veterinarian (Vet OS) Dashboard
+A comprehensive Practice Management System (PMS) tailored for modern veterinarians.
+- **Automated KYC & Onboarding Pipeline:**
+  - Secure document uploads (Medical License, Identity Proof).
+  - Real-time approval status tracking (Pending Review, Approved, Rejected).
+  - System gating: Vets cannot access core features until KYC is approved by an Admin.
+- **Financial & Revenue Tracking:**
+  - Real-time earnings dashboard with localized currency formatting (INR).
+  - Historical payout tracking and balance ledgers.
+- **Electronic Medical Records (EMR) & Patient Management:**
+  - Digital prescription generation with PDF export capabilities.
+  - Patient history tracking, consultation notes, and diagnosis input.
+- **Appointment & Schedule Matrix:**
+  - Accept, decline, or reschedule incoming user appointments.
+  - Set custom consultation fees and dynamic availability slots.
 
-PETZONEE is built upon an uncompromising, modern technology stack ensuring scalability, security, and blazing-fast performance.
-
-- **Frontend**: Next.js 15 (App Router, Turbopack, React Server Components).
-- **Styling & UI**: Tailwind CSS v4, Framer Motion, and GSAP for state-of-the-art animations.
-- **State Management**: TanStack React Query (for server state & caching) and Context/Local State for ephemeral UI state.
-- **Backend & Database**: Supabase (PostgreSQL, Auth, Storage, Real-Time Channels).
-- **Payments**: Stripe Integration.
-- **Mapping**: React Leaflet for geolocation services.
-
----
-
-## 2. Project Architecture & File Mapping
-
-The repository follows a strictly modular, feature-based directory structure inside the `src` folder.
-
-### 📂 `src/app` (Next.js App Router)
-The routing engine powering all application pages and API endpoints.
-- **`/admin`**: The absolute top-level view of PETZONEE.
-  - Submodules: `inventory`, `kyc`, `messages`, `orders`, `payments`, `subscriptions`, `users`, `vets`.
-- **`/api`**: Serverless edge routes.
-  - `/checkout`: Stripe checkout session initialization.
-  - `/webhooks`: Asynchronous event processing for Stripe payments and DB triggers.
-- **`/appointments`**: Appointment booking flow with vets.
-- **`/cart` & `/checkout`**: Full E-Commerce workflow (Guest cart merging, tax calculation, checkout UI, `processing`, `success`, `plan-success`).
-- **`/contactUs`**: Support and outreach form handling.
-- **`/dashboard`**: The generalized User Portal for subscription and order tracking.
-- **`/delete`**: Account or entity deletion workflows.
-- **`/feed`**: The core Social Media Engine feed (infinite scrolling).
-- **`/homeComponents`**: Highly modular landing page pieces (`about.tsx`, `banner.tsx`, `faq.tsx`, `mark.tsx`, `marquee.tsx`, `offer.tsx`, `pricing.tsx`, `products.tsx`, `services.tsx`, `stats.tsx`, `team.tsx`, `testimonials.tsx`).
-- **`/kyc-pending`**: Regulatory holding page for Vet onboarding.
-- **`/map`**: Discovery engine utilizing Leaflet to find nearby clinics or events.
-- **`/pets`**: The "Digital Kennel" (`[id]` for viewing, `new` for pet creation).
-- **`/products`**: The E-commerce storefront and Product Details Page (PDP, `[id]`).
-- **`/reset-password` & `/signup`**: Supabase authentication workflows.
-- **`/vet`**: The Vet OS (Patient Management System & EMR).
-- **`layout.tsx` & `ClientLayout.tsx`**: Global wrapper injecting providers and global UI elements.
-- **`tanstackProvider.tsx`**: React Query client initialization.
-
-### 📂 `src/components` (Reusable UI Elements)
-- **`/admin`, `/portal`, `/products`, `/chat`, `/ui`**: Domain-specific UI fragments.
-- **`NotificationDrawer.tsx`**: Real-time push notification sliding panel.
-- **`navbar.tsx` & `footer.tsx`**: Master navigation layouts with dynamic states (e.g., auth, cart counts).
-- **`ScrolltoTop.tsx` & `SpinnerLoader.tsx`**: Utility UX enhancers.
-
-### 📂 `src/lib` (Core Utilities)
-- **`supabase.ts` & `supabaseAdmin.ts`**: Client and Service Role initializers for the database.
-- **`utils.ts`**: Shared helper functions (class merging, formatting).
-- **`chartjs.ts`**: Configuration for analytics dashboards.
-
-### 📂 `src/types`
-- **`product.ts`**: TypeScript definitions enforcing strict data contracts across the codebase.
+#### C. The Administrator Command Center
+A god-mode control panel for platform administrators to monitor, manage, and scale the ecosystem.
+- **Real-time Analytics Engine:**
+  - Powered by Recharts for visual data representation.
+  - Live revenue metrics, conversion rates, and active user counts.
+- **Vet KYC Verification Console:**
+  - Admins can view submitted documents, verify licenses, and approve/reject vet accounts in real-time.
+- **Inventory & E-commerce Management:**
+  - Full CRUD operations for pet shop products.
+  - Stock level alerts, category management, and pricing control.
+- **Order Fulfillment & Logistics:**
+  - Advance order states (Processing -> Shipped -> Delivered).
+  - Manage user returns and initiate refunds.
+- **Global User Management:**
+  - Monitor all registered users, reset passwords, and manage subscription statuses.
 
 ---
 
-## 3. Feature Matrix & Workflows
-
-### 🐕 The Social Media Engine
-A full-fledged social networking experience tailored exclusively for pets.
-- **Multiple Pet Profiles**: Create distinct profiles per pet with custom avatars, medical stats, and breeds (`src/app/pets`).
-- **The Global Feed** (`/feed`): Share status updates, images, and milestones.
-- **Engagement Mechanics**: Polymorphic relations allowing "Liking", "Commenting", and "Sharing". Optimistic UI updates powered by React Query ensure instant feedback.
-
-### 🛍️ The E-Commerce Suite
-A complete, production-ready shopping workflow designed for pet goods.
-- **The Storefront** (`/products`): Advanced filtering, PDPs with high-res galleries, and dynamic reviews.
-- **Persistent Cart Engine** (`/cart`): Syncs guest carts with Supabase upon login. If a user logs in on another device, their cart is magically restored.
-- **Checkout & Taxes** (`/checkout`): Automatically computes sub-totals, calculating precision SGST/CGST.
-- **Subscription Discounts**: Active "Care Plan" holders automatically receive injected percentage discounts on their orders.
-
-### 🏥 The Tri-Portal Dashboards
-Authentication routes users dynamically based on their Role (User, Vet, Admin).
-- **User Portal** (`/dashboard`): Manage subscriptions, track E-commerce orders, handle appointments, and oversee Pet Profiles.
-- **Vet OS** (`/vet`): EMR (Electronic Medical Records), clinical notes, and a scheduling matrix to accept/reschedule appointments. Requires KYC approval.
-- **Admin Dashboard** (`/admin`): Oversee GMV (Gross Merchandise Value), moderate the social feed, manage inventory, users, vets, and respond to global support tickets.
-
-### 📍 Discovery Map & Appointments
-- **Interactive Map** (`/map`): Geolocation-based discovery of nearby veterinary clinics and services.
-- **Booking Engine** (`/appointments`): Conflict-free scheduling system mapping users, pets, and vets.
-
-### 💬 Real-Time Communication Layer
-- **Global Chat Widget** (`src/components/chat`): Direct WebSocket-powered communication with Support.
-- **Smart Notification Drawer** (`NotificationDrawer.tsx`): Real-time alerts for order shipping, appointment approvals, and social engagement.
+### 2. 🌍 Daily News Feed (Social Component)
+A highly interactive social network for pets, enabling users to engage with community activity in real-time.
+- **Activity Tracking Engine:** Automatically logs events such as `pet.created`, `pet.media_added`, and `user.avatar_updated`.
+- **Engagement Mechanics:**
+  - Like system (`activity_likes`) with dynamic counters.
+  - Nested threaded comments (`activity_comments`) allowing users to reply, edit, and delete their thoughts.
+- **Infinite Scrolling:** Powered by the `IntersectionObserver` API for buttery-smooth pagination.
+- **Live Feed Rendering:** Supabase channels instantly push new posts and likes to the feed without manual refreshes.
 
 ---
 
-## 4. Advanced Technical Implementations
-
-- **Real-Time Database Listeners**: Supabase Channels (`postgres_changes`) are actively listening in the `navbar.tsx` to update cart counts and notification badges instantaneously without polling.
-- **Animation Orchestration**: 
-  - *Framer Motion* handles layout transitions, spring-based modal popups, and list re-ordering.
-  - *GSAP (ScrollTrigger)* powers the landing page's massive SVG path animations and parallax marquee banners.
-- **Edge API & Webhooks**: Stripe webhooks (`/api/webhooks`) are processed securely on edge functions to update order statuses and activate premium subscriptions securely outside of client scope.
-- **Guest-to-User Merging Logic**: Deeply embedded logic ensuring a frictionless transition from anonymous browsing to an authenticated buyer.
+### 3. 💬 Real-Time Communication Layer
+The platform is equipped with an incredibly fast, highly interactive messaging system bridging all three roles.
+- **Global Chat Widget (Support Chat):**
+  - A glassmorphic, floating widget accessible globally on the site.
+  - **User-to-Admin Communication:** Users can request help, and admins can reply instantly.
+  - Real-time `postgres_changes` subscriptions ensure instant message delivery without polling.
+  - **Quick Replies:** Context-aware quick actions ("Checking appointment status", "Emergency service inquiry").
+- **Dedicated User ↔ Vet Chat (Consultation Chat):**
+  - A full-screen, split-pane chat interface similar to WhatsApp Web.
+  - Secure file sharing (Images, PDFs, Docs) up to 50KB limit, utilizing Supabase Storage.
+  - Read receipts (Single tick, Double tick colored).
+  - **Conversation Lifecycle:** Vets or Admins can mark a conversation as "Resolved/Closed", which locks the chat and displays a distinct "Transmission Closed" UI to the user.
+  - Archive and Purge features for Vets to manage their inbox.
 
 ---
 
-## 5. Installation & Setup Guide
+### 4. 🛒 Advanced E-Commerce & Checkout
+A high-conversion shop built for pet supplies.
+- **Guest to Authenticated Cart Merging:** If a user shops as a guest and logs in, their cart automatically merges using local storage syncing.
+- **Dynamic Tax & Shipping Calculations:** 
+  - Standard Delivery (Free) vs. Express Delivery (₹99).
+  - 18% GST calculation applied dynamically at checkout.
+- **Membership Discounts:** Instantly deducts percentage totals if a user possesses an active subscription.
+- **Stripe Payment Gateway:** Fully integrated with Stripe Webhooks (`/api/checkout/stripe`) for secure credit card and local payment processing.
 
-### Core Prerequisites
-- Node.js v20+
-- Verified Supabase Project
-- Stripe Account (for payments)
+---
 
-### Initialization Sequence
+### 5. 🗺️ Geolocation & Map Integration
+- Interactive `/map` routing allowing users to discover nearby vet clinics, pet parks, or supply stores.
+- Visual pins and localized distance estimations utilizing mapping libraries.
 
-1. **Clone the Repository**
+---
+
+## 🛠️ Technical Architecture & Stack
+
+### Frontend Architecture
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript (Strict typing for robust state management)
+- **Styling:** Tailwind CSS + Vanilla CSS Modules for extreme customization.
+- **Animations:** Framer Motion (Page transitions, micro-interactions, modal popups, dragging widgets).
+- **Icons:** Lucide React
+- **Toast Notifications:** React Hot Toast / React Toastify for transient success/error states.
+
+### Backend & Database Infrastructure
+- **BaaS:** Supabase (PostgreSQL)
+- **Authentication:** Supabase Auth (Email/Password, OAuth, Role-based JWTs).
+- **Real-time:** Supabase Realtime (WebSockets) for Chat, Social Feed updates, and Live Order Tracking.
+- **Storage:** Supabase Storage buckets (`chat-attachments`, `avatars`, `pet-media`, `product-images`, `kyc-documents`).
+- **Database Schema:** Complex relational mapping (Users, Veterinarians, Orders, Order Items, Appointments, Conversations, Activities, Activity Likes, Activity Comments).
+
+### API & Webhooks
+- **Stripe API:** Handles payment intents and subscription lifecycle webhooks.
+
+---
+
+## 🎨 UI/UX Design Philosophy
+PETZONEE breaks away from standard, boring dashboard templates. It employs:
+- **Glassmorphism & Backdrop Blurs:** Deeply integrated translucent panels mimicking frosted glass.
+- **Dark Mode First with Vibrant Accents:** Jet black backgrounds with striking Orange (#f97316), Emerald, and Blue accent gradients.
+- **Micro-Animations:** Hover lifts, pulsing online indicators, typing indicators, and animated progress bars for shipping tracking.
+- **Print-Specific Styling:** CSS media queries (`@media print`) explicitly designed to strip dark mode and render crisp, professional, white-background A4 invoices.
+
+---
+
+## 🚀 Setup & Installation
+
+### Prerequisites
+- Node.js 18.x or higher
+- A Supabase Project (with Database, Auth, Storage, and Realtime enabled)
+- A Stripe Account
+
+### Environment Variables
+Create a `.env.local` file in the root directory:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+```
+
+### Installation Steps
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/SubhradeepNathGit/Product-CRUD.git
+   git clone https://github.com/SubhradeepNath/PETZONEE.git
    cd PETZONEE
    ```
-
-2. **Install Dependencies**
+2. **Install dependencies**
    ```bash
    npm install
    ```
-
-3. **Environment Configuration**
-   Create a `.env.local` file at the root:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_project_url.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   STRIPE_SECRET_KEY=sk_test_...
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   ```
-
-4. **Launch Development Server**
+3. **Run the development server**
    ```bash
    npm run dev
-   # The Next.js Turbopack compiler will start on http://localhost:3000
+   ```
+4. **Build for production**
+   ```bash
+   npm run build
    ```
 
 ---
 
-## 6. Database Schema Overview
-
-PETZONEE's PostgreSQL database relies heavily on relational mapping and Row Level Security (RLS) for data integrity.
-
-- **`users`**: Extends standard Auth with Role specifications (admin, vet, user), Stripe Customer IDs, and KYC status.
-- **`pets`**: Linked to `owner_id` (foreign key to `users`), containing species, breed, and core metadata.
-- **`feed_posts`**: Linked to `pets.id` (Author) and `users.id` (Uploader) for social interactions.
-- **`appointments`**: Complex mapping of `user_id` ↔ `vet_id` ↔ `pet_id` with strict timestamp validation.
-- **`orders` & `order_items`**: Immutable ledger ensuring past orders retain exact pricing regardless of future catalogue changes.
-- **`cart`**: Persistent cart synchronizing session data with registered users.
-- **`notifications` & `messages`**: Triggers real-time alerts through Supabase Channels.
+## 🛡️ Security & Privacy
+- **Row Level Security (RLS):** Enforced at the Supabase database layer. Users can only read/write their own chat messages, orders, and pets. Vets can only access their patients. Admins have global access.
+- **Input Validation:** Strict TypeScript interfaces preventing malformed data injection.
+- **Secure File Uploads:** Storage limits (50KB for chat) and MIME type validation to prevent malicious payload uploads.
 
 ---
 
-<p align="center">
-  <b>System Engineered & Maintained by <a href="https://github.com/SubhradeepNathGit">Subhradeep Nath</a></b><br/>
-  <i>Setting the Industry Standard for Pet Care Ecosystems.</i>
-</p>
+*Designed and engineered with passion for pets and the people who love them.* 🐾
