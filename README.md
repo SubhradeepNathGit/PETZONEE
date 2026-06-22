@@ -1,17 +1,15 @@
-# PETZONEE 🐾
+# PETZONEE
 
 > An ultra-modern, enterprise-grade Pet Care Ecosystem offering advanced Telemedicine, eCommerce, Social Networking, and Multi-Role Management with Real-Time Capabilities.
 
-![PetZonee Platform Overview](https://via.placeholder.com/1200x600/1a1a1a/ff8a70?text=PETZONEE+PLATFORM)
-
-## 📖 Overview
+## Overview
 PETZONEE is a highly sophisticated, multi-tenant platform designed to revolutionize the pet care industry. Built with a robust **Next.js 14 App Router** architecture and backed by **Supabase**, it seamlessly integrates Veterinary Telemedicine, an e-commerce Pet Shop, an interactive Pet Social Feed, and a Subscription Membership model. The system provides three distinct, specialized portals for **Users (Pet Owners)**, **Veterinarians**, and **Administrators**, all woven together with real-time bidirectional communication, rich analytics, and an undeniably premium user interface powered by Framer Motion and Tailwind CSS.
 
 ---
 
-## ✨ Exhaustive Feature List & Workflows
+## Exhaustive Feature List & Workflows
 
-### 1. 👥 Multi-Role Dashboard Ecosystem
+### 1. Multi-Role Dashboard Ecosystem
 The platform utilizes an intelligent routing and role-based access control (RBAC) mechanism. Upon login, the system evaluates the user's role and dynamically serves one of three vastly different, highly-specialized environments.
 
 #### A. The User (Pet Owner) Portal
@@ -71,7 +69,7 @@ A god-mode control panel for platform administrators to monitor, manage, and sca
 
 ---
 
-### 2. 🌍 Daily News Feed (Social Component)
+### 2. Daily News Feed (Social Component)
 A highly interactive social network for pets, enabling users to engage with community activity in real-time.
 - **Activity Tracking Engine:** Automatically logs events such as `pet.created`, `pet.media_added`, and `user.avatar_updated`.
 - **Engagement Mechanics:**
@@ -82,7 +80,7 @@ A highly interactive social network for pets, enabling users to engage with comm
 
 ---
 
-### 3. 💬 Real-Time Communication Layer
+### 3. Real-Time Communication Layer
 The platform is equipped with an incredibly fast, highly interactive messaging system bridging all three roles.
 - **Global Chat Widget (Support Chat):**
   - A glassmorphic, floating widget accessible globally on the site.
@@ -98,7 +96,7 @@ The platform is equipped with an incredibly fast, highly interactive messaging s
 
 ---
 
-### 4. 🛒 Advanced E-Commerce & Checkout
+### 4. Advanced E-Commerce & Checkout
 A high-conversion shop built for pet supplies.
 - **Guest to Authenticated Cart Merging:** If a user shops as a guest and logs in, their cart automatically merges using local storage syncing.
 - **Dynamic Tax & Shipping Calculations:** 
@@ -109,13 +107,13 @@ A high-conversion shop built for pet supplies.
 
 ---
 
-### 5. 🗺️ Geolocation & Map Integration
+### 5. Geolocation & Map Integration
 - Interactive `/map` routing allowing users to discover nearby vet clinics, pet parks, or supply stores.
 - Visual pins and localized distance estimations utilizing mapping libraries.
 
 ---
 
-## 🛠️ Technical Architecture & Stack
+## Technical Architecture & Stack
 
 ### Frontend Architecture
 - **Framework:** Next.js 14 (App Router)
@@ -137,7 +135,7 @@ A high-conversion shop built for pet supplies.
 
 ---
 
-## 🎨 UI/UX Design Philosophy
+## UI/UX Design Philosophy
 PETZONEE breaks away from standard, boring dashboard templates. It employs:
 - **Glassmorphism & Backdrop Blurs:** Deeply integrated translucent panels mimicking frosted glass.
 - **Dark Mode First with Vibrant Accents:** Jet black backgrounds with striking Orange (#f97316), Emerald, and Blue accent gradients.
@@ -146,7 +144,7 @@ PETZONEE breaks away from standard, boring dashboard templates. It employs:
 
 ---
 
-## 🚀 Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 - Node.js 18.x or higher
@@ -184,11 +182,11 @@ STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 
 ---
 
-## 🛡️ Security & Privacy
+## Security & Privacy
 - **Row Level Security (RLS):** Enforced at the Supabase database layer. Users can only read/write their own chat messages, orders, and pets. Vets can only access their patients. Admins have global access.
 - **Input Validation:** Strict TypeScript interfaces preventing malformed data injection.
 - **Secure File Uploads:** Storage limits (50KB for chat) and MIME type validation to prevent malicious payload uploads.
 
 ---
 
-*Designed and engineered with passion for pets and the people who love them.* 🐾
+Developed by Subhradeep Nath from scratch to production.
