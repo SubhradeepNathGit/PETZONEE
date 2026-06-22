@@ -1,9 +1,9 @@
 # PETZONEE
 
-> An ultra-modern, enterprise-grade Pet Care Ecosystem offering advanced Telemedicine, eCommerce, Social Networking, and Multi-Role Management with Real-Time Capabilities.
+> A comprehensive, enterprise-grade Pet Care Ecosystem offering advanced Telemedicine, eCommerce, Social Networking, and Multi-Role Management with Real-Time Capabilities.
 
 ## Overview
-PETZONEE is a highly sophisticated, multi-tenant platform designed to revolutionize the pet care industry. Built with a robust **Next.js 14 App Router** architecture and backed by **Supabase**, it seamlessly integrates Veterinary Telemedicine, an e-commerce Pet Shop, an interactive Pet Social Feed, and a Subscription Membership model. The system provides three distinct, specialized portals for **Users (Pet Owners)**, **Veterinarians**, and **Administrators**, all woven together with real-time bidirectional communication, rich analytics, and an undeniably premium user interface powered by Framer Motion and Tailwind CSS.
+PETZONEE is a highly sophisticated, multi-tenant platform designed to revolutionize the pet care industry. Built with a robust **Next.js 14 App Router** architecture and backed by a powerful **PostgreSQL** database with Edge Functions, it seamlessly integrates Veterinary Telemedicine, an e-commerce Pet Shop, an interactive Pet Social Feed, and a Subscription Membership model. The system provides three distinct, specialized portals for **Users (Pet Owners)**, **Veterinarians**, and **Administrators**, all woven together with real-time bidirectional communication, rich analytics, and a premium user interface powered by Framer Motion and Tailwind CSS.
 
 ---
 
@@ -14,7 +14,7 @@ The platform utilizes an intelligent routing and role-based access control (RBAC
 
 #### A. The User (Pet Owner) Portal
 A premium, personalized gateway for pet owners to manage every aspect of their pet's life.
-- **Dynamic Welcome & Avatar Picker:** Personalized greetings and avatar uploads stored securely in Supabase storage.
+- **Dynamic Welcome & Avatar Picker:** Personalized greetings and avatar uploads stored securely in scalable cloud storage buckets.
 - **Membership & Subscription Management:** 
   - Real-time display of active membership plans (e.g., *Premium Care*, *Complete Care*).
   - Tracks and enforces benefits like "Unlimited Consults," "4 Free Consults," or "1+1 Free".
@@ -52,7 +52,7 @@ A comprehensive Practice Management System (PMS) tailored for modern veterinaria
   - Set custom consultation fees and dynamic availability slots.
 
 #### C. The Administrator Command Center
-A god-mode control panel for platform administrators to monitor, manage, and scale the ecosystem.
+A centralized control panel for platform administrators to monitor, manage, and scale the ecosystem.
 - **Real-time Analytics Engine:**
   - Powered by Recharts for visual data representation.
   - Live revenue metrics, conversion rates, and active user counts.
@@ -76,7 +76,7 @@ A highly interactive social network for pets, enabling users to engage with comm
   - Like system (`activity_likes`) with dynamic counters.
   - Nested threaded comments (`activity_comments`) allowing users to reply, edit, and delete their thoughts.
 - **Infinite Scrolling:** Powered by the `IntersectionObserver` API for buttery-smooth pagination.
-- **Live Feed Rendering:** Supabase channels instantly push new posts and likes to the feed without manual refreshes.
+- **Live Feed Rendering:** WebSocket connections instantly push new posts and likes to the feed without manual refreshes.
 
 ---
 
@@ -85,11 +85,11 @@ The platform is equipped with an incredibly fast, highly interactive messaging s
 - **Global Chat Widget (Support Chat):**
   - A glassmorphic, floating widget accessible globally on the site.
   - **User-to-Admin Communication:** Users can request help, and admins can reply instantly.
-  - Real-time `postgres_changes` subscriptions ensure instant message delivery without polling.
+  - Real-time database listeners ensure instant message delivery without polling.
   - **Quick Replies:** Context-aware quick actions ("Checking appointment status", "Emergency service inquiry").
 - **Dedicated User ↔ Vet Chat (Consultation Chat):**
   - A full-screen, split-pane chat interface similar to WhatsApp Web.
-  - Secure file sharing (Images, PDFs, Docs) up to 50KB limit, utilizing Supabase Storage.
+  - Secure file sharing (Images, PDFs, Docs) up to 50KB limit, utilizing scalable cloud storage.
   - Read receipts (Single tick, Double tick colored).
   - **Conversation Lifecycle:** Vets or Admins can mark a conversation as "Resolved/Closed", which locks the chat and displays a distinct "Transmission Closed" UI to the user.
   - Archive and Purge features for Vets to manage their inbox.
@@ -124,10 +124,10 @@ A high-conversion shop built for pet supplies.
 - **Toast Notifications:** React Hot Toast / React Toastify for transient success/error states.
 
 ### Backend & Database Infrastructure
-- **BaaS:** Supabase (PostgreSQL)
-- **Authentication:** Supabase Auth (Email/Password, OAuth, Role-based JWTs).
-- **Real-time:** Supabase Realtime (WebSockets) for Chat, Social Feed updates, and Live Order Tracking.
-- **Storage:** Supabase Storage buckets (`chat-attachments`, `avatars`, `pet-media`, `product-images`, `kyc-documents`).
+- **Database:** PostgreSQL accessed via robust Edge Functions.
+- **Authentication:** Secure Email/Password, OAuth, and Role-based JWT authentication.
+- **Real-time:** WebSocket connections for Chat, Social Feed updates, and Live Order Tracking.
+- **Storage:** Secure Cloud Storage buckets (`chat-attachments`, `avatars`, `pet-media`, `product-images`, `kyc-documents`).
 - **Database Schema:** Complex relational mapping (Users, Veterinarians, Orders, Order Items, Appointments, Conversations, Activities, Activity Likes, Activity Comments).
 
 ### API & Webhooks
@@ -148,14 +148,14 @@ PETZONEE breaks away from standard, boring dashboard templates. It employs:
 
 ### Prerequisites
 - Node.js 18.x or higher
-- A Supabase Project (with Database, Auth, Storage, and Realtime enabled)
+- A PostgreSQL database instance with Edge Functions and WebSocket support enabled
 - A Stripe Account
 
 ### Environment Variables
 Create a `.env.local` file in the root directory:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_API_URL=your_backend_api_url
+NEXT_PUBLIC_ANON_KEY=your_backend_anon_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
@@ -183,7 +183,7 @@ STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ---
 
 ## Security & Privacy
-- **Row Level Security (RLS):** Enforced at the Supabase database layer. Users can only read/write their own chat messages, orders, and pets. Vets can only access their patients. Admins have global access.
+- **Row Level Security (RLS):** Enforced at the PostgreSQL database layer. Users can only read/write their own chat messages, orders, and pets. Vets can only access their patients. Admins have global access.
 - **Input Validation:** Strict TypeScript interfaces preventing malformed data injection.
 - **Secure File Uploads:** Storage limits (50KB for chat) and MIME type validation to prevent malicious payload uploads.
 
