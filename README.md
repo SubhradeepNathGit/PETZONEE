@@ -107,9 +107,29 @@ A high-conversion shop built for pet supplies.
 
 ---
 
-### 5. Geolocation & Map Integration
-- Interactive `/map` routing allowing users to discover nearby vet clinics, pet parks, or supply stores.
-- Visual pins and localized distance estimations utilizing mapping libraries.
+### 5. Discover Feature (Geolocation & Map Integration)
+An interactive community discovery tool located at `/map` allowing users to find nearby pets and owners.
+- **How it works:** 
+  - **Map Engine:** Powered by **React Leaflet** with premium dark-mode tiles from **CARTO** layered over OpenStreetMap.
+  - **Relational Data Mapping:** Performs complex database joins between the `pets` and `users` tables to simultaneously fetch pet avatars, breeds, and owner coordinates.
+  - **Geolocation API:** Uses the browser's native `navigator.geolocation` API for the "Locate Me" feature, smoothly flying the map to the user's real-time physical coordinates.
+  - **Dynamic Markers & UI:** Generates custom CSS-based map markers for each pet, with interactive glassmorphic popups styled with Tailwind CSS and Framer Motion.
+
+---
+
+## Frontend System Design Deep Dive
+
+### Real-Time Chat Architecture
+The bidirectional messaging infrastructure relies on an event-driven architecture using PostgreSQL and WebSockets:
+- **Database Schema:** Chat data is normalized into two core tables: `conversations` (managing metadata, participants, and lifecycle states like 'active' vs 'resolved') and `conversation_messages` (storing the actual payload, timestamps, and sender IDs).
+- **WebSocket Subscriptions:** The frontend utilizes `postgres_changes` event listeners to subscribe to `INSERT` and `UPDATE` events on the messages table. When a payload is pushed to the database, the edge function immediately broadcasts the delta over the active WebSocket channel to the client, triggering an optimistic UI update without costly HTTP polling.
+- **State Synchronization:** Global state is managed dynamically. When a Vet resolves a chat, the state change updates the `conversations` table, which triggers a real-time broadcast to lock the user's input field and render a "Transmission Closed" state instantly.
+
+### Multi-Pet Profile Management
+The ecosystem handles an arbitrary N:1 relationship between pets and users efficiently:
+- **Relational Integrity:** The `pets` table holds a foreign key `owner_id` mapped strictly to the `users` table. This allows users to hold multiple, distinct pet profiles simultaneously.
+- **Media Segregation:** Each pet profile is tied to a one-to-many `pet_media` table via a `pet_id` foreign key. This ensures that the lightbox gallery specifically queries photos belonging to the target pet rather than mingling all user media in a single bucket.
+- **Row Level Security (RLS):** Database policies are constructed utilizing `auth.uid() = owner_id`. This strict gateway ensures that a user can `SELECT`, `UPDATE`, or `DELETE` only their associated pet records and related media rows. Attempting to fetch another user's pet profile forcefully yields zero rows at the database level.
 
 ---
 

@@ -40,6 +40,16 @@ type Order = {
     subtotal?: number;
     shipping_cost?: number;
     tax_amount?: number;
+    userProfile?: {
+        id: string;
+        first_name?: string;
+        last_name?: string;
+        email?: string;
+        avatar_url?: string;
+        city?: string;
+        state?: string;
+        phone?: string;
+    };
 };
 
 /* Status Config */
@@ -59,19 +69,32 @@ export default function AdminOrdersPage() {
     const [me, setMe] = useState<{ name: string; avatar: string | null }>({ name: "Admin", avatar: null });
 
     const fetchAllOrders = useCallback(async () => {
-        const { data, error } = await supabase
-            .from('orders')
-            .select(`
-                *,
-                order_items (*)
-            `)
-            .order('created_at', { ascending: false });
+        const [ordersRes, usersRes] = await Promise.all([
+            supabase
+                .from('orders')
+                .select(`
+                    *,
+                    order_items (*)
+                `)
+                .order('created_at', { ascending: false }),
+            supabase
+                .from('users')
+                .select('id, first_name, last_name, email, avatar_url, city, state, phone')
+        ]);
 
-        if (error) {
+        if (ordersRes.error) {
             toast.error("Failed to fetch orders");
             return;
         }
-        setOrders(data || []);
+
+        const userMap = new Map((usersRes.data || []).map(u => [u.id, u]));
+
+        const enrichedOrders: Order[] = (ordersRes.data || []).map(o => ({
+            ...o,
+            userProfile: o.user_id ? userMap.get(o.user_id) : undefined
+        }));
+
+        setOrders(enrichedOrders);
     }, []);
 
     useEffect(() => {
@@ -90,8 +113,15 @@ export default function AdminOrdersPage() {
 
     const filteredOrders = useMemo(() => {
         return orders.filter(o => {
-            const matchesSearch = o.order_number.toLowerCase().includes(search.toLowerCase()) ||
-                (o.contact_details?.email || "").toLowerCase().includes(search.toLowerCase());
+            const contactEmail = o.contact_details?.email || "";
+            const userEmail = o.userProfile?.email || o.user_email || "";
+            const userName = o.userProfile ? `${o.userProfile.first_name || ''} ${o.userProfile.last_name || ''}` : (o.shipping_address?.name || "");
+
+            const searchLower = search.toLowerCase();
+            const matchesSearch = o.order_number.toLowerCase().includes(searchLower) ||
+                contactEmail.toLowerCase().includes(searchLower) ||
+                userEmail.toLowerCase().includes(searchLower) ||
+                userName.toLowerCase().includes(searchLower);
             const matchesStatus = filterStatus === "all" || o.status === filterStatus;
             return matchesSearch && matchesStatus;
         });
@@ -243,6 +273,19 @@ export default function AdminOrdersPage() {
                                     {filteredOrders.map((o) => {
                                         const cfg = STATUS_BAR[o.status];
                                         const StatusIcon = cfg.icon;
+
+                                        const contactEmail = o.contact_details?.email;
+                                        const profileEmail = o.userProfile?.email || o.user_email;
+                                        const displayEmail = contactEmail || profileEmail || "";
+
+                                        const profileName = o.userProfile ? `${o.userProfile.first_name || ''} ${o.userProfile.last_name || ''}`.trim() : "";
+                                        const shippingName = o.shipping_address?.name;
+                                        const displayName = profileName || shippingName || displayEmail || "Unknown Customer";
+
+                                        const city = o.shipping_address?.city || o.userProfile?.city || "N/A";
+                                        const avatarUrl = o.userProfile?.avatar_url;
+                                        const initial = (displayName?.[0] || displayEmail?.[0] || "U").toUpperCase();
+
                                         return (
                                             <motion.tr
                                                 layout
@@ -257,12 +300,20 @@ export default function AdminOrdersPage() {
                                                 </td>
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-9 h-9 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 font-bold text-xs border border-orange-500/20">
-                                                            {(o.contact_details?.email?.[0] || "U").toUpperCase()}
+                                                        <div className="w-9 h-9 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 font-bold text-xs border border-orange-500/20 overflow-hidden relative flex-shrink-0">
+                                                            {avatarUrl ? (
+                                                                <Image src={avatarUrl} alt={displayName} fill className="object-cover" />
+                                                            ) : (
+                                                                initial
+                                                            )}
                                                         </div>
-                                                        <div>
-                                                            <p className="text-white font-bold text-xs truncate max-w-[150px]">{o.contact_details?.email || "Unknown Customer"}</p>
-                                                            <p className="text-[9px] text-white/30 font-bold uppercase">{o.shipping_address?.city || "N/A"}</p>
+                                                        <div className="min-w-0">
+                                                            <p className="text-white font-bold text-xs truncate max-w-[160px]" title={displayName}>
+                                                                {displayName}
+                                                            </p>
+                                                            <p className="text-[9px] text-white/30 font-bold uppercase truncate max-w-[160px]">
+                                                                {displayEmail && displayName !== displayEmail ? `${displayEmail} • ${city}` : city}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </td>

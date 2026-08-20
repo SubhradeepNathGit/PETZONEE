@@ -45,6 +45,39 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        let finalContact = contact || {};
+        let finalAddr = addr || {};
+
+        if ((!finalContact.email || !finalAddr.city) && userId) {
+            const { data: userProfile } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .maybeSingle();
+
+            if (userProfile) {
+                const fullName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
+                if (!finalContact.email) {
+                    finalContact = {
+                        ...finalContact,
+                        email: userProfile.email || '',
+                        phone: userProfile.phone || finalContact.phone || '',
+                        name: fullName || 'Valued Customer'
+                    };
+                }
+                if (!finalAddr.city || finalAddr.city === 'N/A') {
+                    finalAddr = {
+                        ...finalAddr,
+                        name: fullName || 'Valued Customer',
+                        line1: userProfile.address || 'Default Address',
+                        city: userProfile.city || 'N/A',
+                        state: userProfile.state || 'N/A',
+                        pincode: userProfile.pincode || 'N/A'
+                    };
+                }
+            }
+        }
+
         const orderNumber = `BM-${Date.now().toString(36).toUpperCase()}`;
 
         // 1. Insert into orders table as 'pending'
@@ -56,8 +89,8 @@ export async function POST(req: Request) {
                 total_amount: total,
                 status: "processing",
                 payment_status: "pending",
-                shipping_address: addr || {},
-                contact_details: contact || {},
+                shipping_address: finalAddr,
+                contact_details: finalContact,
                 summary: {
                     subtotal,
                     sgst: totalTax / 2,
@@ -203,7 +236,7 @@ export async function POST(req: Request) {
                 ? `${origin}/checkout/plan-success?session_id={CHECKOUT_SESSION_ID}`
                 : `${origin}/checkout/success?order=${orderNumber}`,
             cancel_url: isPlanCheckout ? `${origin}/` : `${origin}/cart`,
-            customer_email: contact?.email || undefined,
+            customer_email: finalContact.email || undefined,
             metadata,
             discounts: discounts.length > 0 ? discounts : undefined,
         };
