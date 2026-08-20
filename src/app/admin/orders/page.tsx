@@ -6,7 +6,7 @@ import {
     ShoppingBag, Search, Filter, Clock, Truck,
     CheckCircle2, XCircle, ChevronRight, Package,
     ArrowUpDown, MoreVertical, MapPin, Phone, Mail,
-    RotateCcw, AlertCircle, Loader2
+    RotateCcw, AlertCircle, Loader2, User
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "@/components/sidebar";
@@ -67,6 +67,7 @@ export default function AdminOrdersPage() {
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [me, setMe] = useState<{ name: string; avatar: string | null }>({ name: "Admin", avatar: null });
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     const fetchAllOrders = useCallback(async () => {
         const [ordersRes, usersRes] = await Promise.all([
@@ -113,15 +114,21 @@ export default function AdminOrdersPage() {
 
     const filteredOrders = useMemo(() => {
         return orders.filter(o => {
+            const orderName = o.shipping_address?.name || o.contact_details?.name || o.contact_details?.full_name || "";
             const contactEmail = o.contact_details?.email || "";
+            const contactPhone = o.contact_details?.phone || o.shipping_address?.phone || "";
             const userEmail = o.userProfile?.email || o.user_email || "";
-            const userName = o.userProfile ? `${o.userProfile.first_name || ''} ${o.userProfile.last_name || ''}` : (o.shipping_address?.name || "");
+            const userName = o.userProfile ? `${o.userProfile.first_name || ''} ${o.userProfile.last_name || ''}`.trim() : "";
+            const itemNames = (o.order_items || []).map(it => it.product_name).join(" ");
 
             const searchLower = search.toLowerCase();
             const matchesSearch = o.order_number.toLowerCase().includes(searchLower) ||
+                orderName.toLowerCase().includes(searchLower) ||
                 contactEmail.toLowerCase().includes(searchLower) ||
+                contactPhone.toLowerCase().includes(searchLower) ||
                 userEmail.toLowerCase().includes(searchLower) ||
-                userName.toLowerCase().includes(searchLower);
+                userName.toLowerCase().includes(searchLower) ||
+                itemNames.toLowerCase().includes(searchLower);
             const matchesStatus = filterStatus === "all" || o.status === filterStatus;
             return matchesSearch && matchesStatus;
         });
@@ -274,17 +281,18 @@ export default function AdminOrdersPage() {
                                         const cfg = STATUS_BAR[o.status];
                                         const StatusIcon = cfg.icon;
 
-                                        const contactEmail = o.contact_details?.email;
-                                        const profileEmail = o.userProfile?.email || o.user_email;
-                                        const displayEmail = contactEmail || profileEmail || "";
-
+                                        const orderName = o.shipping_address?.name || o.contact_details?.name || o.contact_details?.full_name;
+                                        const orderEmail = o.contact_details?.email;
                                         const profileName = o.userProfile ? `${o.userProfile.first_name || ''} ${o.userProfile.last_name || ''}`.trim() : "";
-                                        const shippingName = o.shipping_address?.name;
-                                        const displayName = profileName || shippingName || displayEmail || "Unknown Customer";
+                                        const profileEmail = o.userProfile?.email || o.user_email;
 
+                                        const displayName = orderName || profileName || orderEmail || profileEmail || "Customer";
+                                        const displayEmail = orderEmail || profileEmail || "";
                                         const city = o.shipping_address?.city || o.userProfile?.city || "N/A";
                                         const avatarUrl = o.userProfile?.avatar_url;
                                         const initial = (displayName?.[0] || displayEmail?.[0] || "U").toUpperCase();
+
+                                        const hasDifferentRecipient = orderName && profileName && orderName.toLowerCase() !== profileName.toLowerCase();
 
                                         return (
                                             <motion.tr
@@ -292,7 +300,8 @@ export default function AdminOrdersPage() {
                                                 key={o.id}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                className="hover:bg-white/[0.02] transition-colors group"
+                                                className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
+                                                onClick={() => setSelectedOrder(o)}
                                             >
                                                 <td className="px-8 py-6">
                                                     <p className="text-white font-bold text-sm mb-1">#{o.order_number}</p>
@@ -312,7 +321,11 @@ export default function AdminOrdersPage() {
                                                                 {displayName}
                                                             </p>
                                                             <p className="text-[9px] text-white/30 font-bold uppercase truncate max-w-[160px]">
-                                                                {displayEmail && displayName !== displayEmail ? `${displayEmail} • ${city}` : city}
+                                                                {hasDifferentRecipient ? (
+                                                                    <span className="text-orange-400/80">By: {profileName} • {city}</span>
+                                                                ) : (
+                                                                    displayEmail ? `${displayEmail} • ${city}` : city
+                                                                )}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -334,7 +347,7 @@ export default function AdminOrdersPage() {
                                                 <td className="px-8 py-6 font-bold text-white">
                                                     ₹{Number(o.total_amount).toLocaleString()}
                                                 </td>
-                                                <td className="px-8 py-6 text-right">
+                                                <td className="px-8 py-6 text-right" onClick={(e) => e.stopPropagation()}>
                                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         {o.status === 'processing' && (
                                                             <button
@@ -360,7 +373,10 @@ export default function AdminOrdersPage() {
                                                                 Void
                                                             </button>
                                                         )}
-                                                        <button className="p-2 rounded-xl bg-white/5 text-white/40 hover:text-white border border-white/10">
+                                                        <button 
+                                                            onClick={() => setSelectedOrder(o)}
+                                                            className="p-2 rounded-xl bg-white/5 text-white/40 hover:text-white border border-white/10"
+                                                        >
                                                             <MoreVertical size={16} />
                                                         </button>
                                                     </div>
@@ -380,6 +396,162 @@ export default function AdminOrdersPage() {
                     )}
                 </div>
             </main>
+
+            {/* Slide-over Drawer for Order Details */}
+            <AnimatePresence>
+                {selectedOrder && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex justify-end"
+                    >
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setSelectedOrder(null)} />
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                            className="relative w-full max-w-2xl h-screen bg-[#0a0a0a] border-l border-white/10 p-8 md:p-12 shadow-2xl overflow-y-auto custom-scrollbar space-y-8"
+                        >
+                            <div className="flex items-center justify-between border-b border-white/10 pb-6">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <h2 className="text-2xl font-black text-white tracking-tight">Order #{selectedOrder.order_number}</h2>
+                                        <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${STATUS_BAR[selectedOrder.status].bg} ${STATUS_BAR[selectedOrder.status].color} ${STATUS_BAR[selectedOrder.status].border} border`}>
+                                            {STATUS_BAR[selectedOrder.status].label}
+                                        </span>
+                                    </div>
+                                    <p className="text-white/40 text-xs font-medium">{new Date(selectedOrder.created_at).toLocaleString()}</p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedOrder(null)}
+                                    className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-all"
+                                >
+                                    <XCircle size={24} />
+                                </button>
+                            </div>
+
+                            {/* Status Actions */}
+                            <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl space-y-4">
+                                <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">Update Order Status</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {(['processing', 'shipped', 'delivered', 'cancelled'] as const).map((st) => (
+                                        <button
+                                            key={st}
+                                            onClick={() => {
+                                                updateOrderStatus(selectedOrder.id, st);
+                                                setSelectedOrder(prev => prev ? { ...prev, status: st } : null);
+                                            }}
+                                            className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all ${
+                                                selectedOrder.status === st
+                                                    ? 'bg-orange-500 text-white border-orange-500 shadow-lg'
+                                                    : 'bg-white/5 text-white/40 border-white/10 hover:text-white hover:bg-white/10'
+                                            }`}
+                                        >
+                                            {st}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Customer & Shipping Details */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl space-y-3">
+                                    <div className="flex items-center gap-2 text-orange-500 mb-1">
+                                        <User size={16} />
+                                        <h3 className="text-xs font-bold uppercase tracking-wider text-white">Order Placer (Account)</h3>
+                                    </div>
+                                    <div>
+                                        <p className="text-white/40 text-[9px] font-bold uppercase">Account Name</p>
+                                        <p className="text-white font-bold text-sm">
+                                            {selectedOrder.userProfile ? `${selectedOrder.userProfile.first_name || ''} ${selectedOrder.userProfile.last_name || ''}`.trim() : (selectedOrder.contact_details?.name || "Guest User")}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-white/40 text-[9px] font-bold uppercase">Account Email</p>
+                                        <p className="text-white font-medium text-xs break-all">{selectedOrder.userProfile?.email || selectedOrder.contact_details?.email || selectedOrder.user_email || "N/A"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-white/40 text-[9px] font-bold uppercase">Phone</p>
+                                        <p className="text-white font-medium text-xs">{selectedOrder.userProfile?.phone || selectedOrder.contact_details?.phone || "N/A"}</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl space-y-3">
+                                    <div className="flex items-center gap-2 text-blue-500 mb-1">
+                                        <MapPin size={16} />
+                                        <h3 className="text-xs font-bold uppercase tracking-wider text-white">Delivery & Recipient</h3>
+                                    </div>
+                                    <div>
+                                        <p className="text-white/40 text-[9px] font-bold uppercase">Recipient Name</p>
+                                        <p className="text-white font-bold text-sm">
+                                            {selectedOrder.shipping_address?.name || selectedOrder.contact_details?.name || (selectedOrder.userProfile ? `${selectedOrder.userProfile.first_name || ''} ${selectedOrder.userProfile.last_name || ''}`.trim() : "") || "N/A"}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-white/40 text-[9px] font-bold uppercase">Delivery Address</p>
+                                        <p className="text-white/80 text-xs leading-relaxed">
+                                            {selectedOrder.shipping_address?.line1 || "No street address"}
+                                            {selectedOrder.shipping_address?.line2 ? `, ${selectedOrder.shipping_address.line2}` : ""}
+                                        </p>
+                                        <p className="text-white/80 text-xs font-medium">
+                                            {selectedOrder.shipping_address?.city || selectedOrder.userProfile?.city || "N/A"}
+                                            {selectedOrder.shipping_address?.state ? `, ${selectedOrder.shipping_address.state}` : ""}
+                                            {selectedOrder.shipping_address?.pincode ? ` - ${selectedOrder.shipping_address.pincode}` : ""}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Order Items */}
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 flex items-center gap-2">
+                                    <Package size={16} className="text-orange-500" />
+                                    Order Items ({selectedOrder.order_items?.length || 0})
+                                </h3>
+                                <div className="space-y-3">
+                                    {selectedOrder.order_items?.map((item) => (
+                                        <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative w-12 h-12 rounded-xl bg-zinc-900 border border-white/10 overflow-hidden flex-shrink-0">
+                                                    {item.image_url ? (
+                                                        <Image src={item.image_url} alt={item.product_name} fill className="object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-white/20"><Package size={20} /></div>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="text-white font-bold text-sm">{item.product_name}</p>
+                                                    <p className="text-white/40 text-[10px] uppercase font-medium">Qty: {item.quantity} × ₹{item.unit_price.toLocaleString()}</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-white font-bold text-base">₹{(item.quantity * item.unit_price).toLocaleString()}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Payment Summary */}
+                            <div className="bg-white/[0.03] border border-white/10 p-6 rounded-3xl space-y-3">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">Payment Summary</h3>
+                                <div className="flex justify-between text-xs text-white/60">
+                                    <span>Payment Method</span>
+                                    <span className="font-bold text-white uppercase">{selectedOrder.payment_method || 'Card / UPI'}</span>
+                                </div>
+                                <div className="flex justify-between text-xs text-white/60">
+                                    <span>Payment Status</span>
+                                    <span className={`font-bold uppercase ${selectedOrder.payment_status === 'paid' ? 'text-emerald-400' : 'text-amber-400'}`}>{selectedOrder.payment_status}</span>
+                                </div>
+                                <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+                                    <span className="text-white font-bold text-sm">Total Paid</span>
+                                    <span className="text-2xl font-black text-white">₹{Number(selectedOrder.total_amount).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
